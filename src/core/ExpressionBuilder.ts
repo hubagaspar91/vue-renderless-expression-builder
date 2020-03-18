@@ -14,19 +14,23 @@ const classes: ClassConstructors = {
 };
 
 export default class ExpressionBuilder {
-  private readonly _root: ExpressionNodeGroup;
+  public readonly root: ExpressionNodeGroup;
   private _context: ExpressionNodeGroup;
 
   static GROUP = GROUP;
   static NODE = NODE;
 
   constructor(root?: ExpressionNodeGroup | IExpressionNodeGroupJSON) {
-    this._root = root
+    this.root = root
       ? ExpressionNodeGroup.isJSONInstance(root)
         ? ExpressionNodeGroup.fromJSON(root)
         : root
       : new ExpressionNodeGroup();
-    this._context = this._root;
+    this._context = this.root;
+  }
+
+  get context() {
+    return this._context;
   }
 
   private _validateIndex(index?: number): boolean {
@@ -117,12 +121,17 @@ export default class ExpressionBuilder {
   }
 
   contextToRoot() {
-    this._context = this._root;
+    this._context = this.root;
     return this;
   }
 
+  /**
+   *
+   * @param path {Number[]} - describes a path to the ExpressionNodeGroup in the tree, that is to be set as context
+   * @param root
+   * @param pathIndex
+   */
   private static seekContext(path: number[], root: ExpressionNodeGroup, pathIndex = 0): ExpressionNodeGroup | null {
-    // if at the end of the provided path
     const foundNode = root.children[path[pathIndex]];
     if (foundNode && foundNode instanceof ExpressionNodeGroup) {
       if (pathIndex == path.length - 1)
@@ -134,16 +143,16 @@ export default class ExpressionBuilder {
   }
 
   contextTo(path: number[]): ExpressionBuilder {
-    const newContext = ExpressionBuilder.seekContext(path, this._root);
+    const newContext = ExpressionBuilder.seekContext(path, this.root);
     this._context = newContext ? newContext : this._context;
     return this;
   }
 
   toJSON(): IExpressionNodeGroupJSON {
-    return this._root.toJSON();
+    return this.root.toJSON();
   }
 
   flatten(): Array<ICondition[]> {
-    return this._root.flatten();
+    return this.root.flatten();
   }
 }

@@ -37,7 +37,9 @@ class ExpressionNodeBase implements IExpressionNodeBase {
 
 }
 
-
+/**
+ * Node object, describing a condition
+ */
 export class ExpressionNode extends ExpressionNodeBase implements IExpressionNode {
   public condition: ICondition;
 
@@ -48,6 +50,9 @@ export class ExpressionNode extends ExpressionNodeBase implements IExpressionNod
     this.condition = condition;
   }
 
+  /**
+   * Exports the data as JSON
+   */
   toJSON(): IExpressionNodeJSON {
     return {
       connectionType: this.connectionType,
@@ -55,10 +60,19 @@ export class ExpressionNode extends ExpressionNodeBase implements IExpressionNod
     }
   }
 
+  /**
+   * Checks, whether an Object is a valid JSON instance to construct an ExpressionNode from
+   * @param object
+   */
   static isJSONInstance(object: object): object is IExpressionNodeJSON {
     return "condition" in object;
   }
 
+  /**
+   * Constructs an ExpressionNode from a JSON representation
+   * @param json
+   * @param parentNode
+   */
   static fromJSON(json: IExpressionNodeJSON, parentNode?: ExpressionNodeGroup): ExpressionNode {
     return new ExpressionNode(json.condition, json.connectionType, parentNode)
   }
@@ -98,6 +112,10 @@ export class ExpressionNodeGroup extends ExpressionNodeBase implements IExpressi
     return this._maxDepth;
   }
 
+  /**
+   * Current depth must be 0 or larger by one than that of the parentNode
+   * @param value
+   */
   set currentDepth(value: number) {
     if (!this.parentNode && value == 0 || this.parentNode && value - 1 == this.parentNode.currentDepth)
       this._currentDepth = value;
@@ -110,6 +128,9 @@ export class ExpressionNodeGroup extends ExpressionNodeBase implements IExpressi
   }
 
 
+  /**
+   * Recursively creates a JSON representation of the expression tree
+   */
   toJSON(): IExpressionNodeGroupJSON {
     return {
       connectionType: this.connectionType,

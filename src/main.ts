@@ -41,7 +41,8 @@ builder
   .addNew(ExpressionBuilder.NODE, undefined, {name: "fasz", value: 0})
   .addNew(ExpressionBuilder.GROUP, "and")
   .addNew(ExpressionBuilder.NODE, "or", {name: "fasz", value: 1})
-  .addNew(ExpressionBuilder.NODE, "or", {name: "fasz", value: 2});
+  .addNew(ExpressionBuilder.NODE, "or", {name: "fasz", value: 2})
+  .setNew(ExpressionBuilder.NODE, 1, "and", {name: "dick", value: 0});
 console.log(builder);
 
 console.log(builder.flatten());
