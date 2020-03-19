@@ -82,7 +82,7 @@ module.exports =
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "fb15");
+/******/ 	return __webpack_require__(__webpack_require__.s = "fae3");
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -1605,6 +1605,13 @@ if (typeof store.inspectSource != 'function') {
 
 module.exports = store.inspectSource;
 
+
+/***/ }),
+
+/***/ "8bbf":
+/***/ (function(module, exports) {
+
+module.exports = require("vue");
 
 /***/ }),
 
@@ -3343,7 +3350,7 @@ module.exports = function (key) {
 
 /***/ }),
 
-/***/ "fb15":
+/***/ "fae3":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -3351,8 +3358,8 @@ module.exports = function (key) {
 __webpack_require__.r(__webpack_exports__);
 
 // EXPORTS
-__webpack_require__.d(__webpack_exports__, "ExpressionNodeGroup", function() { return /* reexport */ ExpressionNodes_ExpressionNodeGroup; });
-__webpack_require__.d(__webpack_exports__, "ExpressionNode", function() { return /* reexport */ ExpressionNodes_ExpressionNode; });
+__webpack_require__.d(__webpack_exports__, "Core", function() { return /* reexport */ Core; });
+__webpack_require__.d(__webpack_exports__, "Components", function() { return /* reexport */ Components; });
 
 // CONCATENATED MODULE: ./node_modules/@vue/cli-service/lib/commands/build/setPublicPath.js
 // This file is imported into lib/wc client bundles.
@@ -4070,16 +4077,1161 @@ var ExpressionBuilder_ExpressionBuilder = /*#__PURE__*/function () {
 
 ExpressionBuilder_ExpressionBuilder.GROUP = GROUP;
 ExpressionBuilder_ExpressionBuilder.NODE = NODE;
+// EXTERNAL MODULE: ./node_modules/core-js/modules/es.array.slice.js
+var es_array_slice = __webpack_require__("fb6a");
+
+// CONCATENATED MODULE: ./node_modules/tslib/tslib.es6.js
+/*! *****************************************************************************
+Copyright (c) Microsoft Corporation. All rights reserved.
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at http://www.apache.org/licenses/LICENSE-2.0
+
+THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
+WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
+MERCHANTABLITY OR NON-INFRINGEMENT.
+
+See the Apache Version 2.0 License for specific language governing permissions
+and limitations under the License.
+***************************************************************************** */
+/* global Reflect, Promise */
+
+var extendStatics = function(d, b) {
+    extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return extendStatics(d, b);
+};
+
+function __extends(d, b) {
+    extendStatics(d, b);
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+}
+
+var __assign = function() {
+    __assign = Object.assign || function __assign(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
+        }
+        return t;
+    }
+    return __assign.apply(this, arguments);
+}
+
+function __rest(s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+}
+
+function __decorate(decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+}
+
+function __param(paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+}
+
+function __metadata(metadataKey, metadataValue) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(metadataKey, metadataValue);
+}
+
+function __awaiter(thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+}
+
+function __generator(thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+}
+
+function __exportStar(m, exports) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
+
+function __values(o) {
+    var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
+    if (m) return m.call(o);
+    if (o && typeof o.length === "number") return {
+        next: function () {
+            if (o && i >= o.length) o = void 0;
+            return { value: o && o[i++], done: !o };
+        }
+    };
+    throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
+}
+
+function __read(o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+}
+
+function __spread() {
+    for (var ar = [], i = 0; i < arguments.length; i++)
+        ar = ar.concat(__read(arguments[i]));
+    return ar;
+}
+
+function __spreadArrays() {
+    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+    for (var r = Array(s), k = 0, i = 0; i < il; i++)
+        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+            r[k] = a[j];
+    return r;
+};
+
+function __await(v) {
+    return this instanceof __await ? (this.v = v, this) : new __await(v);
+}
+
+function __asyncGenerator(thisArg, _arguments, generator) {
+    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
+    var g = generator.apply(thisArg, _arguments || []), i, q = [];
+    return i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i;
+    function verb(n) { if (g[n]) i[n] = function (v) { return new Promise(function (a, b) { q.push([n, v, a, b]) > 1 || resume(n, v); }); }; }
+    function resume(n, v) { try { step(g[n](v)); } catch (e) { settle(q[0][3], e); } }
+    function step(r) { r.value instanceof __await ? Promise.resolve(r.value.v).then(fulfill, reject) : settle(q[0][2], r); }
+    function fulfill(value) { resume("next", value); }
+    function reject(value) { resume("throw", value); }
+    function settle(f, v) { if (f(v), q.shift(), q.length) resume(q[0][0], q[0][1]); }
+}
+
+function __asyncDelegator(o) {
+    var i, p;
+    return i = {}, verb("next"), verb("throw", function (e) { throw e; }), verb("return"), i[Symbol.iterator] = function () { return this; }, i;
+    function verb(n, f) { i[n] = o[n] ? function (v) { return (p = !p) ? { value: __await(o[n](v)), done: n === "return" } : f ? f(v) : v; } : f; }
+}
+
+function __asyncValues(o) {
+    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
+    var m = o[Symbol.asyncIterator], i;
+    return m ? m.call(o) : (o = typeof __values === "function" ? __values(o) : o[Symbol.iterator](), i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i);
+    function verb(n) { i[n] = o[n] && function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }
+    function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
+}
+
+function __makeTemplateObject(cooked, raw) {
+    if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
+    return cooked;
+};
+
+function __importStar(mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result.default = mod;
+    return result;
+}
+
+function __importDefault(mod) {
+    return (mod && mod.__esModule) ? mod : { default: mod };
+}
+
+function __classPrivateFieldGet(receiver, privateMap) {
+    if (!privateMap.has(receiver)) {
+        throw new TypeError("attempted to get private field on non-instance");
+    }
+    return privateMap.get(receiver);
+}
+
+function __classPrivateFieldSet(receiver, privateMap, value) {
+    if (!privateMap.has(receiver)) {
+        throw new TypeError("attempted to set private field on non-instance");
+    }
+    privateMap.set(receiver, value);
+    return value;
+}
+
+// EXTERNAL MODULE: external {"commonjs":"vue","commonjs2":"vue","root":"Vue"}
+var external_commonjs_vue_commonjs2_vue_root_Vue_ = __webpack_require__("8bbf");
+var external_commonjs_vue_commonjs2_vue_root_Vue_default = /*#__PURE__*/__webpack_require__.n(external_commonjs_vue_commonjs2_vue_root_Vue_);
+
+// CONCATENATED MODULE: ./node_modules/vue-class-component/dist/vue-class-component.esm.js
+/**
+  * vue-class-component v7.2.3
+  * (c) 2015-present Evan You
+  * @license MIT
+  */
+
+
+function vue_class_component_esm_typeof(obj) {
+  if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
+    vue_class_component_esm_typeof = function (obj) {
+      return typeof obj;
+    };
+  } else {
+    vue_class_component_esm_typeof = function (obj) {
+      return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+    };
+  }
+
+  return vue_class_component_esm_typeof(obj);
+}
+
+function vue_class_component_esm_defineProperty(obj, key, value) {
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+  } else {
+    obj[key] = value;
+  }
+
+  return obj;
+}
+
+function vue_class_component_esm_toConsumableArray(arr) {
+  return vue_class_component_esm_arrayWithoutHoles(arr) || vue_class_component_esm_iterableToArray(arr) || vue_class_component_esm_nonIterableSpread();
+}
+
+function vue_class_component_esm_arrayWithoutHoles(arr) {
+  if (Array.isArray(arr)) {
+    for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
+
+    return arr2;
+  }
+}
+
+function vue_class_component_esm_iterableToArray(iter) {
+  if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
+}
+
+function vue_class_component_esm_nonIterableSpread() {
+  throw new TypeError("Invalid attempt to spread non-iterable instance");
+}
+
+// The rational behind the verbose Reflect-feature check below is the fact that there are polyfills
+// which add an implementation for Reflect.defineMetadata but not for Reflect.getOwnMetadataKeys.
+// Without this check consumers will encounter hard to track down runtime errors.
+function reflectionIsSupported() {
+  return typeof Reflect !== 'undefined' && Reflect.defineMetadata && Reflect.getOwnMetadataKeys;
+}
+function copyReflectionMetadata(to, from) {
+  forwardMetadata(to, from);
+  Object.getOwnPropertyNames(from.prototype).forEach(function (key) {
+    forwardMetadata(to.prototype, from.prototype, key);
+  });
+  Object.getOwnPropertyNames(from).forEach(function (key) {
+    forwardMetadata(to, from, key);
+  });
+}
+
+function forwardMetadata(to, from, propertyKey) {
+  var metaKeys = propertyKey ? Reflect.getOwnMetadataKeys(from, propertyKey) : Reflect.getOwnMetadataKeys(from);
+  metaKeys.forEach(function (metaKey) {
+    var metadata = propertyKey ? Reflect.getOwnMetadata(metaKey, from, propertyKey) : Reflect.getOwnMetadata(metaKey, from);
+
+    if (propertyKey) {
+      Reflect.defineMetadata(metaKey, metadata, to, propertyKey);
+    } else {
+      Reflect.defineMetadata(metaKey, metadata, to);
+    }
+  });
+}
+
+var fakeArray = {
+  __proto__: []
+};
+var hasProto = fakeArray instanceof Array;
+function createDecorator(factory) {
+  return function (target, key, index) {
+    var Ctor = typeof target === 'function' ? target : target.constructor;
+
+    if (!Ctor.__decorators__) {
+      Ctor.__decorators__ = [];
+    }
+
+    if (typeof index !== 'number') {
+      index = undefined;
+    }
+
+    Ctor.__decorators__.push(function (options) {
+      return factory(options, key, index);
+    });
+  };
+}
+function mixins() {
+  for (var _len = arguments.length, Ctors = new Array(_len), _key = 0; _key < _len; _key++) {
+    Ctors[_key] = arguments[_key];
+  }
+
+  return external_commonjs_vue_commonjs2_vue_root_Vue_default.a.extend({
+    mixins: Ctors
+  });
+}
+function isPrimitive(value) {
+  var type = vue_class_component_esm_typeof(value);
+
+  return value == null || type !== 'object' && type !== 'function';
+}
+function warn(message) {
+  if (typeof console !== 'undefined') {
+    console.warn('[vue-class-component] ' + message);
+  }
+}
+
+function collectDataFromConstructor(vm, Component) {
+  // override _init to prevent to init as Vue instance
+  var originalInit = Component.prototype._init;
+
+  Component.prototype._init = function () {
+    var _this = this;
+
+    // proxy to actual vm
+    var keys = Object.getOwnPropertyNames(vm); // 2.2.0 compat (props are no longer exposed as self properties)
+
+    if (vm.$options.props) {
+      for (var key in vm.$options.props) {
+        if (!vm.hasOwnProperty(key)) {
+          keys.push(key);
+        }
+      }
+    }
+
+    keys.forEach(function (key) {
+      if (key.charAt(0) !== '_') {
+        Object.defineProperty(_this, key, {
+          get: function get() {
+            return vm[key];
+          },
+          set: function set(value) {
+            vm[key] = value;
+          },
+          configurable: true
+        });
+      }
+    });
+  }; // should be acquired class property values
+
+
+  var data = new Component(); // restore original _init to avoid memory leak (#209)
+
+  Component.prototype._init = originalInit; // create plain data object
+
+  var plainData = {};
+  Object.keys(data).forEach(function (key) {
+    if (data[key] !== undefined) {
+      plainData[key] = data[key];
+    }
+  });
+
+  if (false) {}
+
+  return plainData;
+}
+
+var $internalHooks = ['data', 'beforeCreate', 'created', 'beforeMount', 'mounted', 'beforeDestroy', 'destroyed', 'beforeUpdate', 'updated', 'activated', 'deactivated', 'render', 'errorCaptured', 'serverPrefetch' // 2.6
+];
+function componentFactory(Component) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  options.name = options.name || Component._componentTag || Component.name; // prototype props.
+
+  var proto = Component.prototype;
+  Object.getOwnPropertyNames(proto).forEach(function (key) {
+    if (key === 'constructor') {
+      return;
+    } // hooks
+
+
+    if ($internalHooks.indexOf(key) > -1) {
+      options[key] = proto[key];
+      return;
+    }
+
+    var descriptor = Object.getOwnPropertyDescriptor(proto, key);
+
+    if (descriptor.value !== void 0) {
+      // methods
+      if (typeof descriptor.value === 'function') {
+        (options.methods || (options.methods = {}))[key] = descriptor.value;
+      } else {
+        // typescript decorated data
+        (options.mixins || (options.mixins = [])).push({
+          data: function data() {
+            return vue_class_component_esm_defineProperty({}, key, descriptor.value);
+          }
+        });
+      }
+    } else if (descriptor.get || descriptor.set) {
+      // computed properties
+      (options.computed || (options.computed = {}))[key] = {
+        get: descriptor.get,
+        set: descriptor.set
+      };
+    }
+  });
+  (options.mixins || (options.mixins = [])).push({
+    data: function data() {
+      return collectDataFromConstructor(this, Component);
+    }
+  }); // decorate options
+
+  var decorators = Component.__decorators__;
+
+  if (decorators) {
+    decorators.forEach(function (fn) {
+      return fn(options);
+    });
+    delete Component.__decorators__;
+  } // find super
+
+
+  var superProto = Object.getPrototypeOf(Component.prototype);
+  var Super = superProto instanceof external_commonjs_vue_commonjs2_vue_root_Vue_default.a ? superProto.constructor : external_commonjs_vue_commonjs2_vue_root_Vue_default.a;
+  var Extended = Super.extend(options);
+  forwardStaticMembers(Extended, Component, Super);
+
+  if (reflectionIsSupported()) {
+    copyReflectionMetadata(Extended, Component);
+  }
+
+  return Extended;
+}
+var reservedPropertyNames = [// Unique id
+'cid', // Super Vue constructor
+'super', // Component options that will be used by the component
+'options', 'superOptions', 'extendOptions', 'sealedOptions', // Private assets
+'component', 'directive', 'filter'];
+var shouldIgnore = {
+  prototype: true,
+  arguments: true,
+  callee: true,
+  caller: true
+};
+
+function forwardStaticMembers(Extended, Original, Super) {
+  // We have to use getOwnPropertyNames since Babel registers methods as non-enumerable
+  Object.getOwnPropertyNames(Original).forEach(function (key) {
+    // Skip the properties that should not be overwritten
+    if (shouldIgnore[key]) {
+      return;
+    } // Some browsers does not allow reconfigure built-in properties
+
+
+    var extendedDescriptor = Object.getOwnPropertyDescriptor(Extended, key);
+
+    if (extendedDescriptor && !extendedDescriptor.configurable) {
+      return;
+    }
+
+    var descriptor = Object.getOwnPropertyDescriptor(Original, key); // If the user agent does not support `__proto__` or its family (IE <= 10),
+    // the sub class properties may be inherited properties from the super class in TypeScript.
+    // We need to exclude such properties to prevent to overwrite
+    // the component options object which stored on the extended constructor (See #192).
+    // If the value is a referenced value (object or function),
+    // we can check equality of them and exclude it if they have the same reference.
+    // If it is a primitive value, it will be forwarded for safety.
+
+    if (!hasProto) {
+      // Only `cid` is explicitly exluded from property forwarding
+      // because we cannot detect whether it is a inherited property or not
+      // on the no `__proto__` environment even though the property is reserved.
+      if (key === 'cid') {
+        return;
+      }
+
+      var superDescriptor = Object.getOwnPropertyDescriptor(Super, key);
+
+      if (!isPrimitive(descriptor.value) && superDescriptor && superDescriptor.value === descriptor.value) {
+        return;
+      }
+    } // Warn if the users manually declare reserved properties
+
+
+    if (false) {}
+
+    Object.defineProperty(Extended, key, descriptor);
+  });
+}
+
+function vue_class_component_esm_Component(options) {
+  if (typeof options === 'function') {
+    return componentFactory(options);
+  }
+
+  return function (Component) {
+    return componentFactory(Component, options);
+  };
+}
+
+vue_class_component_esm_Component.registerHooks = function registerHooks(keys) {
+  $internalHooks.push.apply($internalHooks, vue_class_component_esm_toConsumableArray(keys));
+};
+
+/* harmony default export */ var vue_class_component_esm = (vue_class_component_esm_Component);
+
+
+// CONCATENATED MODULE: ./node_modules/vue-property-decorator/lib/vue-property-decorator.js
+/** vue-property-decorator verson 8.4.1 MIT LICENSE copyright 2019 kaorun343 */
+/// <reference types='reflect-metadata'/>
+
+
+
+
+/** Used for keying reactive provide/inject properties */
+var reactiveInjectKey = '__reactiveInject__';
+/**
+ * decorator of an inject
+ * @param from key
+ * @return PropertyDecorator
+ */
+function Inject(options) {
+    return createDecorator(function (componentOptions, key) {
+        if (typeof componentOptions.inject === 'undefined') {
+            componentOptions.inject = {};
+        }
+        if (!Array.isArray(componentOptions.inject)) {
+            componentOptions.inject[key] = options || key;
+        }
+    });
+}
+/**
+ * decorator of a reactive inject
+ * @param from key
+ * @return PropertyDecorator
+ */
+function InjectReactive(options) {
+    return createDecorator(function (componentOptions, key) {
+        if (typeof componentOptions.inject === 'undefined') {
+            componentOptions.inject = {};
+        }
+        if (!Array.isArray(componentOptions.inject)) {
+            var fromKey_1 = !!options ? options.from || options : key;
+            var defaultVal_1 = (!!options && options.default) || undefined;
+            if (!componentOptions.computed)
+                componentOptions.computed = {};
+            componentOptions.computed[key] = function () {
+                var obj = this[reactiveInjectKey];
+                return obj ? obj[fromKey_1] : defaultVal_1;
+            };
+            componentOptions.inject[reactiveInjectKey] = reactiveInjectKey;
+        }
+    });
+}
+function produceProvide(original) {
+    var provide = function () {
+        var _this = this;
+        var rv = typeof original === 'function' ? original.call(this) : original;
+        rv = Object.create(rv || null);
+        // set reactive services (propagates previous services if necessary)
+        rv[reactiveInjectKey] = this[reactiveInjectKey] || {};
+        for (var i in provide.managed) {
+            rv[provide.managed[i]] = this[i];
+        }
+        var _loop_1 = function (i) {
+            rv[provide.managedReactive[i]] = this_1[i]; // Duplicates the behavior of `@Provide`
+            if (!rv[reactiveInjectKey].hasOwnProperty(provide.managedReactive[i])) {
+                Object.defineProperty(rv[reactiveInjectKey], provide.managedReactive[i], {
+                    enumerable: true,
+                    get: function () { return _this[i]; },
+                });
+            }
+        };
+        var this_1 = this;
+        for (var i in provide.managedReactive) {
+            _loop_1(i);
+        }
+        return rv;
+    };
+    provide.managed = {};
+    provide.managedReactive = {};
+    return provide;
+}
+function needToProduceProvide(original) {
+    return (typeof original !== 'function' ||
+        (!original.managed && !original.managedReactive));
+}
+/**
+ * decorator of a provide
+ * @param key key
+ * @return PropertyDecorator | void
+ */
+function Provide(key) {
+    return createDecorator(function (componentOptions, k) {
+        var provide = componentOptions.provide;
+        if (needToProduceProvide(provide)) {
+            provide = componentOptions.provide = produceProvide(provide);
+        }
+        provide.managed[k] = key || k;
+    });
+}
+/**
+ * decorator of a reactive provide
+ * @param key key
+ * @return PropertyDecorator | void
+ */
+function ProvideReactive(key) {
+    return createDecorator(function (componentOptions, k) {
+        var provide = componentOptions.provide;
+        // inject parent reactive services (if any)
+        if (!Array.isArray(componentOptions.inject)) {
+            componentOptions.inject = componentOptions.inject || {};
+            componentOptions.inject[reactiveInjectKey] = {
+                from: reactiveInjectKey,
+                default: {},
+            };
+        }
+        if (needToProduceProvide(provide)) {
+            provide = componentOptions.provide = produceProvide(provide);
+        }
+        provide.managedReactive[k] = key || k;
+    });
+}
+/** @see {@link https://github.com/vuejs/vue-class-component/blob/master/src/reflect.ts} */
+var reflectMetadataIsSupported = typeof Reflect !== 'undefined' && typeof Reflect.getMetadata !== 'undefined';
+function applyMetadata(options, target, key) {
+    if (reflectMetadataIsSupported) {
+        if (!Array.isArray(options) &&
+            typeof options !== 'function' &&
+            typeof options.type === 'undefined') {
+            var type = Reflect.getMetadata('design:type', target, key);
+            if (type !== Object) {
+                options.type = type;
+            }
+        }
+    }
+}
+/**
+ * decorator of model
+ * @param  event event name
+ * @param options options
+ * @return PropertyDecorator
+ */
+function Model(event, options) {
+    if (options === void 0) { options = {}; }
+    return function (target, key) {
+        applyMetadata(options, target, key);
+        createDecorator(function (componentOptions, k) {
+            ;
+            (componentOptions.props || (componentOptions.props = {}))[k] = options;
+            componentOptions.model = { prop: k, event: event || k };
+        })(target, key);
+    };
+}
+/**
+ * decorator of a prop
+ * @param  options the options for the prop
+ * @return PropertyDecorator | void
+ */
+function Prop(options) {
+    if (options === void 0) { options = {}; }
+    return function (target, key) {
+        applyMetadata(options, target, key);
+        createDecorator(function (componentOptions, k) {
+            ;
+            (componentOptions.props || (componentOptions.props = {}))[k] = options;
+        })(target, key);
+    };
+}
+/**
+ * decorator of a synced prop
+ * @param propName the name to interface with from outside, must be different from decorated property
+ * @param options the options for the synced prop
+ * @return PropertyDecorator | void
+ */
+function PropSync(propName, options) {
+    if (options === void 0) { options = {}; }
+    // @ts-ignore
+    return function (target, key) {
+        applyMetadata(options, target, key);
+        createDecorator(function (componentOptions, k) {
+            ;
+            (componentOptions.props || (componentOptions.props = {}))[propName] = options;
+            (componentOptions.computed || (componentOptions.computed = {}))[k] = {
+                get: function () {
+                    return this[propName];
+                },
+                set: function (value) {
+                    // @ts-ignore
+                    this.$emit("update:" + propName, value);
+                },
+            };
+        })(target, key);
+    };
+}
+/**
+ * decorator of a watch function
+ * @param  path the path or the expression to observe
+ * @param  WatchOption
+ * @return MethodDecorator
+ */
+function Watch(path, options) {
+    if (options === void 0) { options = {}; }
+    var _a = options.deep, deep = _a === void 0 ? false : _a, _b = options.immediate, immediate = _b === void 0 ? false : _b;
+    return createDecorator(function (componentOptions, handler) {
+        if (typeof componentOptions.watch !== 'object') {
+            componentOptions.watch = Object.create(null);
+        }
+        var watch = componentOptions.watch;
+        if (typeof watch[path] === 'object' && !Array.isArray(watch[path])) {
+            watch[path] = [watch[path]];
+        }
+        else if (typeof watch[path] === 'undefined') {
+            watch[path] = [];
+        }
+        watch[path].push({ handler: handler, deep: deep, immediate: immediate });
+    });
+}
+// Code copied from Vue/src/shared/util.js
+var hyphenateRE = /\B([A-Z])/g;
+var hyphenate = function (str) { return str.replace(hyphenateRE, '-$1').toLowerCase(); };
+/**
+ * decorator of an event-emitter function
+ * @param  event The name of the event
+ * @return MethodDecorator
+ */
+function Emit(event) {
+    return function (_target, propertyKey, descriptor) {
+        var key = hyphenate(propertyKey);
+        var original = descriptor.value;
+        descriptor.value = function emitter() {
+            var _this = this;
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i] = arguments[_i];
+            }
+            var emit = function (returnValue) {
+                var emitName = event || key;
+                if (returnValue === undefined) {
+                    if (args.length === 0) {
+                        _this.$emit(emitName);
+                    }
+                    else if (args.length === 1) {
+                        _this.$emit(emitName, args[0]);
+                    }
+                    else {
+                        _this.$emit(emitName, args);
+                    }
+                }
+                else {
+                    _this.$emit(emitName, returnValue);
+                }
+            };
+            var returnValue = original.apply(this, args);
+            if (isPromise(returnValue)) {
+                returnValue.then(function (returnValue) {
+                    emit(returnValue);
+                });
+            }
+            else {
+                emit(returnValue);
+            }
+            return returnValue;
+        };
+    };
+}
+/**
+ * decorator of a ref prop
+ * @param refKey the ref key defined in template
+ */
+function Ref(refKey) {
+    return createDecorator(function (options, key) {
+        options.computed = options.computed || {};
+        options.computed[key] = {
+            cache: false,
+            get: function () {
+                return this.$refs[refKey || key];
+            },
+        };
+    });
+}
+function isPromise(obj) {
+    return obj instanceof Promise || (obj && typeof obj.then === 'function');
+}
+
+// CONCATENATED MODULE: ./src/components/Utils.ts
+var actionTypes = {
+  ADD: "add",
+  INSERT: "insert",
+  SET: "set",
+  DELETE: "delete",
+  ADD_NEW: "addNew",
+  INSERT_NEW: "insertNew",
+  SET_NEW: "setNew"
+};
+// CONCATENATED MODULE: ./src/components/ExpressionBuilderRenderless.ts
+
+
+
+
+
+
+
+
+
+
+
+var ExpressionBuilderRenderless_ExpressionBuilderRenderless = /*#__PURE__*/function (_Vue) {
+  _inherits(ExpressionBuilderRenderless, _Vue);
+
+  function ExpressionBuilderRenderless() {
+    _classCallCheck(this, ExpressionBuilderRenderless);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(ExpressionBuilderRenderless).apply(this, arguments));
+  }
+
+  _createClass(ExpressionBuilderRenderless, [{
+    key: "created",
+    value: function created() {
+      this.builderInstance = new ExpressionBuilder_ExpressionBuilder(this.JSON);
+      this.$on("input", this.handleInput);
+    }
+  }, {
+    key: "handleInput",
+    value: function handleInput(body) {
+      var pathToParent = body.path.slice(0, body.path.length - 1),
+          index = body.path[body.path.length - 1];
+
+      switch (body.action) {
+        case actionTypes.SET:
+          this.builderInstance.contextTo(pathToParent).set(body.value, index);
+          break;
+
+        case actionTypes.ADD:
+          this.builderInstance.contextTo(body.path).add(body.value);
+          break;
+
+        case actionTypes.INSERT:
+          this.builderInstance.contextTo(pathToParent).insert(body.value, index);
+          break;
+
+        case actionTypes.DELETE:
+          this.builderInstance.contextTo(pathToParent).delete(index);
+          break;
+      }
+    }
+  }]);
+
+  return ExpressionBuilderRenderless;
+}(external_commonjs_vue_commonjs2_vue_root_Vue_default.a);
+
+__decorate([Prop()], ExpressionBuilderRenderless_ExpressionBuilderRenderless.prototype, "JSON", void 0);
+
+ExpressionBuilderRenderless_ExpressionBuilderRenderless = __decorate([vue_class_component_esm], ExpressionBuilderRenderless_ExpressionBuilderRenderless);
+/* harmony default export */ var components_ExpressionBuilderRenderless = (ExpressionBuilderRenderless_ExpressionBuilderRenderless);
+// CONCATENATED MODULE: ./src/components/ExpressionNodeBase.ts
+
+
+
+
+
+
+
+
+
+
+
+var ExpressionNodeBase_ExpressionNodeBase = /*#__PURE__*/function (_Vue) {
+  _inherits(ExpressionNodeBase, _Vue);
+
+  function ExpressionNodeBase() {
+    _classCallCheck(this, ExpressionNodeBase);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(ExpressionNodeBase).apply(this, arguments));
+  }
+
+  _createClass(ExpressionNodeBase, [{
+    key: "emitInput",
+    value: function emitInput(value) {
+      var action = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : actionTypes.SET;
+      var path = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+
+      if (this.$parent && this.$parent.$parent) {
+        if (this.index >= 0) // top level element has index = -1
+          path.unshift(this.index);
+        this.$parent.$parent.$emit("input", {
+          value: value,
+          path: path,
+          action: action
+        });
+      }
+    }
+  }, {
+    key: "toggleConnectionType",
+    value: function toggleConnectionType(fromJSON) {
+      var json = this.value.toJSON();
+      if (json.connectionType === connectionTypes.AND) json.connectionType = connectionTypes.OR;else json.connectionType = connectionTypes.AND;
+      this.emitInput(fromJSON(json));
+    }
+  }, {
+    key: "emitDelete",
+    value: function emitDelete() {
+      this.emitInput(undefined, actionTypes.DELETE);
+    }
+  }]);
+
+  return ExpressionNodeBase;
+}(external_commonjs_vue_commonjs2_vue_root_Vue_default.a);
+
+__decorate([Prop({
+  default: -1
+})], ExpressionNodeBase_ExpressionNodeBase.prototype, "index", void 0);
+
+__decorate([Prop()], ExpressionNodeBase_ExpressionNodeBase.prototype, "value", void 0);
+
+ExpressionNodeBase_ExpressionNodeBase = __decorate([vue_class_component_esm({})], ExpressionNodeBase_ExpressionNodeBase);
+/* harmony default export */ var components_ExpressionNodeBase = (ExpressionNodeBase_ExpressionNodeBase);
+// CONCATENATED MODULE: ./src/components/ExpressionNodeRenderless.ts
+
+
+
+
+
+
+
+
+
+
+var ExpressionNodeRenderless_ExpressionNodeRenderless = /*#__PURE__*/function (_ExpressionNodeBase) {
+  _inherits(ExpressionNodeRenderless, _ExpressionNodeBase);
+
+  function ExpressionNodeRenderless() {
+    _classCallCheck(this, ExpressionNodeRenderless);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(ExpressionNodeRenderless).apply(this, arguments));
+  }
+
+  _createClass(ExpressionNodeRenderless, [{
+    key: "update",
+    value: function update(value) {
+      this.emitInput(value);
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      var _this = this;
+
+      return this.$scopedSlots.default({
+        node: this.value,
+        index: this.index,
+        toggleConnectionType: function toggleConnectionType() {
+          return _this.toggleConnectionType(ExpressionNodes_ExpressionNode.fromJSON);
+        },
+        update: this.update,
+        delete: this.emitDelete
+      });
+    }
+  }]);
+
+  return ExpressionNodeRenderless;
+}(components_ExpressionNodeBase);
+
+__decorate([Prop({
+  required: true,
+  type: ExpressionNodes_ExpressionNode
+})], ExpressionNodeRenderless_ExpressionNodeRenderless.prototype, "value", void 0);
+
+ExpressionNodeRenderless_ExpressionNodeRenderless = __decorate([vue_class_component_esm], ExpressionNodeRenderless_ExpressionNodeRenderless);
+/* harmony default export */ var components_ExpressionNodeRenderless = (ExpressionNodeRenderless_ExpressionNodeRenderless);
+// CONCATENATED MODULE: ./src/components/ExpressionNodeGroupRenderless.ts
+
+
+
+
+
+
+
+
+
+
+
+var ExpressionNodeGroupRenderless_ExpressionNodeGroupRenderless = /*#__PURE__*/function (_ExpressionNodeBase) {
+  _inherits(ExpressionNodeGroupRenderless, _ExpressionNodeBase);
+
+  function ExpressionNodeGroupRenderless() {
+    _classCallCheck(this, ExpressionNodeGroupRenderless);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(ExpressionNodeGroupRenderless).apply(this, arguments));
+  }
+
+  _createClass(ExpressionNodeGroupRenderless, [{
+    key: "created",
+    value: function created() {
+      var _this = this;
+
+      this.$on("input", function (body) {
+        return _this.emitInput(body.value, body.action, body.path);
+      });
+    }
+  }, {
+    key: "set",
+    value: function set(value, index) {
+      this.emitInput(value, actionTypes.SET, [index]);
+    }
+  }, {
+    key: "insert",
+    value: function insert(value, index) {
+      this.emitInput(value, actionTypes.INSERT, [index]);
+    }
+  }, {
+    key: "add",
+    value: function add(value, index) {
+      this.emitInput(value, actionTypes.ADD);
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      var _this2 = this;
+
+      return this.$scopedSlots.default({
+        node: this.value,
+        index: this.index,
+        toggleConnectionType: function toggleConnectionType() {
+          return _this2.toggleConnectionType(ExpressionNodes_ExpressionNodeGroup.fromJSON);
+        },
+        delete: this.emitDelete,
+        set: this.set,
+        insert: this.insert,
+        add: this.add
+      });
+    }
+  }]);
+
+  return ExpressionNodeGroupRenderless;
+}(components_ExpressionNodeBase);
+
+__decorate([Prop({
+  required: true,
+  type: ExpressionNodes_ExpressionNodeGroup
+})], ExpressionNodeGroupRenderless_ExpressionNodeGroupRenderless.prototype, "value", void 0);
+
+ExpressionNodeGroupRenderless_ExpressionNodeGroupRenderless = __decorate([vue_class_component_esm], ExpressionNodeGroupRenderless_ExpressionNodeGroupRenderless);
+/* harmony default export */ var components_ExpressionNodeGroupRenderless = (ExpressionNodeGroupRenderless_ExpressionNodeGroupRenderless);
+// CONCATENATED MODULE: ./src/components/index.ts
+
+
+
+/* harmony default export */ var components = ({
+  ExpressionBuilderRenderless: components_ExpressionBuilderRenderless,
+  ExpressionNodeRenderless: components_ExpressionNodeRenderless,
+  ExpressionNodeGroupRenderless: components_ExpressionNodeGroupRenderless
+});
 // CONCATENATED MODULE: ./src/main.ts
 
 
-/* harmony default export */ var main = (ExpressionBuilder_ExpressionBuilder);
 
-// CONCATENATED MODULE: ./node_modules/@vue/cli-service/lib/commands/build/entry-lib.js
+var Core = {
+  ExpressionBuilder: ExpressionBuilder_ExpressionBuilder,
+  ExpressionNodeGroup: ExpressionNodes_ExpressionNodeGroup,
+  ExpressionNode: ExpressionNodes_ExpressionNode
+};
+var Components = components;
+// CONCATENATED MODULE: ./node_modules/@vue/cli-service/lib/commands/build/entry-lib-no-default.js
 
 
-/* harmony default export */ var entry_lib = __webpack_exports__["default"] = (main);
 
+
+/***/ }),
+
+/***/ "fb6a":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var $ = __webpack_require__("23e7");
+var isObject = __webpack_require__("861d");
+var isArray = __webpack_require__("e8b5");
+var toAbsoluteIndex = __webpack_require__("23cb");
+var toLength = __webpack_require__("50c4");
+var toIndexedObject = __webpack_require__("fc6a");
+var createProperty = __webpack_require__("8418");
+var wellKnownSymbol = __webpack_require__("b622");
+var arrayMethodHasSpeciesSupport = __webpack_require__("1dde");
+var arrayMethodUsesToLength = __webpack_require__("ae40");
+
+var HAS_SPECIES_SUPPORT = arrayMethodHasSpeciesSupport('slice');
+var USES_TO_LENGTH = arrayMethodUsesToLength('slice', { ACCESSORS: true, 0: 0, 1: 2 });
+
+var SPECIES = wellKnownSymbol('species');
+var nativeSlice = [].slice;
+var max = Math.max;
+
+// `Array.prototype.slice` method
+// https://tc39.github.io/ecma262/#sec-array.prototype.slice
+// fallback for not array-like ES3 strings and DOM objects
+$({ target: 'Array', proto: true, forced: !HAS_SPECIES_SUPPORT || !USES_TO_LENGTH }, {
+  slice: function slice(start, end) {
+    var O = toIndexedObject(this);
+    var length = toLength(O.length);
+    var k = toAbsoluteIndex(start, length);
+    var fin = toAbsoluteIndex(end === undefined ? length : end, length);
+    // inline `ArraySpeciesCreate` for usage native `Array#slice` where it's possible
+    var Constructor, result, n;
+    if (isArray(O)) {
+      Constructor = O.constructor;
+      // cross-realm fallback
+      if (typeof Constructor == 'function' && (Constructor === Array || isArray(Constructor.prototype))) {
+        Constructor = undefined;
+      } else if (isObject(Constructor)) {
+        Constructor = Constructor[SPECIES];
+        if (Constructor === null) Constructor = undefined;
+      }
+      if (Constructor === Array || Constructor === undefined) {
+        return nativeSlice.call(O, k, fin);
+      }
+    }
+    result = new (Constructor === undefined ? Array : Constructor)(max(fin - k, 0));
+    for (n = 0; k < fin; k++, n++) if (k in O) createProperty(result, n, O[k]);
+    result.length = n;
+    return result;
+  }
+});
 
 
 /***/ }),
