@@ -133,7 +133,7 @@ export class ExpressionNodeGroup extends ExpressionNodeBase implements IExpressi
   /**
    * Recursively creates a JSON representation of the expression tree
    */
-  toJSON(addMAxDepth: boolean = true): IExpressionNodeGroupJSON {
+  toJSON(addMAxDepth = true): IExpressionNodeGroupJSON {
     return Object.assign((addMAxDepth ? {maxDepth: this._maxDepth} : {}), {
       connectionType: this.connectionType,
       children: this._children.map(c => c.toJSON(false))
