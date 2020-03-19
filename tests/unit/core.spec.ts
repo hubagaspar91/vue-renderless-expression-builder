@@ -148,6 +148,7 @@ describe("ExpressionBuilder - testing fluent api", () => {
     const group1 = new ExpressionNodeGroup();
     const group2 = new ExpressionNodeGroup();
     const group3 = new ExpressionNodeGroup();
+    const node0 = new ExpressionNode({name: "test", value: 0});
     eb.add(group0);
     expect(eb.context).toBe(group0);
     expect(eb.context.parentNode).toBe(eb.root);
@@ -165,6 +166,11 @@ describe("ExpressionBuilder - testing fluent api", () => {
     expect(eb.context).toBe(eb.root);
     eb.contextTo([0, 1, 0]);
     expect(eb.context).toBe(group3);
+    eb.add(node0);
+    // cant switch to ExpressionNode as context
+    expect(() => eb.contextTo([0, 1, 0, 0])).toThrowError(/Invalid path/);
+    // cant switch to non-exitent path
+    expect(() => eb.contextTo([0, 1, 0, 1])).toThrowError(/Invalid path/);
   });
 });
 

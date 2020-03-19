@@ -144,7 +144,9 @@ export class ExpressionNodeGroup extends ExpressionNodeBase implements IExpressi
     return "children" in object;
   }
 
-  static fromJSON(json: IExpressionNodeGroupJSON, parentNode?: ExpressionNodeGroup, currentDepth = 0): ExpressionNodeGroup {
+  static fromJSON(json: IExpressionNodeGroupJSON,
+                  parentNode?: ExpressionNodeGroup,
+                  currentDepth = 0): ExpressionNodeGroup {
     const maxDepth = parentNode == undefined  // if top level node
       ? json.maxDepth != undefined  // and max depth is defined
         ? json.maxDepth  // use max depth
@@ -152,7 +154,6 @@ export class ExpressionNodeGroup extends ExpressionNodeBase implements IExpressi
       : parentNode.maxDepth;  // if parent node is defined, maxDepth is to be copied from it
 
     const newGroup = new ExpressionNodeGroup({maxDepth, currentDepth}, json.connectionType, parentNode);
-    console.log(json);
     newGroup.children = json.children.map(cJSON => (ExpressionNodeGroup.isJSONInstance(cJSON))
       ? ExpressionNodeGroup.fromJSON(cJSON as IExpressionNodeGroupJSON, newGroup, currentDepth + 1)
       : ExpressionNode.fromJSON(cJSON as IExpressionNodeJSON, newGroup));
