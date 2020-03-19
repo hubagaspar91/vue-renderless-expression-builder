@@ -34,7 +34,8 @@ export default class ExpressionBuilder {
   }
 
   private _validateIndex(index?: number): boolean {
-    return Boolean(index == undefined || (index >= 0 || index < this._context.children.length - 1));
+    return Boolean(index == undefined
+      || (index >= 0 && index <= this._context.children.length));
   }
 
   private _fluentInsertion(node: IExpressionNode, operation: Function, index?: number): ExpressionBuilder {
@@ -44,7 +45,7 @@ export default class ExpressionBuilder {
       node.parentNode = this._context;
       // If group, check if will reach max depth
       if (node instanceof ExpressionNodeGroup) {
-        if (this._context.currentDepth === (this._context.maxDepth - 1))
+        if (this._context.maxDepth > 0 && this._context.currentDepth === (this._context.maxDepth - 2))
           throw new Error("Reached max depth, cannot add new child node.");
         node.maxDepth = this._context.maxDepth;
         node.currentDepth = this._context.currentDepth + 1;

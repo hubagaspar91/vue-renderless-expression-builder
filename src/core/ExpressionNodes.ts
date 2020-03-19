@@ -56,7 +56,7 @@ export class ExpressionNode extends ExpressionNodeBase implements IExpressionNod
   toJSON(): IExpressionNodeJSON {
     return {
       connectionType: this.connectionType,
-      condition: this.condition
+      condition: {...this.condition}
     }
   }
 
@@ -78,19 +78,21 @@ export class ExpressionNode extends ExpressionNodeBase implements IExpressionNod
   }
 }
 
+const defaultOpts = () => ({maxDepth: 0, currentDepth: 0, children: []});
 
 export class ExpressionNodeGroup extends ExpressionNodeBase implements IExpressionNode {
   private _children: IExpressionNode[];
   private _maxDepth: number;
   private _currentDepth: number;
 
-  constructor(opts: IExpressionNodeGroupOpts = {children: [], maxDepth: 3, currentDepth: 0},
+  constructor(opts: IExpressionNodeGroupOpts = defaultOpts(),
               connectionType?: string,
               parentNode?: ExpressionNodeGroup) {
     super(connectionType, parentNode);
-    this._children = opts.children;
-    this._maxDepth = opts.maxDepth;
-    this._currentDepth = opts.currentDepth;
+    opts = {...defaultOpts(), ...opts};
+    this._children = opts.children as IExpressionNode[];
+    this._maxDepth = opts.maxDepth as number;
+    this._currentDepth = opts.currentDepth as number;
   }
 
   set children(value: IExpressionNode[]) {
@@ -131,27 +133,28 @@ export class ExpressionNodeGroup extends ExpressionNodeBase implements IExpressi
   /**
    * Recursively creates a JSON representation of the expression tree
    */
-  toJSON(): IExpressionNodeGroupJSON {
-    return {
+  toJSON(addMAxDepth: boolean = true): IExpressionNodeGroupJSON {
+    return Object.assign((addMAxDepth ? {maxDepth: this._maxDepth} : {}), {
       connectionType: this.connectionType,
-      opts: {
-        children: this._children.map(c => c.toJSON()),
-        maxDepth: this._maxDepth,
-        currentDepth: this._currentDepth
-      }
-    }
+      children: this._children.map(c => c.toJSON(false))
+    });
   }
 
   static isJSONInstance(object: object): object is IExpressionNodeGroupJSON {
-    return "opts" in object;
+    return "children" in object;
   }
 
-  static fromJSON(json: IExpressionNodeGroupJSON, parentNode?: ExpressionNodeGroup): ExpressionNodeGroup {
-    const maxDepth = json.opts.maxDepth,
-      currentDepth = json.opts.currentDepth;
-    const newGroup = new ExpressionNodeGroup({children: [], maxDepth, currentDepth}, json.connectionType, parentNode);
-    newGroup.children = json.opts.children.map(cJSON => (ExpressionNodeGroup.isJSONInstance(cJSON))
-      ? ExpressionNodeGroup.fromJSON(cJSON as IExpressionNodeGroupJSON, newGroup)
+  static fromJSON(json: IExpressionNodeGroupJSON, parentNode?: ExpressionNodeGroup, currentDepth = 0): ExpressionNodeGroup {
+    const maxDepth = parentNode == undefined  // if top level node
+      ? json.maxDepth != undefined  // and max depth is defined
+        ? json.maxDepth  // use max depth
+        : undefined  // else get default from constructor
+      : parentNode.maxDepth;  // if parent node is defined, maxDepth is to be copied from it
+
+    const newGroup = new ExpressionNodeGroup({maxDepth, currentDepth}, json.connectionType, parentNode);
+    console.log(json);
+    newGroup.children = json.children.map(cJSON => (ExpressionNodeGroup.isJSONInstance(cJSON))
+      ? ExpressionNodeGroup.fromJSON(cJSON as IExpressionNodeGroupJSON, newGroup, currentDepth + 1)
       : ExpressionNode.fromJSON(cJSON as IExpressionNodeJSON, newGroup));
     return newGroup;
   }
@@ -174,8 +177,7 @@ export class ExpressionNodeGroup extends ExpressionNodeBase implements IExpressi
             flattenedList.push(currentGroup);
           currentGroup = [Object.assign({}, c.condition)]
         } else currentGroup.push(Object.assign({}, c.condition));
-      }
-      else if (c instanceof ExpressionNodeGroup) {
+      } else if (c instanceof ExpressionNodeGroup) {
         if (c.children.length > 0) {
           if (currentGroup.length > 0) {
             flattenedList.push(currentGroup);
@@ -194,7 +196,7 @@ export class ExpressionNodeGroup extends ExpressionNodeBase implements IExpressi
           } else
             flattenedList = [...flattenedList, ...c.flatten()]
         }
-      } else throw "Node cannot be of type " + typeof c;
+      } else throw new Error("Node cannot be of type " + typeof c);
     });
     if (currentGroup.length > 0)
       flattenedList.push(currentGroup);

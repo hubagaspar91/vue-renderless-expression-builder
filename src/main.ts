@@ -1,50 +1,39 @@
 import * as Ex from "./core/ExpressionNodes";
 import * as I from "./core/Interfaces";
 import ExpressionBuilder from "@/core/ExpressionBuilder";
+import {connectionTypes} from "./core/ExpressionNodes";
 
 const test: I.IExpressionNodeGroupJSON = {
   connectionType: "and",
-  opts: {
-    children: [
-      {
-        connectionType: "or",
-        opts: {
-          maxDepth: 5,
-          currentDepth: 1,
-          children: [
-            {
-              connectionType: "and",
-              condition: {
-                name: "dick",
-                value: 1
-              }
-            }
-          ]
+  children: [
+    {
+      connectionType: "or",
+      children: [
+        {
+          connectionType: "and",
+          condition: {
+            name: "test",
+            value: 1
+          }
         }
-      },
-      {
-        connectionType: "and",
-        condition: {
-          name: "dick",
-          value: 2
-        }
+      ]
+    },
+    {
+      connectionType: "or",
+      condition: {
+        name: "test",
+        value: 2
       }
-    ],
-    maxDepth: 5,
-    currentDepth: 0
-  }
+    }
+  ]
 };
 
 const ext = Ex.ExpressionNodeGroup.fromJSON(test);
 const builder = new ExpressionBuilder();
 builder
   .addNew(ExpressionBuilder.NODE, undefined, {name: "fasz", value: 0})
-  .addNew(ExpressionBuilder.GROUP, "and")
-  .addNew(ExpressionBuilder.NODE, "or", {name: "fasz", value: 1})
-  .addNew(ExpressionBuilder.NODE, "or", {name: "fasz", value: 2})
-  .setNew(ExpressionBuilder.NODE, 1, "and", {name: "dick", value: 0});
+  .addNew(ExpressionBuilder.GROUP, connectionTypes.AND);
 console.log(builder);
-
-console.log(builder.flatten());
+//console.log(builder.toJSON());
 
 export default Ex;

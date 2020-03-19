@@ -12,7 +12,7 @@ export interface IExpressionNodeBase {
  * Interface for node types, inheriting from {ExpressionNodeBase}
  */
 export interface IExpressionNode extends IExpressionNodeBase {
-    toJSON(): IExpressionNodeJSON | IExpressionNodeGroupJSON
+    toJSON(addMAxDepth?: boolean): IExpressionNodeJSON | IExpressionNodeGroupJSON
 }
 
 /**
@@ -27,9 +27,9 @@ export interface ICondition {
  * Options object, describing data for {ExpressionNodeGroup}
  */
 export interface IExpressionNodeGroupOpts {
-    children: IExpressionNode[];
-    maxDepth: number,
-    currentDepth: number
+    children?: IExpressionNode[];
+    maxDepth?: number,
+    currentDepth?: number
 }
 
 
@@ -46,11 +46,6 @@ export interface IExpressionNodeJSON extends IExpressionNodeBaseJSON {
 }
 
 export interface IExpressionNodeGroupJSON extends IExpressionNodeBaseJSON {
-    opts: IExpressionNodeGroupOptsJSON
-}
-
-export interface IExpressionNodeGroupOptsJSON {
-    children: (IExpressionNodeJSON|IExpressionNodeGroupJSON)[];
-    maxDepth: number,
-    currentDepth: number
+    children: (IExpressionNodeJSON|IExpressionNodeGroupJSON)[],
+    maxDepth?: number
 }
