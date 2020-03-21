@@ -1,7 +1,7 @@
 import {IExpressionNode} from "@/core/Interfaces";
 
 export interface InputEventBody {
-  value: IExpressionNode;
+  node: IExpressionNode;
   path: number[];
   action: string;
 }

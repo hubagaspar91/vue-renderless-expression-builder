@@ -6,28 +6,23 @@ import {IExpressionNode} from "@/core/Interfaces";
 
 @Component
 export default class ExpressionNodeGroupRenderless extends ExpressionNodeBase {
-  @Prop({required: true, type: Core.ExpressionNodeGroup}) protected value!: Core.ExpressionNodeGroup;
+  @Prop({required: true, type: Core.ExpressionNodeGroup}) protected node!: Core.ExpressionNodeGroup;
 
-  created() {
-   this.$on("input",
-     (body: InputEventBody) => this.emitInput(body.value, body.action, body.path));
+  set(node: IExpressionNode, index: number) {
+    this.emitInput(node, actionTypes.SET, index);
   }
 
-  set(value: IExpressionNode, index: number) {
-    this.emitInput(value, actionTypes.SET, [index]);
+  insert(node: IExpressionNode, index: number) {
+    this.emitInput(node, actionTypes.INSERT, index);
   }
 
-  insert(value: IExpressionNode, index: number) {
-    this.emitInput(value, actionTypes.INSERT, [index]);
-  }
-
-  add(value: IExpressionNode, index: number) {
-    this.emitInput(value, actionTypes.ADD);
+  add(node: IExpressionNode) {
+    this.emitInput(node, actionTypes.ADD);
   }
 
   render() {
     return this.$scopedSlots.default!({
-      node: this.value,
+      node: this.node,
       index: this.index,
       toggleConnectionType: () => this.toggleConnectionType(Core.ExpressionNodeGroup.fromJSON),
       delete: this.emitDelete,

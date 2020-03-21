@@ -1,22 +1,33 @@
 {
   "name": "@ghuba/expression-builder",
-  "version": "0.1.0",
-  "private": true,
-  "main": "./dist/ghuba_expression-builder.common.js",
+  "version": "0.1.20",
+  "private": false,
+  "main": "dist/ghuba_expression-builder.umd.js",
+  "unpkg": "dist/ghuba_expression-builder.umd.js",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build --target lib --name ghuba_expression-builder ./src/main.ts",
+    "build": "rollup -c",
     "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "core-js": "^3.6.4",
-    "vue": "^2.6.11",
+    "tslib": "^1.11.1",
     "vue-class-component": "^7.2.2",
     "vue-property-decorator": "^8.3.0"
   },
+  "peerDependencies": {
+    "vue": "^2.6.11"
+  },
   "devDependencies": {
+    "vue": "^2.6.11",
+    "@babel/core": "^7.9.0",
+    "@babel/plugin-transform-runtime": "^7.9.0",
+    "@babel/preset-typescript": "^7.9.0",
     "@types/jest": "^24.0.19",
+    "@types/vue": "^2.0.0",
     "@typescript-eslint/eslint-plugin": "^2.18.0",
     "@typescript-eslint/parser": "^2.18.0",
     "@vue/cli-plugin-babel": "^4.2.0",
@@ -29,6 +40,12 @@
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^6.1.2",
     "node-sass": "^4.12.0",
+    "rollup-plugin-babel": "^4.4.0",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-typescript": "^1.0.1",
+    "rollup-plugin-typescript2": "^0.26.0",
+    "rollup-plugin-vue": "^5.1.6",
     "sass-loader": "^8.0.2",
     "typescript": "~3.7.5",
     "vue-template-compiler": "^2.6.11"

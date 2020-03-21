@@ -1,39 +1,12 @@
 import ExpressionBuilder from "@/core/ExpressionBuilder";
 import {connectionTypes, ExpressionNode, ExpressionNodeGroup} from "@/core/ExpressionNodes";
-import {IExpressionNodeGroupJSON} from "@/core/Interfaces";
+import {testJSON} from "../utils";
 
 function expectDefaults(group: ExpressionNodeGroup) {
   expect(group.children).toHaveLength(0);
   expect(group.connectionType).toBe(connectionTypes.AND);
   expect(group.maxDepth).toBe(0);
 }
-
-const testJSON: IExpressionNodeGroupJSON = {
-  connectionType: "and",
-  maxDepth: 5,
-  children: [
-    {
-      connectionType: "or",
-      children: [
-        {
-          connectionType: "and",
-          condition: {
-            name: "test",
-            value: 1
-          }
-        }
-      ]
-    },
-    {
-      connectionType: "or",
-      condition: {
-        name: "test",
-        value: 2
-      }
-    }
-  ]
-};
-
 describe("ExpressionBuilder - create and export instance", () => {
 
   it("With defaults", () => {

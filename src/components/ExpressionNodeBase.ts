@@ -3,22 +3,31 @@ import {IExpressionNode} from "@/core/Interfaces";
 import {connectionTypes} from "@/core/ExpressionNodes";
 import {actionTypes, InputEventBody} from "@/components/Utils";
 
+/**
+ * Helper to recursively get the path of the current node
+ * @param node
+ */
+const getNodePath = (node: IExpressionNode): number[] => {
+  if (!node.parentNode)
+    return [];
+  else
+    return [...getNodePath(node.parentNode), node.parentNode.children.indexOf(node)];
+};
+
 @Component({})
 export default class ExpressionNodeBase extends Vue {
-  // IMPORTANT root nodeGroup has to have index -1 always
-  @Prop({default: -1}) protected index!: number;
-  @Prop() protected value!: IExpressionNode;
+  @Prop({required: true}) protected node!: IExpressionNode;
+  @Prop({required: true}) eventHub!: Vue;
 
-  emitInput(value?: IExpressionNode, action = actionTypes.SET, path: number[] = []): void {
-    if (this.$parent && this.$parent.$parent) {
-      if (this.index >= 0)  // top level element has index = -1
-        path.unshift(this.index);
-      this.$parent.$parent.$emit("input", {value, path, action} as InputEventBody);
-    }
+  emitInput(node?: IExpressionNode, action = actionTypes.SET, index?: number ): void {
+    let path = getNodePath(this.node);
+    if (index != undefined)
+      path.push(index);
+    this.eventHub.$emit("input", {node, path, action} as InputEventBody)
   }
 
   toggleConnectionType(fromJSON: Function) {
-    const json = this.value.toJSON();
+    const json = this.node.toJSON();
     if (json.connectionType === connectionTypes.AND)
       json.connectionType = connectionTypes.OR;
     else
@@ -28,5 +37,12 @@ export default class ExpressionNodeBase extends Vue {
 
   emitDelete() {
     this.emitInput(undefined, actionTypes.DELETE);
+  }
+
+  get index() {
+    if (this.node.parentNode)
+      return this.node.parentNode.children.indexOf(this.node);
+    else
+      return -1
   }
 }

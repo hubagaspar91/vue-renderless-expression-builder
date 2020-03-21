@@ -5,7 +5,7 @@ import {ExpressionNode} from "@/core/ExpressionNodes";
 
 @Component
 export default class ExpressionNodeRenderless extends ExpressionNodeBase {
-  @Prop({required: true, type: Core.ExpressionNode}) protected value!: Core.ExpressionNode;
+  @Prop({required: true, type: Core.ExpressionNode}) protected node!: Core.ExpressionNode;
 
   update(value: ExpressionNode) {
     this.emitInput(value);
@@ -13,7 +13,7 @@ export default class ExpressionNodeRenderless extends ExpressionNodeBase {
 
   render() {
     return this.$scopedSlots.default!({
-      node: this.value,
+      node: this.node,
       index: this.index,
       toggleConnectionType: () => this.toggleConnectionType(Core.ExpressionNode.fromJSON),
       update: this.update,

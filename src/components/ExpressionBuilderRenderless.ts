@@ -7,11 +7,13 @@ import {actionTypes, InputEventBody} from "@/components/Utils";
 export default class ExpressionBuilderRenderless extends Vue {
   @Prop() protected JSON?: IExpressionNodeGroupJSON;
 
+  public eventHub: Vue = new Vue();
+
   protected builderInstance!: ExpressionBuilder;
 
   created() {
     this.builderInstance = new ExpressionBuilder(this.JSON);
-    this.$on("input", this.handleInput);
+    this.eventHub.$on("input", this.handleInput);
   }
 
   handleInput(body: InputEventBody) {
@@ -20,13 +22,13 @@ export default class ExpressionBuilderRenderless extends Vue {
 
     switch (body.action) {
       case actionTypes.SET:
-        this.builderInstance.contextTo(pathToParent).set(body.value, index);
+        this.builderInstance.contextTo(pathToParent).set(body.node, index);
         break;
       case actionTypes.ADD:
-        this.builderInstance.contextTo(body.path).add(body.value);
+        this.builderInstance.contextTo(body.path).add(body.node);
         break;
       case actionTypes.INSERT:
-        this.builderInstance.contextTo(pathToParent).insert(body.value, index);
+        this.builderInstance.contextTo(pathToParent).insert(body.node, index);
         break;
       case actionTypes.DELETE:
         this.builderInstance.contextTo(pathToParent).delete(index);
