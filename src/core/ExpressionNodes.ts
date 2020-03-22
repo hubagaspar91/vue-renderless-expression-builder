@@ -4,7 +4,7 @@ import {
   IExpressionNodeGroupJSON,
   IExpressionNodeGroupOpts,
   IExpressionNodeJSON,
-  ICondition
+  ICondition, isICondition, isIExpresionNode
 } from "@/core/Interfaces";
 
 export const connectionTypes = {
@@ -17,11 +17,22 @@ export const connectionTypesArray = Object.values(connectionTypes);
 
 class ExpressionNodeBase implements IExpressionNodeBase {
   private _connectionType: string = connectionTypes.AND;
-  public parentNode?: ExpressionNodeGroup;
+  private _parentNode?: ExpressionNodeGroup;
 
   constructor(connectionType: string = connectionTypes.AND, parentNode?: ExpressionNodeGroup) {
     this.connectionType = connectionType;
     this.parentNode = parentNode;
+  }
+
+  get parentNode() {
+    return this._parentNode as ExpressionNodeGroup;
+  }
+
+  set parentNode(val: ExpressionNodeGroup | undefined) {
+    if (val instanceof ExpressionNodeGroup)
+      this._parentNode = val;
+    else if (val != undefined)
+      throw new Error("Parent must be undefined or ExpressionNodeGroup");
   }
 
   set connectionType(value: string) {
@@ -38,16 +49,33 @@ class ExpressionNodeBase implements IExpressionNodeBase {
 }
 
 /**
+ * Default condition factory for ExpressionNode
+ */
+const defaultCondition = () => ({name: "", value: ""});
+
+
+/**
  * Node object, describing a condition
  */
 export class ExpressionNode extends ExpressionNodeBase implements IExpressionNode {
-  public condition: ICondition;
+  private _condition: ICondition = defaultCondition();
 
-  constructor(condition: ICondition,
+  constructor(condition: ICondition = defaultCondition(),
               connectionType?: string,
               parentNode?: ExpressionNodeGroup) {
     super(connectionType, parentNode);
+
+    // to check for type
     this.condition = condition;
+  }
+
+  get condition() {
+    return this._condition;
+  }
+
+  set condition(condition) {
+    if (isICondition(condition)) this._condition = condition;
+    else throw new Error("Condition object must contain 'name' and 'value' keys.")
   }
 
   /**
@@ -62,10 +90,10 @@ export class ExpressionNode extends ExpressionNodeBase implements IExpressionNod
 
   /**
    * Checks, whether an Object is a valid JSON instance to construct an ExpressionNode from
-   * @param object
+   * @param obj
    */
-  static isJSONInstance(object: object): object is IExpressionNodeJSON {
-    return "condition" in object;
+  static isJSONInstance(obj: object): obj is IExpressionNodeJSON {
+    return "condition" in obj;
   }
 
   /**
@@ -78,6 +106,9 @@ export class ExpressionNode extends ExpressionNodeBase implements IExpressionNod
   }
 }
 
+/**
+ * Factory fn, returning the default opts object for an ExpressionNodeGroup
+ */
 const defaultOpts = () => ({maxDepth: 0, currentDepth: 0, children: []});
 
 export class ExpressionNodeGroup extends ExpressionNodeBase implements IExpressionNode {
@@ -96,7 +127,13 @@ export class ExpressionNodeGroup extends ExpressionNodeBase implements IExpressi
   }
 
   set children(value: IExpressionNode[]) {
-    this._children = value;
+    this._children = value.map(node => {
+      if (isIExpresionNode(node)) {
+        node.parentNode = this;
+        return node;
+      }
+      else throw new Error("Node must by ExpressionNode or ExpressionNodeGroup, got type: " + typeof node);
+    });
   }
 
   get children(): IExpressionNode[] {

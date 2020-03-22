@@ -10,8 +10,5 @@ export const actionTypes = {
   ADD: "add",
   INSERT: "insert",
   SET: "set",
-  DELETE: "delete",
-  ADD_NEW: "addNew",
-  INSERT_NEW: "insertNew",
-  SET_NEW: "setNew"
+  DELETE: "delete"
 };

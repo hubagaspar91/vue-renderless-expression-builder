@@ -10,15 +10,20 @@ import ExpressionNodeGroupRenderless from "@/components/ExpressionNodeGroupRende
 describe("Renderless components", () => {
   describe("Nodes emiting events", () => {
     it("toggleConnectionType", () => {
-      return new Promise(resolve => {
+      return new Promise((resolve, reject) => {
         const group = ExpressionNodeGroup.fromJSON(testJSON);
         const eventHub0 = new Vue();
         eventHub0.$on("input", (body: InputEventBody) => {
-          expect(body.path).toStrictEqual([1]);
-          expect(body.action).toBe(actionTypes.SET);
-          expect((body.node as ExpressionNode).condition).toStrictEqual((group.children[1] as ExpressionNode).condition);
-          expect(body.node.connectionType).not.toBe(group.children[1].connectionType);
-          resolve();
+          try {
+            expect(body.path).toStrictEqual([1]);
+            expect(body.action).toBe(actionTypes.SET);
+            expect((body.node as ExpressionNode).condition).toStrictEqual((group.children[1] as ExpressionNode).condition);
+            expect(body.node.connectionType).not.toBe(group.children[1].connectionType);
+          } catch (e) {
+            reject();
+          } finally {
+            resolve();
+          }
         });
         const wrapper0 = mount(ExpressionNodeRenderless, {
           propsData: {
@@ -35,7 +40,7 @@ describe("Renderless components", () => {
     });
 
     it("toggleConnectionType with deeper path", () => {
-      return new Promise(resolve => {
+      return new Promise((resolve, reject) => {
         const group = ExpressionNodeGroup.fromJSON(testJSON);
         const eventHub0 = new Vue();
         eventHub0.$on("input", (body: InputEventBody) => {
@@ -46,6 +51,8 @@ describe("Renderless components", () => {
               .toStrictEqual(((group.children[0] as ExpressionNodeGroup).children[0] as ExpressionNode).condition);
             expect(body.node.connectionType).not
               .toBe((group.children[0] as ExpressionNodeGroup).children[0].connectionType);
+          } catch (e) {
+            reject();
           } finally {
             resolve();
           }
@@ -65,7 +72,7 @@ describe("Renderless components", () => {
     });
 
     it("Delete - ExpressionNodeRenderless", () => {
-      return new Promise(resolve => {
+      return new Promise((resolve, reject) => {
         const group = ExpressionNodeGroup.fromJSON(testJSON);
         const eventHub0 = new Vue();
         eventHub0.$on("input", (body: InputEventBody) => {
@@ -73,6 +80,8 @@ describe("Renderless components", () => {
             expect(body.node).toBe(undefined);
             expect(body.path).toStrictEqual([0, 0]);
             expect(body.action).toBe(actionTypes.DELETE);
+          } catch (e) {
+            reject();
           } finally {
             resolve();
           }
@@ -92,7 +101,7 @@ describe("Renderless components", () => {
     });
 
     it("Update - ExpressionNodeRenderless", () => {
-      return new Promise(resolve => {
+      return new Promise((resolve, reject) => {
         const group = ExpressionNodeGroup.fromJSON(testJSON);
         const eventHub0 = new Vue();
         eventHub0.$on("input", (body: InputEventBody) => {
@@ -101,6 +110,8 @@ describe("Renderless components", () => {
             expect((body.node as ExpressionNode).condition).toStrictEqual(newCondition);
             expect(body.path).toStrictEqual([0, 0]);
             expect(body.action).toBe(actionTypes.SET);
+          } catch (e) {
+            reject();
           } finally {
             resolve();
           }
@@ -121,8 +132,8 @@ describe("Renderless components", () => {
     });
 
 
-    const testAction = (actionType: string, index?: number) => {
-      return new Promise(resolve => {
+    const testGroupAction = (actionType: string, index?: number) => {
+      return new Promise((resolve, reject) => {
         const group = ExpressionNodeGroup.fromJSON(testJSON);
         const eventHub0 = new Vue();
         eventHub0.$on("input", (body: InputEventBody) => {
@@ -139,6 +150,8 @@ describe("Renderless components", () => {
               case actionTypes.ADD:
                 expect(body.path).toStrictEqual([0]);
             }
+          } catch (e) {
+            reject();
           } finally {
             resolve();
           }
@@ -168,15 +181,15 @@ describe("Renderless components", () => {
     };
 
     it("Set - ExpressionNodeGroupRenderless", () => {
-      return testAction(actionTypes.SET, 1);
+      return testGroupAction(actionTypes.SET, 1);
     });
 
     it("Insert - ExpressionNodeGroupRenderless", () => {
-      return testAction(actionTypes.INSERT, 2);
+      return testGroupAction(actionTypes.INSERT, 2);
     });
 
     it("Add - ExpressionNodeGroupRenderless", () => {
-      return testAction(actionTypes.ADD);
+      return testGroupAction(actionTypes.ADD);
     });
 
   });

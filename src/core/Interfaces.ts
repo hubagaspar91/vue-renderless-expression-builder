@@ -15,12 +15,20 @@ export interface IExpressionNode extends IExpressionNodeBase {
     toJSON(addMAxDepth?: boolean): IExpressionNodeJSON | IExpressionNodeGroupJSON
 }
 
+export function isIExpresionNode(obj: Object): obj is IExpressionNode {
+    return "toJSON" in obj && "connectionType" in obj;
+}
+
 /**
  * Condition object schema for {ExpressionNode}
  */
 export interface ICondition {
     name: string,
     value: any
+}
+
+export function isICondition(obj: object): obj is ICondition {
+    return "name" in obj && "value" in obj;
 }
 
 /**

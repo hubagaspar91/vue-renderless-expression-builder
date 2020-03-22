@@ -1,23 +1,48 @@
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop } from 'vue-property-decorator';
 import * as Core from "@/core/ExpressionNodes";
 import ExpressionNodeBase from "@/components/ExpressionNodeBase";
-import {actionTypes, InputEventBody} from "@/components/Utils";
-import {IExpressionNode} from "@/core/Interfaces";
+import {actionTypes} from "@/components/Utils";
+import {ICondition, IExpressionNode} from "@/core/Interfaces";
+import {ExpressionNode, ExpressionNodeGroup} from "@/core/ExpressionNodes";
 
 @Component
 export default class ExpressionNodeGroupRenderless extends ExpressionNodeBase {
   @Prop({required: true, type: Core.ExpressionNodeGroup}) protected node!: Core.ExpressionNodeGroup;
-
-  set(node: IExpressionNode, index: number) {
+  
+  private set(node: IExpressionNode, index: number) {
     this.emitInput(node, actionTypes.SET, index);
   }
 
-  insert(node: IExpressionNode, index: number) {
+  private insert(node: IExpressionNode, index: number) {
     this.emitInput(node, actionTypes.INSERT, index);
   }
 
-  add(node: IExpressionNode) {
+  private add(node: IExpressionNode) {
     this.emitInput(node, actionTypes.ADD);
+  }
+  
+  public setNode(condition: ICondition, index: number, connectionType?: string) {
+    this.set(new ExpressionNode(condition, connectionType), index);
+  }
+
+  public setGroup(index: number, connectionType?: string) {
+    this.set(new ExpressionNodeGroup(undefined, connectionType), index);
+  }
+
+  public insertNode(condition: ICondition, index: number, connectionType?: string) {
+    this.insert(new ExpressionNode(condition, connectionType), index);
+  }
+
+  public insertGroup(index: number, connectionType?: string) {
+    this.insert(new ExpressionNodeGroup(undefined, connectionType), index);
+  }
+
+  public addNode(condition: ICondition, connectionType?: string) {
+    this.add(new ExpressionNode(condition, connectionType));
+  }
+
+  public addGroup(connectionType?: string) {
+    this.add(new ExpressionNodeGroup(undefined, connectionType));
   }
 
   render() {
@@ -26,9 +51,12 @@ export default class ExpressionNodeGroupRenderless extends ExpressionNodeBase {
       index: this.index,
       toggleConnectionType: () => this.toggleConnectionType(Core.ExpressionNodeGroup.fromJSON),
       delete: this.emitDelete,
-      set: this.set,
-      insert: this.insert,
-      add: this.add
+      setNode: this.setNode,
+      setGroup: this.setGroup,
+      insertNode: this.insertNode,
+      insertGroup: this.insertGroup,
+      addNode: this.addNode,
+      addGroup: this.addGroup
     }) as any
   }
 }

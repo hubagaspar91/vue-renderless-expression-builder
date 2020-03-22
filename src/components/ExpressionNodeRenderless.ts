@@ -1,14 +1,15 @@
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop } from 'vue-property-decorator';
 import * as Core from "@/core/ExpressionNodes";
 import ExpressionNodeBase from "@/components/ExpressionNodeBase";
 import {ExpressionNode} from "@/core/ExpressionNodes";
+import {ICondition} from "@/core/Interfaces";
 
 @Component
 export default class ExpressionNodeRenderless extends ExpressionNodeBase {
   @Prop({required: true, type: Core.ExpressionNode}) protected node!: Core.ExpressionNode;
 
-  update(value: ExpressionNode) {
-    this.emitInput(value);
+  update(condition: ICondition) {
+    this.emitInput(new ExpressionNode(condition, this.node.connectionType));
   }
 
   render() {

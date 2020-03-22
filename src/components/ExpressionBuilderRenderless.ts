@@ -34,6 +34,19 @@ export default class ExpressionBuilderRenderless extends Vue {
         this.builderInstance.contextTo(pathToParent).delete(index);
         break;
     }
+
+    this.$emit("input", this.root.toJSON());
+  }
+
+  get root() {
+    return this.builderInstance.root;
+  }
+
+  render() {
+    return this.$scopedSlots.default!({
+      eventHub: this.eventHub,
+      root: this.root
+    }) as any
   }
 
 }
