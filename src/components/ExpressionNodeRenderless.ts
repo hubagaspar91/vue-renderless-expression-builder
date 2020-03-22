@@ -17,8 +17,8 @@ export default class ExpressionNodeRenderless extends ExpressionNodeBase {
       node: this.node,
       index: this.index,
       toggleConnectionType: () => this.toggleConnectionType(Core.ExpressionNode.fromJSON),
-      update: this.update,
-      delete: this.emitDelete
+      updateCondition: this.update,
+      deleteNode: this.emitDelete
     }) as any
   }
 }

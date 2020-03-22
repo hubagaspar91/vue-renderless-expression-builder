@@ -1,15 +1,9 @@
 import {ExpressionNodeGroup} from "@/core/ExpressionNodes";
 import {ICondition, IExpressionNode, IExpressionNodeGroupJSON} from "@/core/Interfaces";
 
-const GROUP = "group";
-const NODE = "node";
-
 export default class ExpressionBuilder {
   public readonly root: ExpressionNodeGroup;
   private _context: ExpressionNodeGroup;
-
-  static GROUP = GROUP;
-  static NODE = NODE;
 
   constructor(root?: ExpressionNodeGroup | IExpressionNodeGroupJSON) {
     this.root = root

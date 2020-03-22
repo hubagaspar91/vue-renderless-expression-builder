@@ -2,17 +2,19 @@ import {Component, Prop, Vue} from 'vue-property-decorator';
 import {IExpressionNodeGroupJSON} from "@/core/Interfaces";
 import ExpressionBuilder from "@/core/ExpressionBuilder";
 import {actionTypes, InputEventBody} from "@/components/Utils";
+import {ExpressionNodeGroup} from "@/core/ExpressionNodes";
 
 @Component
 export default class ExpressionBuilderRenderless extends Vue {
-  @Prop() protected JSON?: IExpressionNodeGroupJSON;
+  @Prop() protected json?: IExpressionNodeGroupJSON;
 
   public eventHub: Vue = new Vue();
 
   protected builderInstance!: ExpressionBuilder;
 
   created() {
-    this.builderInstance = new ExpressionBuilder(this.JSON);
+    this.builderInstance = new ExpressionBuilder(this.json);
+    this.$emit("update-expression", this.root);
     this.eventHub.$on("input", this.handleInput);
   }
 
@@ -35,10 +37,10 @@ export default class ExpressionBuilderRenderless extends Vue {
         break;
     }
 
-    this.$emit("input", this.root.toJSON());
+    this.$emit("update-expression", this.root);
   }
 
-  get root() {
+  get root(): ExpressionNodeGroup {
     return this.builderInstance.root;
   }
 

@@ -245,7 +245,7 @@ function _inherits(subClass, superClass) {
 
 var inherits = _inherits;
 
-function isIExpresionNode(obj) {
+function isIExpressionNode(obj) {
   return "toJSON" in obj && "connectionType" in obj;
 }
 function isICondition(obj) {
@@ -340,8 +340,9 @@ var ExpressionNode = /*#__PURE__*/function (_ExpressionNodeBase) {
       };
     }
     /**
-     * Checks, whether an Object is a valid JSON instance to construct an ExpressionNode from
-     * @param obj
+     * Constructs an ExpressionNode from a JSON representation
+     * @param json
+     * @param parentNode
      */
 
   }, {
@@ -353,17 +354,6 @@ var ExpressionNode = /*#__PURE__*/function (_ExpressionNodeBase) {
       if (isICondition(condition)) this._condition = condition;else throw new Error("Condition object must contain 'name' and 'value' keys.");
     }
   }], [{
-    key: "isJSONInstance",
-    value: function isJSONInstance(obj) {
-      return "condition" in obj;
-    }
-    /**
-     * Constructs an ExpressionNode from a JSON representation
-     * @param json
-     * @param parentNode
-     */
-
-  }, {
     key: "fromJSON",
     value: function fromJSON(json, parentNode) {
       return new ExpressionNode(json.condition, json.connectionType, parentNode);
@@ -399,10 +389,13 @@ var ExpressionNodeGroup = /*#__PURE__*/function (_ExpressionNodeBase2) {
     classCallCheck(this, ExpressionNodeGroup);
 
     _this2 = _super2.call(this, connectionType, parentNode);
+    _this2._children = [];
+    _this2._maxDepth = 0;
+    _this2._currentDepth = 0;
     opts = objectSpread2({}, defaultOpts(), {}, opts);
-    _this2._children = opts.children;
-    _this2._maxDepth = opts.maxDepth;
-    _this2._currentDepth = opts.currentDepth;
+    _this2.children = opts.children;
+    _this2.maxDepth = opts.maxDepth;
+    _this2.currentDepth = opts.currentDepth;
     return _this2;
   }
 
@@ -471,7 +464,7 @@ var ExpressionNodeGroup = /*#__PURE__*/function (_ExpressionNodeBase2) {
       var _this3 = this;
 
       this._children = value.map(function (node) {
-        if (isIExpresionNode(node)) {
+        if (isIExpressionNode(node)) {
           node.parentNode = _this3;
           return node;
         } else throw new Error("Node must by ExpressionNode or ExpressionNodeGroup, got type: " + _typeof_1(node));
@@ -529,9 +522,6 @@ var ExpressionNodeGroup = /*#__PURE__*/function (_ExpressionNodeBase2) {
 
   return ExpressionNodeGroup;
 }(ExpressionNodeBase);
-
-var GROUP = "group";
-var NODE = "node";
 
 var ExpressionBuilder = /*#__PURE__*/function () {
   function ExpressionBuilder(root) {
@@ -668,8 +658,6 @@ var ExpressionBuilder = /*#__PURE__*/function () {
 
   return ExpressionBuilder;
 }();
-ExpressionBuilder.GROUP = GROUP;
-ExpressionBuilder.NODE = NODE;
 
 var actionTypes = {
   ADD: "add",
@@ -696,7 +684,8 @@ var ExpressionBuilderRenderless = /*#__PURE__*/function (_Vue) {
   createClass(ExpressionBuilderRenderless, [{
     key: "created",
     value: function created() {
-      this.builderInstance = new ExpressionBuilder(this.JSON);
+      this.builderInstance = new ExpressionBuilder(this.json);
+      this.$emit("update-expression", this.root);
       this.eventHub.$on("input", this.handleInput);
     }
   }, {
@@ -723,7 +712,7 @@ var ExpressionBuilderRenderless = /*#__PURE__*/function (_Vue) {
           break;
       }
 
-      this.$emit("input", this.root.toJSON());
+      this.$emit("update-expression", this.root);
     }
   }, {
     key: "render",
@@ -743,7 +732,7 @@ var ExpressionBuilderRenderless = /*#__PURE__*/function (_Vue) {
   return ExpressionBuilderRenderless;
 }(Vue);
 
-__decorate([Prop()], ExpressionBuilderRenderless.prototype, "JSON", void 0);
+__decorate([Prop()], ExpressionBuilderRenderless.prototype, "json", void 0);
 
 ExpressionBuilderRenderless = __decorate([Component], ExpressionBuilderRenderless);
 var ExpressionBuilderRenderless$1 = ExpressionBuilderRenderless;
@@ -841,8 +830,8 @@ var ExpressionNodeRenderless = /*#__PURE__*/function (_ExpressionNodeBase) {
         toggleConnectionType: function toggleConnectionType() {
           return _this.toggleConnectionType(ExpressionNode.fromJSON);
         },
-        update: this.update,
-        delete: this.emitDelete
+        updateCondition: this.update,
+        deleteNode: this.emitDelete
       });
     }
   }]);
@@ -937,7 +926,7 @@ var ExpressionNodeGroupRenderless = /*#__PURE__*/function (_ExpressionNodeBase) 
         toggleConnectionType: function toggleConnectionType() {
           return _this.toggleConnectionType(ExpressionNodeGroup.fromJSON);
         },
-        delete: this.emitDelete,
+        deleteNode: this.emitDelete,
         setNode: this.setNode,
         setGroup: this.setGroup,
         insertNode: this.insertNode,

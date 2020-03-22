@@ -24,7 +24,7 @@ describe("ExpressionBuilderRenderless", () => {
   it("Create instance from json", () => {
     const wrapper = mount(ExpressionBuilderRenderless, {
       propsData: {
-        JSON: testJSON
+        json: testJSON
       },
       scopedSlots: {
         default: () => null
@@ -42,7 +42,7 @@ describe("ExpressionBuilderRenderless", () => {
       // creating the renderless builder component
       const wrapper = mount(ExpressionBuilderRenderless, {
         propsData: {
-          JSON: testJSON
+          json: testJSON
         },
         scopedSlots: {
           default: () => null
@@ -69,7 +69,8 @@ describe("ExpressionBuilderRenderless", () => {
 
         const {wrapper, nodeWrapper, selectedNode} = createBuilderAndNode();
 
-        wrapper.vm.$on("input", (json: IExpressionNodeGroupJSON) => {
+        wrapper.vm.$on("update-expression", (root: ExpressionNodeGroup) => {
+          const json = root.toJSON();
           try {
             expect((json.children[0] as IExpressionNodeGroupJSON).children[0].connectionType).not.toBe(selectedNode.connectionType);
             expect(((json.children[0] as IExpressionNodeGroupJSON).children[0] as IExpressionNodeJSON).condition)
@@ -89,7 +90,8 @@ describe("ExpressionBuilderRenderless", () => {
       return new Promise((resolve, reject) => {
         const {wrapper, nodeWrapper} = createBuilderAndNode();
 
-        wrapper.vm.$on("input", (json: IExpressionNodeGroupJSON) => {
+        wrapper.vm.$on("update-expression", (root: ExpressionNodeGroup) => {
+          const json = root.toJSON();
           try {
             expect((json.children[0] as IExpressionNodeGroupJSON).children).toHaveLength(0);
           } catch(e) {
@@ -108,7 +110,8 @@ describe("ExpressionBuilderRenderless", () => {
 
         const newCondition = {name: "test", value: 200};
 
-        wrapper.vm.$on("input", (json: IExpressionNodeGroupJSON) => {
+        wrapper.vm.$on("update-expression", (root: ExpressionNodeGroup) => {
+          const json = root.toJSON();
           try {
             expect(((json.children[0] as IExpressionNodeGroupJSON).children[0] as IExpressionNodeJSON).condition)
               .not.toStrictEqual((selectedNode as ExpressionNode).condition);
@@ -129,7 +132,7 @@ describe("ExpressionBuilderRenderless", () => {
       // creating the renderless builder component
       const wrapper = mount(ExpressionBuilderRenderless, {
         propsData: {
-          JSON: testJSON
+          json: testJSON
         },
         scopedSlots: {
           default: () => null
@@ -154,11 +157,12 @@ describe("ExpressionBuilderRenderless", () => {
 
     const testActionOnGroup = (actionType: string, group: boolean, index?: number) => {
       return new Promise((resolve, reject) => {
-        const {wrapper, groupWrapper, selectedGroup} = createBuilderAndGroup();
+        const {wrapper, groupWrapper} = createBuilderAndGroup();
 
         const newCondition: ICondition = {name: "test", value: 500};
 
-        wrapper.vm.$on("input", (json: IExpressionNodeGroupJSON) => {
+        wrapper.vm.$on("update-expression", (root: ExpressionNodeGroup) => {
+          const json = root.toJSON();
           const parentJson = json.children[0] as IExpressionNodeGroupJSON;
           const newNodeJson = parentJson.children[index != undefined ? index : parentJson.children.length-1];
           try {

@@ -4,7 +4,7 @@ import {
   IExpressionNodeGroupJSON,
   IExpressionNodeGroupOpts,
   IExpressionNodeJSON,
-  ICondition, isICondition, isIExpresionNode
+  ICondition, isICondition, isIExpressionNode
 } from "@/core/Interfaces";
 
 export const connectionTypes = {
@@ -89,14 +89,6 @@ export class ExpressionNode extends ExpressionNodeBase implements IExpressionNod
   }
 
   /**
-   * Checks, whether an Object is a valid JSON instance to construct an ExpressionNode from
-   * @param obj
-   */
-  static isJSONInstance(obj: object): obj is IExpressionNodeJSON {
-    return "condition" in obj;
-  }
-
-  /**
    * Constructs an ExpressionNode from a JSON representation
    * @param json
    * @param parentNode
@@ -112,23 +104,23 @@ export class ExpressionNode extends ExpressionNodeBase implements IExpressionNod
 const defaultOpts = () => ({maxDepth: 0, currentDepth: 0, children: []});
 
 export class ExpressionNodeGroup extends ExpressionNodeBase implements IExpressionNode {
-  private _children: IExpressionNode[];
-  private _maxDepth: number;
-  private _currentDepth: number;
+  private _children: IExpressionNode[] = [];
+  private _maxDepth: number = 0;
+  private _currentDepth: number = 0;
 
   constructor(opts: IExpressionNodeGroupOpts = defaultOpts(),
               connectionType?: string,
               parentNode?: ExpressionNodeGroup) {
     super(connectionType, parentNode);
     opts = {...defaultOpts(), ...opts};
-    this._children = opts.children as IExpressionNode[];
-    this._maxDepth = opts.maxDepth as number;
-    this._currentDepth = opts.currentDepth as number;
+    this.children = opts.children as IExpressionNode[];
+    this.maxDepth = opts.maxDepth as number;
+    this.currentDepth = opts.currentDepth as number;
   }
 
   set children(value: IExpressionNode[]) {
     this._children = value.map(node => {
-      if (isIExpresionNode(node)) {
+      if (isIExpressionNode(node)) {
         node.parentNode = this;
         return node;
       }

@@ -26,11 +26,6 @@ export declare class ExpressionNode extends ExpressionNodeBase implements IExpre
      */
     toJSON(): IExpressionNodeJSON;
     /**
-     * Checks, whether an Object is a valid JSON instance to construct an ExpressionNode from
-     * @param obj
-     */
-    static isJSONInstance(obj: object): obj is IExpressionNodeJSON;
-    /**
      * Constructs an ExpressionNode from a JSON representation
      * @param json
      * @param parentNode

@@ -70,7 +70,7 @@ export default class ExpressionNodeGroupRenderless extends ExpressionNodeBase {
       node: this.node,
       index: this.index,
       toggleConnectionType: () => this.toggleConnectionType(Core.ExpressionNodeGroup.fromJSON),
-      delete: this.emitDelete,
+      deleteNode: this.emitDelete,
       setNode: this.setNode,
       setGroup: this.setGroup,
       insertNode: this.insertNode,

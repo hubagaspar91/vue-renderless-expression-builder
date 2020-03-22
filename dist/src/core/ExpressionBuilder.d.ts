@@ -3,8 +3,6 @@ import { ICondition, IExpressionNode, IExpressionNodeGroupJSON } from "@/core/In
 export default class ExpressionBuilder {
     readonly root: ExpressionNodeGroup;
     private _context;
-    static GROUP: string;
-    static NODE: string;
     constructor(root?: ExpressionNodeGroup | IExpressionNodeGroupJSON);
     get context(): ExpressionNodeGroup;
     private _validateIndex;
