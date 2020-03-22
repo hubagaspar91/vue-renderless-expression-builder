@@ -1,17 +1,8 @@
-import {ExpressionNode, ExpressionNodeGroup} from "@/core/ExpressionNodes";
+import {ExpressionNodeGroup} from "@/core/ExpressionNodes";
 import {ICondition, IExpressionNode, IExpressionNodeGroupJSON} from "@/core/Interfaces";
 
 const GROUP = "group";
 const NODE = "node";
-
-interface ClassConstructors {
-  [index: string]: Function;
-}
-
-const classes: ClassConstructors = {
-  [GROUP]: (connectionType?: string) => new ExpressionNodeGroup(undefined, connectionType),
-  [NODE]: (condition: ICondition, connectionType?: string) => new ExpressionNode(condition, connectionType)
-};
 
 export default class ExpressionBuilder {
   public readonly root: ExpressionNodeGroup;
@@ -90,31 +81,6 @@ export default class ExpressionBuilder {
     throw new Error("Invalid index " + index);
   }
 
-  private static _new(type: string, operation: Function, index?: number, connectionType?: string, condition?: ICondition) {
-    if (type in classes) {
-      let newNode;
-      if (type == GROUP)
-        newNode = classes[type](connectionType);
-      else if (type == NODE)
-        newNode = classes[type](condition, connectionType);
-
-      return operation(newNode, index);
-    }
-    throw new Error("Invalid node type " + type);
-  }
-
-  addNew(type: string, connectionType?: string, condition?: ICondition) {
-    return ExpressionBuilder._new(type, this.add.bind(this), undefined, connectionType, condition);
-  }
-
-  insertNew(type: string, index: number, connectionType?: string, condition?: ICondition) {
-    return ExpressionBuilder._new(type, this.insert.bind(this), index, connectionType, condition);
-  }
-
-  setNew(type: string, index: number, connectionType?: string, condition?: ICondition) {
-    return ExpressionBuilder._new(type, this.set.bind(this), index, connectionType, condition);
-  }
-
   contextUp() {
     if (this._context.parentNode)
       this._context = this._context.parentNode;
@@ -133,6 +99,7 @@ export default class ExpressionBuilder {
    * @param pathIndex
    */
   private static seekContext(path: number[], root: ExpressionNodeGroup, pathIndex = 0): ExpressionNodeGroup | null {
+    if (path.length == 0) return null;
     const foundNode = root.children[path[pathIndex]];
     if (foundNode && foundNode instanceof ExpressionNodeGroup) {
       if (pathIndex == path.length - 1)

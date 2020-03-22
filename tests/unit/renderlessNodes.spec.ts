@@ -1,4 +1,4 @@
-import {shallowMount, mount} from "@vue/test-utils";
+import {mount} from "@vue/test-utils";
 import {testJSON} from "../utils";
 import {ExpressionNode, ExpressionNodeGroup} from "@/core/ExpressionNodes";
 import ExpressionNodeRenderless from "@/components/ExpressionNodeRenderless";
@@ -9,7 +9,7 @@ import ExpressionNodeGroupRenderless from "@/components/ExpressionNodeGroupRende
 
 describe("Renderless components", () => {
   describe("Nodes emiting events", () => {
-    it("toggleConnectionType", () => {
+    it("toggleConnectionType - Base", () => {
       return new Promise((resolve, reject) => {
         const group = ExpressionNodeGroup.fromJSON(testJSON);
         const eventHub0 = new Vue();
@@ -39,7 +39,7 @@ describe("Renderless components", () => {
       })
     });
 
-    it("toggleConnectionType with deeper path", () => {
+    it("toggleConnectionType - Base - with deeper path", () => {
       return new Promise((resolve, reject) => {
         const group = ExpressionNodeGroup.fromJSON(testJSON);
         const eventHub0 = new Vue();
@@ -71,7 +71,7 @@ describe("Renderless components", () => {
       })
     });
 
-    it("Delete - ExpressionNodeRenderless", () => {
+    it("Delete - Base", () => {
       return new Promise((resolve, reject) => {
         const group = ExpressionNodeGroup.fromJSON(testJSON);
         const eventHub0 = new Vue();
@@ -127,19 +127,24 @@ describe("Renderless components", () => {
         });
         expect(wrapper0.vm.eventHub).toBe(eventHub0);
         const newCondition = {name: "test", value: 100};
-        wrapper0.vm.update(new ExpressionNode(newCondition));
+        wrapper0.vm.update(newCondition);
       })
     });
 
 
-    const testGroupAction = (actionType: string, index?: number) => {
+    const testGroupAction = (actionType: string, group: boolean, index?: number) => {
       return new Promise((resolve, reject) => {
         const group = ExpressionNodeGroup.fromJSON(testJSON);
         const eventHub0 = new Vue();
+        const newCondition = {name: "test", value: 100000};
         eventHub0.$on("input", (body: InputEventBody) => {
           try {
             expect(body.action).toBe(actionType);
-            expect((body.node as ExpressionNode).condition).toStrictEqual({name: "test", value: 0});
+            if (!group) {
+              expect((body.node as ExpressionNode).condition).toStrictEqual(newCondition);
+              expect(body.node).toBeInstanceOf(ExpressionNode);
+            }
+            else expect(body.node).toBeInstanceOf(ExpressionNodeGroup);
 
             switch (actionType) {
               case actionTypes.SET:
@@ -168,28 +173,49 @@ describe("Renderless components", () => {
         expect(wrapper0.vm.eventHub).toBe(eventHub0);
         switch (actionType) {
           case actionTypes.SET:
-            wrapper0.vm.set(new ExpressionNode({name: "test", value: 0}), (index as number));
+            if (group)
+              wrapper0.vm.setGroup((index as number));
+            else
+              wrapper0.vm.setNode(newCondition, (index as number));
             break;
           case actionTypes.INSERT:
-            wrapper0.vm.insert(new ExpressionNode({name: "test", value: 0}), (index as number));
+            if (group)
+              wrapper0.vm.insertGroup((index as number));
+            else
+              wrapper0.vm.insertNode(newCondition, (index as number));
             break;
           case actionTypes.ADD:
-            wrapper0.vm.add(new ExpressionNode({name: "test", value: 0}));
+            if (group)
+              wrapper0.vm.addGroup();
+            else
+              wrapper0.vm.addNode(newCondition);
             break;
         }
       })
     };
 
-    it("Set - ExpressionNodeGroupRenderless", () => {
-      return testGroupAction(actionTypes.SET, 1);
+    it("setNode - ExpressionNodeGroupRenderless", () => {
+      return testGroupAction(actionTypes.SET, false, 1);
     });
 
-    it("Insert - ExpressionNodeGroupRenderless", () => {
-      return testGroupAction(actionTypes.INSERT, 2);
+    it("setGroup - ExpressionNodeGroupRenderless", () => {
+      return testGroupAction(actionTypes.SET, true, 1);
     });
 
-    it("Add - ExpressionNodeGroupRenderless", () => {
-      return testGroupAction(actionTypes.ADD);
+    it("insertNode - ExpressionNodeGroupRenderless", () => {
+      return testGroupAction(actionTypes.INSERT, false, 2);
+    });
+
+    it("insertGroup - ExpressionNodeGroupRenderless", () => {
+      return testGroupAction(actionTypes.INSERT, true, 2);
+    });
+
+    it("addNode - ExpressionNodeGroupRenderless", () => {
+      return testGroupAction(actionTypes.ADD, false);
+    });
+
+    it("addGroup - ExpressionNodeGroupRenderless", () => {
+      return testGroupAction(actionTypes.ADD, true);
     });
 
   });

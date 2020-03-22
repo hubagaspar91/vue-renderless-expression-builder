@@ -20,29 +20,49 @@ export default class ExpressionNodeGroupRenderless extends ExpressionNodeBase {
   private add(node: IExpressionNode) {
     this.emitInput(node, actionTypes.ADD);
   }
+
+  private groupInsertionWrapper(fn: Function, index?: number, connectionType?: string) {
+    connectionType = connectionType == undefined
+      ? index != undefined && this.node.children[index]
+        ? this.node.children[index].connectionType
+        : undefined
+      : connectionType;
+
+    fn(new ExpressionNodeGroup(undefined, connectionType), index);
+  }
+
+  private nodeInsertionWrapper(fn: Function, condition: ICondition, index?: number, connectionType?: string) {
+    connectionType = connectionType == undefined
+      ? index != undefined && this.node.children[index]
+        ? this.node.children[index].connectionType
+        : undefined
+      : connectionType;
+
+    fn(new ExpressionNode(condition, connectionType), index);
+  }
   
   public setNode(condition: ICondition, index: number, connectionType?: string) {
-    this.set(new ExpressionNode(condition, connectionType), index);
+    this.nodeInsertionWrapper(this.set, condition, index, connectionType);
   }
 
   public setGroup(index: number, connectionType?: string) {
-    this.set(new ExpressionNodeGroup(undefined, connectionType), index);
+    this.groupInsertionWrapper(this.set, index, connectionType);
   }
 
   public insertNode(condition: ICondition, index: number, connectionType?: string) {
-    this.insert(new ExpressionNode(condition, connectionType), index);
+    this.nodeInsertionWrapper(this.insert, condition, index, connectionType);
   }
 
   public insertGroup(index: number, connectionType?: string) {
-    this.insert(new ExpressionNodeGroup(undefined, connectionType), index);
+    this.groupInsertionWrapper(this.insert, index, connectionType);
   }
 
   public addNode(condition: ICondition, connectionType?: string) {
-    this.add(new ExpressionNode(condition, connectionType));
+    this.nodeInsertionWrapper(this.add, condition, undefined, connectionType);
   }
 
   public addGroup(connectionType?: string) {
-    this.add(new ExpressionNodeGroup(undefined, connectionType));
+    this.groupInsertionWrapper(this.add, undefined, connectionType);
   }
 
   render() {

@@ -82,34 +82,14 @@ describe("ExpressionBuilder - testing fluent api", () => {
     expect(eb.context.children).toHaveLength(0);
   });
 
-  it("Tests addNew, insertNew, setNew methods, and automatic context switch", () => {
-    const eb = new ExpressionBuilder();
-    const cond0 = {name: "test", value: 0};
-    const cond1 = {name: "test", value: 1};
-    eb.addNew(ExpressionBuilder.NODE, undefined, cond0);
-    expect((eb.root.children[0] as ExpressionNode).condition).toStrictEqual(cond0);
-    expect((eb.context.children[0] as ExpressionNode).condition).toStrictEqual(cond0);
-    eb.insertNew(ExpressionBuilder.NODE, 0, undefined, cond1);
-    expect((eb.root.children[0] as ExpressionNode).condition).toStrictEqual(cond1);
-    expect((eb.context.children[0] as ExpressionNode).condition).toStrictEqual(cond1);
-    expect((eb.root.children[1] as ExpressionNode).condition).toStrictEqual(cond0);
-    expect((eb.context.children[1] as ExpressionNode).condition).toStrictEqual(cond0);
-    eb.setNew(ExpressionBuilder.GROUP, 1);
-    expect((eb.root.children[0] as ExpressionNode).condition).toStrictEqual(cond1);
-    expect(eb.root.children[1]).toBeInstanceOf(ExpressionNodeGroup);
-    expect(eb.context).toBeInstanceOf(ExpressionNodeGroup);
-    expect(eb.context).not.toBe(eb.root);
-    expect(eb.context.parentNode).toBe(eb.root);
-  });
-
   it("Insert and set not yet existing, next possible index", () => {
     const eb = new ExpressionBuilder();
     const cond0 = {name: "test", value: 0};
-    eb.setNew(ExpressionBuilder.NODE, 0, connectionTypes.OR, cond0);
+    eb.set(new ExpressionNode(cond0, connectionTypes.OR), 0);
     expect(eb.root.children).toHaveLength(1);
     expect(eb.root.children[0].connectionType).toBe(connectionTypes.OR);
     expect((eb.root.children[0] as ExpressionNode).condition).toStrictEqual(cond0);
-    eb.insertNew(ExpressionBuilder.NODE, 1, connectionTypes.OR, cond0);
+    eb.insert(new ExpressionNode(cond0, connectionTypes.OR), 1);
     expect(eb.root.children).toHaveLength(2);
     expect(eb.root.children[1].connectionType).toBe(connectionTypes.OR);
     expect((eb.root.children[1] as ExpressionNode).condition).toStrictEqual(cond0);
@@ -151,24 +131,24 @@ describe("ExpressionBuilder - testing restrictions, exceptions", () => {
   it("Cannot be nested below maxDepth", () => {
     const eb = new ExpressionBuilder(testJSON);
     expect(() => eb
-      .addNew(ExpressionBuilder.GROUP)
-      .addNew(ExpressionBuilder.GROUP)
-      .addNew(ExpressionBuilder.GROUP)
-      .addNew(ExpressionBuilder.GROUP)).toThrowError(/Reached max depth/);
+      .add(new ExpressionNodeGroup())
+      .add(new ExpressionNodeGroup())
+      .add(new ExpressionNodeGroup())
+      .add(new ExpressionNodeGroup())).toThrowError(/Reached max depth/);
   });
 
   it("Cannot insert, set and delete non-existent index", () => {
     const eb = new ExpressionBuilder(testJSON);
-    eb.addNew(ExpressionBuilder.GROUP);
-    expect(() => eb.insertNew(ExpressionBuilder.NODE, 2)).toThrowError(/Invalid index/);
-    expect(() => eb.setNew(ExpressionBuilder.NODE, 2)).toThrowError(/Invalid index/);
+    eb.add(new ExpressionNodeGroup());
+    expect(() => eb.insert(new ExpressionNode(), 2)).toThrowError(/Invalid index/);
+    expect(() => eb.set(new ExpressionNode(), 2)).toThrowError(/Invalid index/);
     expect(() => eb.delete(2)).toThrowError(/Invalid index/);
   });
 
   it("Tests maxDepth, currentDepth constraints", () => {
     const eb = new ExpressionBuilder(testJSON);
-    eb.addNew(ExpressionBuilder.GROUP)
-      .addNew(ExpressionBuilder.GROUP);
+    eb.add(new ExpressionNodeGroup())
+      .add(new ExpressionNodeGroup());
     expect(() => eb.context.currentDepth = 0).toThrowError(/Invalid current depth value/);
     expect(() => eb.context.maxDepth = 0).toThrowError(/maxDepth cannot be different from that of the parentNode/);
   });
