@@ -20,10 +20,9 @@ describe("Renderless components", () => {
             expect((body.node as ExpressionNode).condition).toStrictEqual((group.children[1] as ExpressionNode).condition);
             expect(body.node.connectionType).not.toBe(group.children[1].connectionType);
           } catch (e) {
-            reject();
-          } finally {
-            resolve();
+            reject(e);
           }
+          resolve();
         });
         const wrapper0 = mount(ExpressionNodeRenderless, {
           propsData: {
@@ -52,10 +51,10 @@ describe("Renderless components", () => {
             expect(body.node.connectionType).not
               .toBe((group.children[0] as ExpressionNodeGroup).children[0].connectionType);
           } catch (e) {
-            reject();
-          } finally {
-            resolve();
+            reject(e);
           }
+          resolve();
+
         });
         const wrapper0 = mount(ExpressionNodeRenderless, {
           propsData: {
@@ -81,10 +80,10 @@ describe("Renderless components", () => {
             expect(body.path).toStrictEqual([0, 0]);
             expect(body.action).toBe(actionTypes.DELETE);
           } catch (e) {
-            reject();
-          } finally {
-            resolve();
+            reject(e);
           }
+          resolve();
+
         });
         const wrapper0 = mount(ExpressionNodeRenderless, {
           propsData: {
@@ -111,10 +110,10 @@ describe("Renderless components", () => {
             expect(body.path).toStrictEqual([0, 0]);
             expect(body.action).toBe(actionTypes.SET);
           } catch (e) {
-            reject();
-          } finally {
-            resolve();
+            reject(e);
           }
+          resolve();
+
         });
         const wrapper0 = mount(ExpressionNodeRenderless, {
           propsData: {
@@ -156,10 +155,10 @@ describe("Renderless components", () => {
                 expect(body.path).toStrictEqual([0]);
             }
           } catch (e) {
-            reject();
-          } finally {
-            resolve();
+            reject(e);
           }
+          resolve();
+
         });
         const wrapper0 = mount(ExpressionNodeGroupRenderless, {
           propsData: {

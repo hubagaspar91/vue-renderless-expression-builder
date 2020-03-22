@@ -1,8 +1,8 @@
 import * as Core from "@/core/ExpressionNodes";
 import ExpressionNodeBase from "@/components/ExpressionNodeBase";
-import { ExpressionNode } from "@/core/ExpressionNodes";
+import { ICondition } from "@/core/Interfaces";
 export default class ExpressionNodeRenderless extends ExpressionNodeBase {
     protected node: Core.ExpressionNode;
-    update(value: ExpressionNode): void;
+    update(condition: ICondition): void;
     render(): any;
 }

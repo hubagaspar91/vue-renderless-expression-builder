@@ -124,6 +124,14 @@ describe("ExpressionBuilder - testing fluent api", () => {
     expect(() => eb.contextTo([0, 1, 0, 0])).toThrowError(/Invalid path/);
     // cant switch to non-exitent path
     expect(() => eb.contextTo([0, 1, 0, 1])).toThrowError(/Invalid path/);
+
+    // contextTo to default to root
+    eb.contextTo([]);
+    expect(eb.context).toBe(eb.root);
+    eb.contextTo([0, 1, 0]);
+    expect(eb.context).toBe(group3);
+    eb.contextTo();
+    expect(eb.context).toBe(eb.root);
   });
 });
 

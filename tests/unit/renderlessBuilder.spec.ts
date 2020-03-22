@@ -76,11 +76,9 @@ describe("ExpressionBuilderRenderless", () => {
               .toStrictEqual((selectedNode as ExpressionNode).condition);
           }
           catch(e) {
-            reject();
+            reject(e);
           }
-          finally {
-            resolve();
-          }
+          resolve();
         });
 
         nodeWrapper.vm.toggleConnectionType(ExpressionNode.fromJSON);
@@ -95,11 +93,9 @@ describe("ExpressionBuilderRenderless", () => {
           try {
             expect((json.children[0] as IExpressionNodeGroupJSON).children).toHaveLength(0);
           } catch(e) {
-            reject();
+            reject(e);
           }
-          finally {
-            resolve();
-          }
+          resolve();
         });
 
         nodeWrapper.vm.emitDelete();
@@ -120,11 +116,9 @@ describe("ExpressionBuilderRenderless", () => {
               .toStrictEqual(newCondition);
           }
           catch(e) {
-            reject();
+            reject(e);
           }
-          finally {
-            resolve();
-          }
+          resolve();
         });
 
         nodeWrapper.vm.update(newCondition);

@@ -9,7 +9,4 @@ export declare const actionTypes: {
     INSERT: string;
     SET: string;
     DELETE: string;
-    ADD_NEW: string;
-    INSERT_NEW: string;
-    SET_NEW: string;
 };

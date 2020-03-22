@@ -6,8 +6,10 @@ export declare const connectionTypes: {
 export declare const connectionTypesArray: string[];
 declare class ExpressionNodeBase implements IExpressionNodeBase {
     private _connectionType;
-    parentNode?: ExpressionNodeGroup;
+    private _parentNode?;
     constructor(connectionType?: string, parentNode?: ExpressionNodeGroup);
+    get parentNode(): ExpressionNodeGroup | undefined;
+    set parentNode(val: ExpressionNodeGroup | undefined);
     set connectionType(value: string);
     get connectionType(): string;
 }
@@ -15,17 +17,19 @@ declare class ExpressionNodeBase implements IExpressionNodeBase {
  * Node object, describing a condition
  */
 export declare class ExpressionNode extends ExpressionNodeBase implements IExpressionNode {
-    condition: ICondition;
-    constructor(condition: ICondition, connectionType?: string, parentNode?: ExpressionNodeGroup);
+    private _condition;
+    constructor(condition?: ICondition, connectionType?: string, parentNode?: ExpressionNodeGroup);
+    get condition(): ICondition;
+    set condition(condition: ICondition);
     /**
      * Exports the data as JSON
      */
     toJSON(): IExpressionNodeJSON;
     /**
      * Checks, whether an Object is a valid JSON instance to construct an ExpressionNode from
-     * @param object
+     * @param obj
      */
-    static isJSONInstance(object: object): object is IExpressionNodeJSON;
+    static isJSONInstance(obj: object): obj is IExpressionNodeJSON;
     /**
      * Constructs an ExpressionNode from a JSON representation
      * @param json

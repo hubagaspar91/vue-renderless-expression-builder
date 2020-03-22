@@ -110,9 +110,9 @@ export default class ExpressionBuilder {
     throw new Error("Invalid path: " + path.join(", "));
   }
 
-  contextTo(path: number[]): ExpressionBuilder {
+  contextTo(path: number[] = []): ExpressionBuilder {
     const newContext = ExpressionBuilder.seekContext(path, this.root);
-    this._context = newContext ? newContext : this._context;
+    this._context = newContext ? newContext : this.root;
     return this;
   }
 
