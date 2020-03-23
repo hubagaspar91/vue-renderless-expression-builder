@@ -27,6 +27,46 @@ function _createClass(Constructor, protoProps, staticProps) {
 
 var createClass = _createClass;
 
+function _defineProperty(obj, key, value) {
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+  } else {
+    obj[key] = value;
+  }
+
+  return obj;
+}
+
+var defineProperty = _defineProperty;
+
+var _errorTypeMessageFact;
+
+var errorTypes = {
+  MAX_DEPTH_REACHED: "maxDepthReached",
+  INVALID_INDEX_INSERT: "invalidIndexInsert",
+  INVALID_INDEX_DELETE: "invalidIndexDelete",
+  INVALID_CONTEXT_PATH: "invalidContextPath"
+};
+var errorTypeMessageFactoryMap = (_errorTypeMessageFact = {}, defineProperty(_errorTypeMessageFact, errorTypes.MAX_DEPTH_REACHED, function (maxDepth) {
+  return "Reached max depth: ".concat(maxDepth, ". Cannot nest conditions any further.");
+}), defineProperty(_errorTypeMessageFact, errorTypes.INVALID_INDEX_INSERT, function (index) {
+  return "Cannot insert node to non-existent index: ".concat(index);
+}), defineProperty(_errorTypeMessageFact, errorTypes.INVALID_INDEX_DELETE, function (index) {
+  return "Cannot delete node from non-existent index: ".concat(index);
+}), defineProperty(_errorTypeMessageFact, errorTypes.INVALID_CONTEXT_PATH, function (path) {
+  return "Invalid context path [".concat(path.join(", "), "], new context must be an ExpressionNodeGroup node");
+}), _errorTypeMessageFact);
+var handleError = function handleError(type, customHandler, factoryParam) {
+  var msg = errorTypeMessageFactoryMap[type](factoryParam);
+  if (customHandler) customHandler(type, msg);
+  console.error(msg);
+};
+
 function createCommonjsModule(fn, module) {
 	return module = { exports: {} }, fn(module, module.exports), module.exports;
 }
@@ -97,23 +137,6 @@ function _toConsumableArray(arr) {
 }
 
 var toConsumableArray = _toConsumableArray;
-
-function _defineProperty(obj, key, value) {
-  if (key in obj) {
-    Object.defineProperty(obj, key, {
-      value: value,
-      enumerable: true,
-      configurable: true,
-      writable: true
-    });
-  } else {
-    obj[key] = value;
-  }
-
-  return obj;
-}
-
-var defineProperty = _defineProperty;
 
 function ownKeys(object, enumerableOnly) {
   var keys = Object.keys(object);
@@ -290,15 +313,15 @@ var ExpressionNodeBase = /*#__PURE__*/function () {
 
   return ExpressionNodeBase;
 }();
+
 /**
  * Default condition factory for ExpressionNode
  */
 
-
 var defaultCondition = function defaultCondition() {
   return {
-    name: "",
-    value: ""
+    name: null,
+    value: null
   };
 };
 /**
@@ -362,6 +385,7 @@ var ExpressionNode = /*#__PURE__*/function (_ExpressionNodeBase) {
 
   return ExpressionNode;
 }(ExpressionNodeBase);
+
 /**
  * Factory fn, returning the default opts object for an ExpressionNodeGroup
  */
@@ -374,13 +398,13 @@ var defaultOpts = function defaultOpts() {
   };
 };
 
-var ExpressionNodeGroup = /*#__PURE__*/function (_ExpressionNodeBase2) {
-  inherits(ExpressionNodeGroup, _ExpressionNodeBase2);
+var ExpressionNodeGroup = /*#__PURE__*/function (_ExpressionNodeBase) {
+  inherits(ExpressionNodeGroup, _ExpressionNodeBase);
 
-  var _super2 = createSuper(ExpressionNodeGroup);
+  var _super = createSuper(ExpressionNodeGroup);
 
   function ExpressionNodeGroup() {
-    var _this2;
+    var _this;
 
     var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : defaultOpts();
     var connectionType = arguments.length > 1 ? arguments[1] : undefined;
@@ -388,15 +412,15 @@ var ExpressionNodeGroup = /*#__PURE__*/function (_ExpressionNodeBase2) {
 
     classCallCheck(this, ExpressionNodeGroup);
 
-    _this2 = _super2.call(this, connectionType, parentNode);
-    _this2._children = [];
-    _this2._maxDepth = 0;
-    _this2._currentDepth = 0;
+    _this = _super.call(this, connectionType, parentNode);
+    _this._children = [];
+    _this._maxDepth = 0;
+    _this._currentDepth = 0;
     opts = objectSpread2({}, defaultOpts(), {}, opts);
-    _this2.children = opts.children;
-    _this2.maxDepth = opts.maxDepth;
-    _this2.currentDepth = opts.currentDepth;
-    return _this2;
+    _this.children = opts.children;
+    _this.maxDepth = opts.maxDepth;
+    _this.currentDepth = opts.currentDepth;
+    return _this;
   }
 
   createClass(ExpressionNodeGroup, [{
@@ -406,8 +430,8 @@ var ExpressionNodeGroup = /*#__PURE__*/function (_ExpressionNodeBase2) {
      * Recursively creates a JSON representation of the expression tree
      */
     value: function toJSON() {
-      var addMAxDepth = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
-      return Object.assign(addMAxDepth ? {
+      var addMaxDepth = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+      return Object.assign(addMaxDepth ? {
         maxDepth: this._maxDepth
       } : {}, {
         connectionType: this.connectionType,
@@ -425,7 +449,9 @@ var ExpressionNodeGroup = /*#__PURE__*/function (_ExpressionNodeBase2) {
      * and the arrays are connected by OR
      * This means, the output can be interpreted simply as
      *
-     * flattened.find(flattened.map(group => group.every(validateNode)), n => n)
+     * flattened.some(flattened.map(group => group.every(validateNode)), n => n)
+     *
+     * It can be used for client side list filtering
      */
     value: function flatten() {
       var currentGroup = [];
@@ -461,11 +487,11 @@ var ExpressionNodeGroup = /*#__PURE__*/function (_ExpressionNodeBase2) {
   }, {
     key: "children",
     set: function set(value) {
-      var _this3 = this;
+      var _this2 = this;
 
       this._children = value.map(function (node) {
         if (isIExpressionNode(node)) {
-          node.parentNode = _this3;
+          node.parentNode = _this2;
           return node;
         } else throw new Error("Node must by ExpressionNode or ExpressionNodeGroup, got type: " + _typeof_1(node));
       });
@@ -524,11 +550,17 @@ var ExpressionNodeGroup = /*#__PURE__*/function (_ExpressionNodeBase2) {
 }(ExpressionNodeBase);
 
 var ExpressionBuilder = /*#__PURE__*/function () {
-  function ExpressionBuilder(root) {
+  function ExpressionBuilder(root, errorHandler) {
     classCallCheck(this, ExpressionBuilder);
 
-    this.root = root ? ExpressionNodeGroup.isJSONInstance(root) ? ExpressionNodeGroup.fromJSON(root) : root : new ExpressionNodeGroup();
+    this.root = root // if root is defined
+    ? ExpressionNodeGroup.isJSONInstance(root) // and is a json representation
+    ? ExpressionNodeGroup.fromJSON(root) // parse it
+    : root // else use root as root, as it's an ExpressionNodeGroup
+    : new ExpressionNodeGroup(); // else create an empty ExpressionNodeGroup
+
     this._context = this.root;
+    this.errorHandler = errorHandler;
   }
 
   createClass(ExpressionBuilder, [{
@@ -545,7 +577,11 @@ var ExpressionBuilder = /*#__PURE__*/function () {
         node.parentNode = this._context; // If group, check if will reach max depth
 
         if (node instanceof ExpressionNodeGroup) {
-          if (this._context.maxDepth > 0 && this._context.currentDepth === this._context.maxDepth - 2) throw new Error("Reached max depth, cannot add new child node.");
+          if (this.context.maxDepth > 0 && this.context.currentDepth >= this.context.maxDepth - 2) {
+            handleError(errorTypes.MAX_DEPTH_REACHED, this.errorHandler, this.context.maxDepth);
+            return this;
+          }
+
           node.maxDepth = this._context.maxDepth;
           node.currentDepth = this._context.currentDepth + 1;
           newContext = node;
@@ -556,7 +592,8 @@ var ExpressionBuilder = /*#__PURE__*/function () {
         return this;
       }
 
-      throw new Error("Invalid index " + index);
+      handleError(errorTypes.INVALID_INDEX_INSERT, this.errorHandler, index);
+      return this;
     }
   }, {
     key: "_insert",
@@ -591,13 +628,9 @@ var ExpressionBuilder = /*#__PURE__*/function () {
   }, {
     key: "delete",
     value: function _delete(index) {
-      if (this._validateIndex(index)) {
-        this._context.children.splice(index, 1);
-
-        return this;
-      }
-
-      throw new Error("Invalid index " + index);
+      if (index >= 0 && index <= this.context.children.length - 1) this._context.children.splice(index, 1);
+      handleError(errorTypes.INVALID_INDEX_DELETE, this.errorHandler, index);
+      return this;
     }
   }, {
     key: "contextUp",
@@ -619,11 +652,23 @@ var ExpressionBuilder = /*#__PURE__*/function () {
      */
 
   }, {
+    key: "seekContext",
+    value: function seekContext(path, root) {
+      var pathIndex = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+      var foundNode = root.children[path[pathIndex]];
+
+      if (foundNode && foundNode instanceof ExpressionNodeGroup) {
+        if (pathIndex == path.length - 1) return foundNode;else return this.seekContext(path, foundNode, pathIndex + 1);
+      }
+
+      if (path.length > 0) handleError(errorTypes.INVALID_CONTEXT_PATH, this.errorHandler, path);
+      return this.root; // return root if [] is the path
+    }
+  }, {
     key: "contextTo",
     value: function contextTo() {
       var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-      var newContext = ExpressionBuilder.seekContext(path, this.root);
-      this._context = newContext ? newContext : this.root;
+      this._context = this.seekContext(path, this.root);
       return this;
     }
   }, {
@@ -640,19 +685,6 @@ var ExpressionBuilder = /*#__PURE__*/function () {
     key: "context",
     get: function get() {
       return this._context;
-    }
-  }], [{
-    key: "seekContext",
-    value: function seekContext(path, root) {
-      var pathIndex = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
-      if (path.length == 0) return null;
-      var foundNode = root.children[path[pathIndex]];
-
-      if (foundNode && foundNode instanceof ExpressionNodeGroup) {
-        if (pathIndex == path.length - 1) return foundNode;else return ExpressionBuilder.seekContext(path, foundNode, pathIndex + 1);
-      }
-
-      throw new Error("Invalid path: " + path.join(", "));
     }
   }]);
 
@@ -684,8 +716,6 @@ var ExpressionBuilderRenderless = /*#__PURE__*/function (_Vue) {
   createClass(ExpressionBuilderRenderless, [{
     key: "created",
     value: function created() {
-      this.builderInstance = new ExpressionBuilder(this.json);
-      this.$emit("update-expression", this.root);
       this.eventHub.$on("input", this.handleInput);
     }
   }, {
@@ -696,43 +726,44 @@ var ExpressionBuilderRenderless = /*#__PURE__*/function (_Vue) {
 
       switch (body.action) {
         case actionTypes.SET:
-          this.builderInstance.contextTo(pathToParent).set(body.node, index);
+          this.value.contextTo(pathToParent).set(body.node, index);
           break;
 
         case actionTypes.ADD:
-          this.builderInstance.contextTo(body.path).add(body.node);
+          this.value.contextTo(body.path).add(body.node);
           break;
 
         case actionTypes.INSERT:
-          this.builderInstance.contextTo(pathToParent).insert(body.node, index);
+          this.value.contextTo(pathToParent).insert(body.node, index);
           break;
 
         case actionTypes.DELETE:
-          this.builderInstance.contextTo(pathToParent).delete(index);
+          this.value.contextTo(pathToParent).delete(index);
           break;
       }
 
-      this.$emit("update-expression", this.root);
+      this.value.contextToRoot();
+      this.$emit("input", this.value);
     }
   }, {
     key: "render",
     value: function render() {
-      return this.$scopedSlots.default({
-        eventHub: this.eventHub,
-        root: this.root
-      });
+      return null;
     }
   }, {
     key: "root",
     get: function get() {
-      return this.builderInstance.root;
+      return this.value.root;
     }
   }]);
 
   return ExpressionBuilderRenderless;
 }(Vue);
 
-__decorate([Prop()], ExpressionBuilderRenderless.prototype, "json", void 0);
+__decorate([Prop({
+  type: ExpressionBuilder,
+  required: true
+})], ExpressionBuilderRenderless.prototype, "value", void 0);
 
 ExpressionBuilderRenderless = __decorate([Component], ExpressionBuilderRenderless);
 var ExpressionBuilderRenderless$1 = ExpressionBuilderRenderless;
@@ -831,7 +862,7 @@ var ExpressionNodeRenderless = /*#__PURE__*/function (_ExpressionNodeBase) {
           return _this.toggleConnectionType(ExpressionNode.fromJSON);
         },
         updateCondition: this.update,
-        deleteNode: this.emitDelete
+        deleteSelf: this.emitDelete
       });
     }
   }]);
@@ -859,11 +890,6 @@ var ExpressionNodeGroupRenderless = /*#__PURE__*/function (_ExpressionNodeBase) 
   }
 
   createClass(ExpressionNodeGroupRenderless, [{
-    key: "set",
-    value: function set(node, index) {
-      this.emitInput(node, actionTypes.SET, index);
-    }
-  }, {
     key: "insert",
     value: function insert(node, index) {
       this.emitInput(node, actionTypes.INSERT, index);
@@ -874,46 +900,14 @@ var ExpressionNodeGroupRenderless = /*#__PURE__*/function (_ExpressionNodeBase) 
       this.emitInput(node, actionTypes.ADD);
     }
   }, {
-    key: "groupInsertionWrapper",
-    value: function groupInsertionWrapper(fn, index, connectionType) {
-      connectionType = connectionType == undefined ? index != undefined && this.node.children[index] ? this.node.children[index].connectionType : undefined : connectionType;
-      fn(new ExpressionNodeGroup(undefined, connectionType), index);
-    }
-  }, {
-    key: "nodeInsertionWrapper",
-    value: function nodeInsertionWrapper(fn, condition, index, connectionType) {
-      connectionType = connectionType == undefined ? index != undefined && this.node.children[index] ? this.node.children[index].connectionType : undefined : connectionType;
-      fn(new ExpressionNode(condition, connectionType), index);
-    }
-  }, {
-    key: "setNode",
-    value: function setNode(condition, index, connectionType) {
-      this.nodeInsertionWrapper(this.set, condition, index, connectionType);
-    }
-  }, {
-    key: "setGroup",
-    value: function setGroup(index, connectionType) {
-      this.groupInsertionWrapper(this.set, index, connectionType);
-    }
-  }, {
-    key: "insertNode",
-    value: function insertNode(condition, index, connectionType) {
-      this.nodeInsertionWrapper(this.insert, condition, index, connectionType);
-    }
-  }, {
-    key: "insertGroup",
-    value: function insertGroup(index, connectionType) {
-      this.groupInsertionWrapper(this.insert, index, connectionType);
-    }
-  }, {
     key: "addNode",
-    value: function addNode(condition, connectionType) {
-      this.nodeInsertionWrapper(this.add, condition, undefined, connectionType);
+    value: function addNode() {
+      this.add(new ExpressionNode());
     }
   }, {
     key: "addGroup",
-    value: function addGroup(connectionType) {
-      this.groupInsertionWrapper(this.add, undefined, connectionType);
+    value: function addGroup() {
+      this.add(new ExpressionNodeGroup());
     }
   }, {
     key: "render",
@@ -926,11 +920,8 @@ var ExpressionNodeGroupRenderless = /*#__PURE__*/function (_ExpressionNodeBase) 
         toggleConnectionType: function toggleConnectionType() {
           return _this.toggleConnectionType(ExpressionNodeGroup.fromJSON);
         },
-        deleteNode: this.emitDelete,
-        setNode: this.setNode,
-        setGroup: this.setGroup,
-        insertNode: this.insertNode,
-        insertGroup: this.insertGroup,
+        deleteSelf: this.emitDelete,
+        insert: this.insert,
         addNode: this.addNode,
         addGroup: this.addGroup
       });
@@ -957,7 +948,8 @@ var ImportedComponents = {
 var Core = {
   ExpressionBuilder: ExpressionBuilder,
   ExpressionNodeGroup: ExpressionNodeGroup,
-  ExpressionNode: ExpressionNode
+  ExpressionNode: ExpressionNode,
+  ErrorTypes: errorTypes
 };
 var Components = ImportedComponents;
 

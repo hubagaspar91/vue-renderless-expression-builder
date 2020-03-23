@@ -1,109 +1,19 @@
 import {
+  ICondition,
   IExpressionNode,
-  IExpressionNodeBase,
   IExpressionNodeGroupJSON,
-  IExpressionNodeGroupOpts,
-  IExpressionNodeJSON,
-  ICondition, isICondition, isIExpressionNode
+  IExpressionNodeGroupOpts, IExpressionNodeJSON,
+  isIExpressionNode
 } from "@/core/Interfaces";
-
-export const connectionTypes = {
-  AND: "and",
-  OR: "or"
-};
-
-export const connectionTypesArray = Object.values(connectionTypes);
-
-
-class ExpressionNodeBase implements IExpressionNodeBase {
-  private _connectionType: string = connectionTypes.AND;
-  private _parentNode?: ExpressionNodeGroup;
-
-  constructor(connectionType: string = connectionTypes.AND, parentNode?: ExpressionNodeGroup) {
-    this.connectionType = connectionType;
-    this.parentNode = parentNode;
-  }
-
-  get parentNode() {
-    return this._parentNode as ExpressionNodeGroup;
-  }
-
-  set parentNode(val: ExpressionNodeGroup | undefined) {
-    if (val instanceof ExpressionNodeGroup)
-      this._parentNode = val;
-    else if (val != undefined)
-      throw new Error("Parent must be undefined or ExpressionNodeGroup");
-  }
-
-  set connectionType(value: string) {
-    if (Object.values(connectionTypesArray).includes(value))
-      this._connectionType = value;
-    else
-      throw new Error("ConnectionType not supported, possible values: " + connectionTypesArray.join(", "));
-  }
-
-  get connectionType() {
-    return this._connectionType;
-  }
-
-}
-
-/**
- * Default condition factory for ExpressionNode
- */
-const defaultCondition = () => ({name: "", value: ""});
-
-
-/**
- * Node object, describing a condition
- */
-export class ExpressionNode extends ExpressionNodeBase implements IExpressionNode {
-  private _condition: ICondition = defaultCondition();
-
-  constructor(condition: ICondition = defaultCondition(),
-              connectionType?: string,
-              parentNode?: ExpressionNodeGroup) {
-    super(connectionType, parentNode);
-
-    // to check for type
-    this.condition = condition;
-  }
-
-  get condition() {
-    return this._condition;
-  }
-
-  set condition(condition) {
-    if (isICondition(condition)) this._condition = condition;
-    else throw new Error("Condition object must contain 'name' and 'value' keys.")
-  }
-
-  /**
-   * Exports the data as JSON
-   */
-  toJSON(): IExpressionNodeJSON {
-    return {
-      connectionType: this.connectionType,
-      condition: {...this.condition}
-    }
-  }
-
-  /**
-   * Constructs an ExpressionNode from a JSON representation
-   * @param json
-   * @param parentNode
-   */
-  static fromJSON(json: IExpressionNodeJSON, parentNode?: ExpressionNodeGroup): ExpressionNode {
-    return new ExpressionNode(json.condition, json.connectionType, parentNode)
-  }
-}
+import ExpressionNode from "@/core/ExpressionNode";
+import ExpressionNodeBase, {connectionTypes} from "@/core/ExpressionNodeBase";
 
 /**
  * Factory fn, returning the default opts object for an ExpressionNodeGroup
  */
 const defaultOpts = () => ({maxDepth: 0, currentDepth: 0, children: []});
 
-export class ExpressionNodeGroup extends ExpressionNodeBase implements IExpressionNode {
+export default class ExpressionNodeGroup extends ExpressionNodeBase implements IExpressionNode {
   private _children: IExpressionNode[] = [];
   private _maxDepth: number = 0;
   private _currentDepth: number = 0;
@@ -162,8 +72,8 @@ export class ExpressionNodeGroup extends ExpressionNodeBase implements IExpressi
   /**
    * Recursively creates a JSON representation of the expression tree
    */
-  toJSON(addMAxDepth = true): IExpressionNodeGroupJSON {
-    return Object.assign((addMAxDepth ? {maxDepth: this._maxDepth} : {}), {
+  toJSON(addMaxDepth = true): IExpressionNodeGroupJSON {
+    return Object.assign((addMaxDepth ? {maxDepth: this._maxDepth} : {}), {
       connectionType: this.connectionType,
       children: this._children.map(c => c.toJSON(false))
     });
@@ -195,7 +105,9 @@ export class ExpressionNodeGroup extends ExpressionNodeBase implements IExpressi
    * and the arrays are connected by OR
    * This means, the output can be interpreted simply as
    *
-   * flattened.find(flattened.map(group => group.every(validateNode)), n => n)
+   * flattened.some(flattened.map(group => group.every(validateNode)), n => n)
+   *
+   * It can be used for client side list filtering
    */
   flatten(): Array<ICondition[]> {
     let currentGroup: ICondition[] = [];

@@ -1,10 +1,11 @@
 import {mount} from "@vue/test-utils";
 import {testJSON} from "../utils";
-import {ExpressionNode, ExpressionNodeGroup} from "@/core/ExpressionNodes";
+import ExpressionNodeGroup from "@/core/ExpressionNodeGroup";
 import ExpressionNodeRenderless from "@/components/ExpressionNodeRenderless";
 import {Vue} from "vue-property-decorator";
 import {actionTypes, InputEventBody} from "@/components/Utils";
 import ExpressionNodeGroupRenderless from "@/components/ExpressionNodeGroupRenderless";
+import ExpressionNode from "@/core/ExpressionNode";
 
 
 describe("Renderless components", () => {
@@ -140,7 +141,10 @@ describe("Renderless components", () => {
           try {
             expect(body.action).toBe(actionType);
             if (!group) {
-              expect((body.node as ExpressionNode).condition).toStrictEqual(newCondition);
+              if (actionType !== actionTypes.ADD)
+                expect((body.node as ExpressionNode).condition).toStrictEqual(newCondition);
+              else
+                expect((body.node as ExpressionNode).condition).toStrictEqual({name: null, value: null});
               expect(body.node).toBeInstanceOf(ExpressionNode);
             }
             else expect(body.node).toBeInstanceOf(ExpressionNodeGroup);
@@ -171,35 +175,21 @@ describe("Renderless components", () => {
         });
         expect(wrapper0.vm.eventHub).toBe(eventHub0);
         switch (actionType) {
-          case actionTypes.SET:
-            if (group)
-              wrapper0.vm.setGroup((index as number));
-            else
-              wrapper0.vm.setNode(newCondition, (index as number));
-            break;
           case actionTypes.INSERT:
             if (group)
-              wrapper0.vm.insertGroup((index as number));
+              wrapper0.vm.insert(new ExpressionNodeGroup(), (index as number));
             else
-              wrapper0.vm.insertNode(newCondition, (index as number));
+              wrapper0.vm.insert(new ExpressionNode(newCondition), (index as number));
             break;
           case actionTypes.ADD:
             if (group)
               wrapper0.vm.addGroup();
             else
-              wrapper0.vm.addNode(newCondition);
+              wrapper0.vm.addNode();
             break;
         }
       })
     };
-
-    it("setNode - ExpressionNodeGroupRenderless", () => {
-      return testGroupAction(actionTypes.SET, false, 1);
-    });
-
-    it("setGroup - ExpressionNodeGroupRenderless", () => {
-      return testGroupAction(actionTypes.SET, true, 1);
-    });
 
     it("insertNode - ExpressionNodeGroupRenderless", () => {
       return testGroupAction(actionTypes.INSERT, false, 2);

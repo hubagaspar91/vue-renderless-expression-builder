@@ -1,19 +1,21 @@
 import {mount} from "@vue/test-utils";
 import ExpressionBuilderRenderless from "@/components/ExpressionBuilderRenderless";
-import {connectionTypes, ExpressionNode, ExpressionNodeGroup} from "@/core/ExpressionNodes";
+import ExpressionNode from "@/core/ExpressionNode";
+import ExpressionNodeGroup from "@/core/ExpressionNodeGroup";
 import {Vue} from "vue-property-decorator";
 import {testJSON} from "../utils";
 import ExpressionNodeRenderless from "@/components/ExpressionNodeRenderless";
 import {ICondition, IExpressionNodeGroupJSON, IExpressionNodeJSON} from "@/core/Interfaces";
 import ExpressionNodeGroupRenderless from "@/components/ExpressionNodeGroupRenderless";
 import {actionTypes} from "@/components/Utils";
+import ExpressionBuilder from "@/core/ExpressionBuilder";
 
 describe("ExpressionBuilderRenderless", () => {
 
   it("Create instance", () => {
     const wrapper = mount(ExpressionBuilderRenderless, {
-      scopedSlots: {
-        default: () => null
+      propsData: {
+        value: new ExpressionBuilder()
       }
     });
     expect(wrapper.vm.root).toBeInstanceOf(ExpressionNodeGroup);
@@ -24,10 +26,7 @@ describe("ExpressionBuilderRenderless", () => {
   it("Create instance from json", () => {
     const wrapper = mount(ExpressionBuilderRenderless, {
       propsData: {
-        json: testJSON
-      },
-      scopedSlots: {
-        default: () => null
+        value: new ExpressionBuilder(testJSON)
       }
     });
     expect(wrapper.vm.root).toBeInstanceOf(ExpressionNodeGroup);
@@ -42,10 +41,7 @@ describe("ExpressionBuilderRenderless", () => {
       // creating the renderless builder component
       const wrapper = mount(ExpressionBuilderRenderless, {
         propsData: {
-          json: testJSON
-        },
-        scopedSlots: {
-          default: () => null
+          value: new ExpressionBuilder(testJSON)
         }
       });
 
@@ -69,8 +65,8 @@ describe("ExpressionBuilderRenderless", () => {
 
         const {wrapper, nodeWrapper, selectedNode} = createBuilderAndNode();
 
-        wrapper.vm.$on("update-expression", (root: ExpressionNodeGroup) => {
-          const json = root.toJSON();
+        wrapper.vm.$on("input", (builder: ExpressionBuilder) => {
+          const json = builder.root.toJSON();
           try {
             expect((json.children[0] as IExpressionNodeGroupJSON).children[0].connectionType).not.toBe(selectedNode.connectionType);
             expect(((json.children[0] as IExpressionNodeGroupJSON).children[0] as IExpressionNodeJSON).condition)
@@ -90,8 +86,8 @@ describe("ExpressionBuilderRenderless", () => {
       return new Promise((resolve, reject) => {
         const {wrapper, nodeWrapper} = createBuilderAndNode();
 
-        wrapper.vm.$on("update-expression", (root: ExpressionNodeGroup) => {
-          const json = root.toJSON();
+        wrapper.vm.$on("input", (builder: ExpressionBuilder) => {
+          const json = builder.root.toJSON();
           try {
             expect((json.children[0] as IExpressionNodeGroupJSON).children).toHaveLength(0);
           } catch(e) {
@@ -110,8 +106,8 @@ describe("ExpressionBuilderRenderless", () => {
 
         const newCondition = {name: "test", value: 200};
 
-        wrapper.vm.$on("update-expression", (root: ExpressionNodeGroup) => {
-          const json = root.toJSON();
+        wrapper.vm.$on("input", (builder: ExpressionBuilder) => {
+          const json = builder.root.toJSON();
           try {
             expect(((json.children[0] as IExpressionNodeGroupJSON).children[0] as IExpressionNodeJSON).condition)
               .not.toStrictEqual((selectedNode as ExpressionNode).condition);
@@ -132,10 +128,7 @@ describe("ExpressionBuilderRenderless", () => {
       // creating the renderless builder component
       const wrapper = mount(ExpressionBuilderRenderless, {
         propsData: {
-          json: testJSON
-        },
-        scopedSlots: {
-          default: () => null
+          value: new ExpressionBuilder(testJSON)
         }
       });
 
@@ -161,16 +154,18 @@ describe("ExpressionBuilderRenderless", () => {
 
         const newCondition: ICondition = {name: "test", value: 500};
 
-        wrapper.vm.$on("update-expression", (root: ExpressionNodeGroup) => {
-          const json = root.toJSON();
+        wrapper.vm.$on("input", (builder: ExpressionBuilder) => {
+          const json = builder.root.toJSON();
           const parentJson = json.children[0] as IExpressionNodeGroupJSON;
           const newNodeJson = parentJson.children[index != undefined ? index : parentJson.children.length-1];
           try {
             if (group) {
               expect("children" in newNodeJson).toBe(true);
-              expect(newNodeJson.connectionType).toBe(connectionTypes.OR);
             } else {
-              expect((newNodeJson as IExpressionNodeJSON).condition).toStrictEqual(newCondition);
+              if (actionType !== actionTypes.ADD)
+                expect((newNodeJson as IExpressionNodeJSON).condition).toStrictEqual(newCondition);
+              else
+                expect((newNodeJson as IExpressionNodeJSON).condition).toStrictEqual({name: null, value: null})
             }
           } catch(e) {
             reject(e);
@@ -179,26 +174,17 @@ describe("ExpressionBuilderRenderless", () => {
         });
 
         switch (actionType) {
-          case actionTypes.SET:
-            group ? groupWrapper.vm.setGroup(index as number, connectionTypes.OR) : groupWrapper.vm.setNode(newCondition, index as number);
-            break;
           case actionTypes.INSERT:
-            group ? groupWrapper.vm.insertGroup(index as number, connectionTypes.OR) : groupWrapper.vm.insertNode(newCondition, index as number);
+            group ?
+              groupWrapper.vm.insert(new ExpressionNodeGroup(), (index as number))
+              : groupWrapper.vm.insert(new ExpressionNode(newCondition), index as number);
             break;
           case actionTypes.ADD:
-            group ? groupWrapper.vm.addGroup(connectionTypes.OR) : groupWrapper.vm.addNode(newCondition);
+            group ? groupWrapper.vm.addGroup() : groupWrapper.vm.addNode();
         }
 
       });
     };
-
-    it("setNode - from ExpressionNodeGroupRenderless",() => {
-      return testActionOnGroup(actionTypes.SET, false, 0);
-    });
-
-    it("setGroup - from ExpressionNodeGroupRenderless",() => {
-      return testActionOnGroup(actionTypes.SET, true, 0);
-    });
 
     it("insertNode - from ExpressionNodeGroupRenderless",() => {
       return testActionOnGroup(actionTypes.INSERT, false, 0);

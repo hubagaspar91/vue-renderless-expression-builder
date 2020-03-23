@@ -1,12 +1,11 @@
 import { Component, Prop } from 'vue-property-decorator';
-import * as Core from "@/core/ExpressionNodes";
 import ExpressionNodeBase from "@/components/ExpressionNodeBase";
-import {ExpressionNode} from "@/core/ExpressionNodes";
+import ExpressionNode from "@/core/ExpressionNode";
 import {ICondition} from "@/core/Interfaces";
 
 @Component
 export default class ExpressionNodeRenderless extends ExpressionNodeBase {
-  @Prop({required: true, type: Core.ExpressionNode}) protected node!: Core.ExpressionNode;
+  @Prop({required: true, type: ExpressionNode}) protected node!: ExpressionNode;
 
   update(condition: ICondition) {
     this.emitInput(new ExpressionNode(condition, this.node.connectionType));
@@ -16,9 +15,9 @@ export default class ExpressionNodeRenderless extends ExpressionNodeBase {
     return this.$scopedSlots.default!({
       node: this.node,
       index: this.index,
-      toggleConnectionType: () => this.toggleConnectionType(Core.ExpressionNode.fromJSON),
+      toggleConnectionType: () => this.toggleConnectionType(ExpressionNode.fromJSON),
       updateCondition: this.update,
-      deleteNode: this.emitDelete
+      deleteSelf: this.emitDelete
     }) as any
   }
 }

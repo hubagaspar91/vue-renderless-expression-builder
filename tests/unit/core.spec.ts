@@ -1,12 +1,19 @@
 import ExpressionBuilder from "@/core/ExpressionBuilder";
-import {connectionTypes, ExpressionNode, ExpressionNodeGroup} from "@/core/ExpressionNodes";
+import {connectionTypes} from "@/core/ExpressionNodeBase";
+import ExpressionNode from "@/core/ExpressionNode";
+import ExpressionNodeGroup from "@/core/ExpressionNodeGroup";
 import {testJSON} from "../utils";
+
+import errorTypes, {handleError} from "@/core/Errors";
+
+jest.mock("@/core/Errors");
 
 function expectDefaults(group: ExpressionNodeGroup) {
   expect(group.children).toHaveLength(0);
   expect(group.connectionType).toBe(connectionTypes.AND);
   expect(group.maxDepth).toBe(0);
 }
+
 describe("ExpressionBuilder - create and export instance", () => {
 
   it("With defaults", () => {
@@ -30,20 +37,20 @@ describe("ExpressionBuilder - create and export instance", () => {
     expect(eb.root.children).toHaveLength(2);
 
     // 0 child
-    const child0 = <ExpressionNodeGroup> eb.root.children[0];
+    const child0 = <ExpressionNodeGroup>eb.root.children[0];
     expect(child0.connectionType).toBe(connectionTypes.OR);
     expect(child0.maxDepth).toBe(5);
     expect(child0.currentDepth).toBe(1);
     expect(child0.children).toHaveLength(1);
 
     // 0:0 child
-    const child0_0 = <ExpressionNode> child0.children[0];
+    const child0_0 = <ExpressionNode>child0.children[0];
     expect(child0_0.connectionType).toBe(connectionTypes.AND);
     expect(child0_0.condition.name).toBe("test");
     expect(child0_0.condition.value).toBe(1);
 
     // 0:1 child
-    const child1 = <ExpressionNode> eb.root.children[1];
+    const child1 = <ExpressionNode>eb.root.children[1];
     expect(child1.connectionType).toBe(connectionTypes.OR);
     expect(child1.condition.name).toBe("test");
     expect(child1.condition.value).toBe(2);
@@ -120,37 +127,36 @@ describe("ExpressionBuilder - testing fluent api", () => {
     eb.contextTo([0, 1, 0]);
     expect(eb.context).toBe(group3);
     eb.add(node0);
-    // cant switch to ExpressionNode as context
-    expect(() => eb.contextTo([0, 1, 0, 0])).toThrowError(/Invalid path/);
-    // cant switch to non-exitent path
-    expect(() => eb.contextTo([0, 1, 0, 1])).toThrowError(/Invalid path/);
 
-    // contextTo to default to root
-    eb.contextTo([]);
-    expect(eb.context).toBe(eb.root);
-    eb.contextTo([0, 1, 0]);
-    expect(eb.context).toBe(group3);
-    eb.contextTo();
-    expect(eb.context).toBe(eb.root);
+    // cant switch to ExpressionNode as context
+    eb.contextTo([0, 1, 0, 0]);
+    expect(handleError).toHaveBeenCalledWith(errorTypes.INVALID_CONTEXT_PATH, undefined, [0, 1, 0, 0]);
+    // cant switch to non-exitent path
+    eb.contextTo([0, 1, 0, 1]);
+    expect(handleError).toHaveBeenCalledWith(errorTypes.INVALID_CONTEXT_PATH, undefined, [0, 1, 0, 1]);
+
   });
 });
 
 describe("ExpressionBuilder - testing restrictions, exceptions", () => {
   it("Cannot be nested below maxDepth", () => {
     const eb = new ExpressionBuilder(testJSON);
-    expect(() => eb
+    eb.add(new ExpressionNodeGroup())
       .add(new ExpressionNodeGroup())
       .add(new ExpressionNodeGroup())
-      .add(new ExpressionNodeGroup())
-      .add(new ExpressionNodeGroup())).toThrowError(/Reached max depth/);
+      .add(new ExpressionNodeGroup());
+    expect(handleError).toHaveBeenCalledWith(errorTypes.MAX_DEPTH_REACHED, undefined, 5);
   });
 
   it("Cannot insert, set and delete non-existent index", () => {
     const eb = new ExpressionBuilder(testJSON);
     eb.add(new ExpressionNodeGroup());
-    expect(() => eb.insert(new ExpressionNode(), 2)).toThrowError(/Invalid index/);
-    expect(() => eb.set(new ExpressionNode(), 2)).toThrowError(/Invalid index/);
-    expect(() => eb.delete(2)).toThrowError(/Invalid index/);
+    eb.insert(new ExpressionNode(), 2);
+    expect(handleError).toHaveBeenCalledWith(errorTypes.INVALID_INDEX_INSERT, undefined, 2);
+    eb.set(new ExpressionNode(), 3);
+    expect(handleError).toHaveBeenCalledWith(errorTypes.INVALID_INDEX_INSERT, undefined, 3);
+    eb.delete(4);
+    expect(handleError).toHaveBeenCalledWith(errorTypes.INVALID_INDEX_DELETE, undefined, 4);
   });
 
   it("Tests maxDepth, currentDepth constraints", () => {
@@ -225,7 +231,6 @@ describe("ExpressionBuilder - testing flatten method", () => {
     expect(flattened[1][0]).toStrictEqual(nodeCond1);
     expect(flattened[1][1]).toStrictEqual(nodeCond2);
   });
-
 
 
   it("node0 and (node1 or node2)g0", () => {

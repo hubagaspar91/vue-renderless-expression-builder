@@ -1,8 +1,8 @@
-import {ExpressionNodeGroup} from "@/core/ExpressionNodes";
-
 /**
  * Interface for {ExpressionNodeBase}
  */
+import ExpressionNodeGroup from "@/core/ExpressionNodeGroup";
+
 export interface IExpressionNodeBase {
     connectionType: string
     parentNode?: ExpressionNodeGroup
@@ -23,7 +23,7 @@ export function isIExpressionNode(obj: Object): obj is IExpressionNode {
  * Condition object schema for {ExpressionNode}
  */
 export interface ICondition {
-    name: string,
+    name: string | null,
     value: any
 }
 

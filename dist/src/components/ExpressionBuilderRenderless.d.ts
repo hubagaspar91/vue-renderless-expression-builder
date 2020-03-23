@@ -1,14 +1,12 @@
 import { Vue } from 'vue-property-decorator';
-import { IExpressionNodeGroupJSON } from "@/core/Interfaces";
 import ExpressionBuilder from "@/core/ExpressionBuilder";
 import { InputEventBody } from "@/components/Utils";
-import { ExpressionNodeGroup } from "@/core/ExpressionNodes";
+import ExpressionNodeGroup from "@/core/ExpressionNodeGroup";
 export default class ExpressionBuilderRenderless extends Vue {
-    protected json?: IExpressionNodeGroupJSON;
+    protected value: ExpressionBuilder;
     eventHub: Vue;
-    protected builderInstance: ExpressionBuilder;
     created(): void;
     handleInput(body: InputEventBody): void;
     get root(): ExpressionNodeGroup;
-    render(): any;
+    render(): null;
 }

@@ -50,7 +50,7 @@ export declare class ExpressionNodeGroup extends ExpressionNodeBase implements I
     /**
      * Recursively creates a JSON representation of the expression tree
      */
-    toJSON(addMAxDepth?: boolean): IExpressionNodeGroupJSON;
+    toJSON(addMaxDepth?: boolean): IExpressionNodeGroupJSON;
     static isJSONInstance(object: object): object is IExpressionNodeGroupJSON;
     static fromJSON(json: IExpressionNodeGroupJSON, parentNode?: ExpressionNodeGroup, currentDepth?: number): ExpressionNodeGroup;
     /**

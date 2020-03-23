@@ -1,6 +1,6 @@
 import {Component, Prop, Vue} from "vue-property-decorator";
 import {IExpressionNode} from "@/core/Interfaces";
-import {connectionTypes} from "@/core/ExpressionNodes";
+import {connectionTypes} from "@/core/ExpressionNodeBase";
 import {actionTypes, InputEventBody} from "@/components/Utils";
 
 /**

@@ -1,9 +1,10 @@
-import { ExpressionNodeGroup } from "@/core/ExpressionNodes";
 import { ICondition, IExpressionNode, IExpressionNodeGroupJSON } from "@/core/Interfaces";
+import ExpressionNodeGroup from "@/core/ExpressionNodeGroup";
 export default class ExpressionBuilder {
     readonly root: ExpressionNodeGroup;
+    private readonly errorHandler?;
     private _context;
-    constructor(root?: ExpressionNodeGroup | IExpressionNodeGroupJSON);
+    constructor(root?: ExpressionNodeGroup | IExpressionNodeGroupJSON, errorHandler?: Function);
     get context(): ExpressionNodeGroup;
     private _validateIndex;
     private _fluentInsertion;
@@ -22,7 +23,7 @@ export default class ExpressionBuilder {
      * @param root
      * @param pathIndex
      */
-    private static seekContext;
+    private seekContext;
     contextTo(path?: number[]): ExpressionBuilder;
     toJSON(): IExpressionNodeGroupJSON;
     flatten(): Array<ICondition[]>;

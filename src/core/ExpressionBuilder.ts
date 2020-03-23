@@ -1,17 +1,20 @@
-import {ExpressionNodeGroup} from "@/core/ExpressionNodes";
 import {ICondition, IExpressionNode, IExpressionNodeGroupJSON} from "@/core/Interfaces";
+import errorTypes, {handleError} from "@/core/Errors";
+import ExpressionNodeGroup from "@/core/ExpressionNodeGroup";
 
 export default class ExpressionBuilder {
   public readonly root: ExpressionNodeGroup;
+  private readonly errorHandler?: Function;
   private _context: ExpressionNodeGroup;
 
-  constructor(root?: ExpressionNodeGroup | IExpressionNodeGroupJSON) {
-    this.root = root
-      ? ExpressionNodeGroup.isJSONInstance(root)
-        ? ExpressionNodeGroup.fromJSON(root)
-        : root
-      : new ExpressionNodeGroup();
+  constructor(root?: ExpressionNodeGroup | IExpressionNodeGroupJSON, errorHandler?: Function) {
+    this.root = root  // if root is defined
+      ? ExpressionNodeGroup.isJSONInstance(root)  // and is a json representation
+        ? ExpressionNodeGroup.fromJSON(root)  // parse it
+        : root  // else use root as root, as it's an ExpressionNodeGroup
+      : new ExpressionNodeGroup();  // else create an empty ExpressionNodeGroup
     this._context = this.root;
+    this.errorHandler = errorHandler;
   }
 
   get context() {
@@ -30,8 +33,10 @@ export default class ExpressionBuilder {
       node.parentNode = this._context;
       // If group, check if will reach max depth
       if (node instanceof ExpressionNodeGroup) {
-        if (this._context.maxDepth > 0 && this._context.currentDepth === (this._context.maxDepth - 2))
-          throw new Error("Reached max depth, cannot add new child node.");
+        if (this.context.maxDepth > 0 && this.context.currentDepth >= (this.context.maxDepth - 2)) {
+          handleError(errorTypes.MAX_DEPTH_REACHED, this.errorHandler, this.context.maxDepth);
+          return this;
+        }
         node.maxDepth = this._context.maxDepth;
         node.currentDepth = this._context.currentDepth + 1;
         newContext = node;
@@ -40,7 +45,8 @@ export default class ExpressionBuilder {
       this._context = newContext ? newContext : this._context;
       return this;
     }
-    throw new Error("Invalid index " + index);
+    handleError(errorTypes.INVALID_INDEX_INSERT, this.errorHandler, index);
+    return this;
   }
 
   private _insert(node: IExpressionNode, index: number): void {
@@ -68,11 +74,10 @@ export default class ExpressionBuilder {
   }
 
   delete(index: number) {
-    if (this._validateIndex(index)) {
+    if (index >= 0 && index <= this.context.children.length-1)
       this._context.children.splice(index, 1);
-      return this;
-    }
-    throw new Error("Invalid index " + index);
+    handleError(errorTypes.INVALID_INDEX_DELETE, this.errorHandler, index);
+    return this;
   }
 
   contextUp() {
@@ -92,21 +97,21 @@ export default class ExpressionBuilder {
    * @param root
    * @param pathIndex
    */
-  private static seekContext(path: number[], root: ExpressionNodeGroup, pathIndex = 0): ExpressionNodeGroup | null {
-    if (path.length == 0) return null;
+  private seekContext(path: number[], root: ExpressionNodeGroup, pathIndex = 0): ExpressionNodeGroup {
     const foundNode = root.children[path[pathIndex]];
     if (foundNode && foundNode instanceof ExpressionNodeGroup) {
       if (pathIndex == path.length - 1)
         return foundNode;
       else
-        return ExpressionBuilder.seekContext(path, foundNode, pathIndex + 1);
+        return this.seekContext(path, foundNode, pathIndex + 1);
     }
-    throw new Error("Invalid path: " + path.join(", "));
+    if (path.length > 0)
+      handleError(errorTypes.INVALID_CONTEXT_PATH, this.errorHandler, path);
+    return this.root;  // return root if [] is the path
   }
 
   contextTo(path: number[] = []): ExpressionBuilder {
-    const newContext = ExpressionBuilder.seekContext(path, this.root);
-    this._context = newContext ? newContext : this.root;
+    this._context = this.seekContext(path, this.root);
     return this;
   }
 

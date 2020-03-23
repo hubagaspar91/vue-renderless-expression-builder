@@ -1,18 +1,11 @@
-import * as Core from "@/core/ExpressionNodes";
 import ExpressionNodeBase from "@/components/ExpressionNodeBase";
-import { ICondition } from "@/core/Interfaces";
+import { IExpressionNode } from "@/core/Interfaces";
+import ExpressionNodeGroup from "@/core/ExpressionNodeGroup";
 export default class ExpressionNodeGroupRenderless extends ExpressionNodeBase {
-    protected node: Core.ExpressionNodeGroup;
-    private set;
-    private insert;
+    protected node: ExpressionNodeGroup;
+    insert(node: IExpressionNode, index: number): void;
     private add;
-    private groupInsertionWrapper;
-    private nodeInsertionWrapper;
-    setNode(condition: ICondition, index: number, connectionType?: string): void;
-    setGroup(index: number, connectionType?: string): void;
-    insertNode(condition: ICondition, index: number, connectionType?: string): void;
-    insertGroup(index: number, connectionType?: string): void;
-    addNode(condition: ICondition, connectionType?: string): void;
-    addGroup(connectionType?: string): void;
+    addNode(): void;
+    addGroup(): void;
     render(): any;
 }
