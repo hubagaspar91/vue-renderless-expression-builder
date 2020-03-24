@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1584990945129" clover="3.2.0">
-  <project timestamp="1584990945129" name="All files">
-    <metrics statements="216" coveredstatements="204" conditionals="103" coveredconditionals="90" methods="72" coveredmethods="67" elements="391" coveredelements="361" complexity="0" loc="216" ncloc="216" packages="3" files="12" classes="12"/>
+<coverage generated="1585056643820" clover="3.2.0">
+  <project timestamp="1585056643820" name="All files">
+    <metrics statements="202" coveredstatements="192" conditionals="92" coveredconditionals="81" methods="73" coveredmethods="70" elements="367" coveredelements="343" complexity="0" loc="202" ncloc="202" packages="3" files="12" classes="12"/>
     <package name="src.components">
-      <metrics statements="67" coveredstatements="64" conditionals="13" coveredconditionals="12" methods="19" coveredmethods="17"/>
+      <metrics statements="64" coveredstatements="62" conditionals="13" coveredconditionals="11" methods="17" coveredmethods="17"/>
       <file name="ExpressionBuilderRenderless.ts" path="/Users/huba/repos/vue-expression-builder/src/components/ExpressionBuilderRenderless.ts">
         <metrics statements="22" coveredstatements="22" conditionals="4" coveredconditionals="4" methods="5" coveredmethods="5"/>
         <line num="1" count="1" type="stmt"/>
@@ -11,52 +11,46 @@
         <line num="3" count="1" type="stmt"/>
         <line num="7" count="2" type="stmt"/>
         <line num="8" count="1" type="stmt"/>
-        <line num="10" count="9" type="stmt"/>
-        <line num="14" count="9" type="stmt"/>
-        <line num="18" count="7" type="stmt"/>
+        <line num="9" count="9" type="stmt"/>
+        <line num="12" count="9" type="stmt"/>
+        <line num="16" count="7" type="stmt"/>
+        <line num="17" count="7" type="stmt"/>
         <line num="19" count="7" type="stmt"/>
-        <line num="21" count="7" type="stmt"/>
-        <line num="23" count="2" type="stmt"/>
+        <line num="21" count="2" type="stmt"/>
+        <line num="22" count="2" type="stmt"/>
         <line num="24" count="2" type="stmt"/>
-        <line num="26" count="2" type="stmt"/>
+        <line num="25" count="2" type="stmt"/>
         <line num="27" count="2" type="stmt"/>
-        <line num="29" count="2" type="stmt"/>
-        <line num="30" count="2" type="stmt"/>
-        <line num="32" count="1" type="stmt"/>
-        <line num="33" count="1" type="stmt"/>
+        <line num="28" count="2" type="stmt"/>
+        <line num="30" count="1" type="stmt"/>
+        <line num="31" count="1" type="stmt"/>
+        <line num="34" count="7" type="stmt"/>
         <line num="36" count="7" type="stmt"/>
-        <line num="38" count="7" type="stmt"/>
-        <line num="42" count="9" type="stmt"/>
-        <line num="46" count="9" type="stmt"/>
+        <line num="40" count="9" type="stmt"/>
+        <line num="44" count="9" type="stmt"/>
       </file>
       <file name="ExpressionNodeBase.ts" path="/Users/huba/repos/vue-expression-builder/src/components/ExpressionNodeBase.ts">
-        <metrics statements="23" coveredstatements="22" conditionals="9" coveredconditionals="8" methods="5" coveredmethods="5"/>
+        <metrics statements="17" coveredstatements="16" conditionals="7" coveredconditionals="6" methods="4" coveredmethods="4"/>
         <line num="1" count="2" type="stmt"/>
         <line num="3" count="2" type="stmt"/>
-        <line num="4" count="2" type="stmt"/>
-        <line num="10" count="2" type="stmt"/>
-        <line num="11" count="36" type="cond" truecount="2" falsecount="0"/>
-        <line num="12" count="15" type="stmt"/>
-        <line num="14" count="21" type="stmt"/>
-        <line num="18" count="4" type="stmt"/>
+        <line num="9" count="2" type="stmt"/>
+        <line num="10" count="32" type="cond" truecount="2" falsecount="0"/>
+        <line num="11" count="14" type="stmt"/>
+        <line num="13" count="18" type="stmt"/>
+        <line num="17" count="4" type="stmt"/>
+        <line num="18" count="2" type="stmt"/>
         <line num="19" count="2" type="stmt"/>
-        <line num="20" count="2" type="stmt"/>
-        <line num="23" count="15" type="stmt"/>
-        <line num="24" count="15" type="cond" truecount="2" falsecount="0"/>
-        <line num="25" count="4" type="stmt"/>
-        <line num="26" count="15" type="stmt"/>
-        <line num="30" count="3" type="stmt"/>
-        <line num="31" count="3" type="cond" truecount="2" falsecount="0"/>
-        <line num="32" count="2" type="stmt"/>
-        <line num="34" count="1" type="stmt"/>
-        <line num="35" count="3" type="stmt"/>
-        <line num="39" count="2" type="stmt"/>
-        <line num="43" count="15" type="cond" truecount="1" falsecount="1"/>
-        <line num="44" count="15" type="stmt"/>
-        <line num="46" count="0" type="stmt"/>
+        <line num="22" count="14" type="stmt"/>
+        <line num="23" count="14" type="cond" truecount="2" falsecount="0"/>
+        <line num="24" count="4" type="stmt"/>
+        <line num="25" count="14" type="stmt"/>
+        <line num="29" count="2" type="stmt"/>
+        <line num="33" count="14" type="cond" truecount="1" falsecount="1"/>
+        <line num="34" count="14" type="stmt"/>
+        <line num="36" count="0" type="stmt"/>
       </file>
       <file name="ExpressionNodeGroupRenderless.ts" path="/Users/huba/repos/vue-expression-builder/src/components/ExpressionNodeGroupRenderless.ts">
-        <metrics statements="13" coveredstatements="12" conditionals="0" coveredconditionals="0" methods="6" coveredmethods="5"/>
+        <metrics statements="17" coveredstatements="16" conditionals="2" coveredconditionals="1" methods="6" coveredmethods="6"/>
         <line num="1" count="2" type="stmt"/>
         <line num="2" count="2" type="stmt"/>
         <line num="3" count="2" type="stmt"/>
@@ -68,19 +62,22 @@
         <line num="17" count="4" type="stmt"/>
         <line num="21" count="1" type="stmt"/>
         <line num="25" count="3" type="stmt"/>
-        <line num="29" count="8" type="stmt"/>
-        <line num="32" count="0" type="stmt"/>
+        <line num="29" count="2" type="stmt"/>
+        <line num="30" count="2" type="cond" truecount="1" falsecount="1"/>
+        <line num="31" count="0" type="stmt"/>
+        <line num="33" count="2" type="stmt"/>
+        <line num="34" count="2" type="stmt"/>
+        <line num="38" count="10" type="stmt"/>
       </file>
       <file name="ExpressionNodeRenderless.ts" path="/Users/huba/repos/vue-expression-builder/src/components/ExpressionNodeRenderless.ts">
-        <metrics statements="8" coveredstatements="7" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="2"/>
+        <metrics statements="7" coveredstatements="7" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
         <line num="1" count="2" type="stmt"/>
         <line num="2" count="2" type="stmt"/>
         <line num="3" count="2" type="stmt"/>
         <line num="7" count="4" type="stmt"/>
         <line num="8" count="2" type="stmt"/>
         <line num="11" count="2" type="stmt"/>
-        <line num="15" count="7" type="stmt"/>
-        <line num="18" count="0" type="stmt"/>
+        <line num="15" count="4" type="stmt"/>
       </file>
       <file name="Utils.ts" path="/Users/huba/repos/vue-expression-builder/src/components/Utils.ts">
         <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
@@ -88,7 +85,7 @@
       </file>
     </package>
     <package name="src.core">
-      <metrics statements="148" coveredstatements="139" conditionals="90" coveredconditionals="78" methods="53" coveredmethods="50"/>
+      <metrics statements="137" coveredstatements="129" conditionals="79" coveredconditionals="70" methods="56" coveredmethods="53"/>
       <file name="Errors.ts" path="/Users/huba/repos/vue-expression-builder/src/core/Errors.ts">
         <metrics statements="12" coveredstatements="8" conditionals="2" coveredconditionals="1" methods="5" coveredmethods="2"/>
         <line num="1" count="2" type="stmt"/>
@@ -105,32 +102,32 @@
         <line num="27" count="2" type="stmt"/>
       </file>
       <file name="ExpressionBuilder.ts" path="/Users/huba/repos/vue-expression-builder/src/core/ExpressionBuilder.ts">
-        <metrics statements="48" coveredstatements="48" conditionals="33" coveredconditionals="29" methods="17" coveredmethods="17"/>
+        <metrics statements="48" coveredstatements="48" conditionals="33" coveredconditionals="30" methods="17" coveredmethods="17"/>
         <line num="2" count="2" type="stmt"/>
         <line num="3" count="2" type="stmt"/>
         <line num="11" count="25" type="stmt"/>
         <line num="16" count="25" type="stmt"/>
         <line num="17" count="25" type="stmt"/>
-        <line num="21" count="62" type="stmt"/>
-        <line num="25" count="55" type="cond" truecount="3" falsecount="0"/>
-        <line num="32" count="55" type="cond" truecount="2" falsecount="0"/>
-        <line num="33" count="53" type="stmt"/>
-        <line num="35" count="53" type="cond" truecount="2" falsecount="0"/>
-        <line num="36" count="21" type="cond" truecount="4" falsecount="0"/>
+        <line num="21" count="66" type="stmt"/>
+        <line num="25" count="56" type="cond" truecount="3" falsecount="0"/>
+        <line num="32" count="56" type="cond" truecount="2" falsecount="0"/>
+        <line num="33" count="54" type="stmt"/>
+        <line num="35" count="54" type="cond" truecount="2" falsecount="0"/>
+        <line num="36" count="23" type="cond" truecount="4" falsecount="0"/>
         <line num="37" count="1" type="stmt"/>
         <line num="38" count="1" type="stmt"/>
-        <line num="40" count="20" type="stmt"/>
-        <line num="41" count="20" type="stmt"/>
-        <line num="42" count="20" type="stmt"/>
-        <line num="44" count="52" type="stmt"/>
-        <line num="45" count="52" type="cond" truecount="2" falsecount="0"/>
-        <line num="46" count="52" type="stmt"/>
+        <line num="40" count="22" type="stmt"/>
+        <line num="41" count="22" type="stmt"/>
+        <line num="42" count="22" type="stmt"/>
+        <line num="44" count="53" type="stmt"/>
+        <line num="45" count="53" type="cond" truecount="2" falsecount="0"/>
+        <line num="46" count="53" type="stmt"/>
         <line num="48" count="2" type="stmt"/>
         <line num="49" count="2" type="stmt"/>
         <line num="53" count="4" type="stmt"/>
         <line num="57" count="5" type="stmt"/>
-        <line num="61" count="44" type="stmt"/>
-        <line num="65" count="45" type="stmt"/>
+        <line num="61" count="45" type="stmt"/>
+        <line num="65" count="46" type="stmt"/>
         <line num="69" count="4" type="stmt"/>
         <line num="73" count="5" type="stmt"/>
         <line num="77" count="3" type="cond" truecount="4" falsecount="0"/>
@@ -144,12 +141,12 @@
         <line num="91" count="8" type="stmt"/>
         <line num="101" count="18" type="stmt"/>
         <line num="102" count="18" type="cond" truecount="4" falsecount="0"/>
-        <line num="103" count="16" type="cond" truecount="2" falsecount="0"/>
-        <line num="104" count="8" type="stmt"/>
+        <line num="103" count="15" type="cond" truecount="2" falsecount="0"/>
+        <line num="104" count="7" type="stmt"/>
         <line num="106" count="8" type="stmt"/>
-        <line num="108" count="2" type="cond" truecount="1" falsecount="1"/>
+        <line num="108" count="3" type="cond" truecount="2" falsecount="0"/>
         <line num="109" count="2" type="stmt"/>
-        <line num="110" count="2" type="stmt"/>
+        <line num="110" count="3" type="stmt"/>
         <line num="114" count="10" type="stmt"/>
         <line num="115" count="10" type="stmt"/>
         <line num="119" count="1" type="stmt"/>
@@ -159,101 +156,90 @@
         <metrics statements="11" coveredstatements="10" conditionals="3" coveredconditionals="2" methods="6" coveredmethods="6"/>
         <line num="1" count="3" type="stmt"/>
         <line num="2" count="3" type="stmt"/>
-        <line num="8" count="82" type="stmt"/>
-        <line num="15" count="79" type="stmt"/>
-        <line num="20" count="79" type="stmt"/>
-        <line num="23" count="79" type="stmt"/>
-        <line num="27" count="57" type="stmt"/>
-        <line num="31" count="79" type="cond" truecount="1" falsecount="1"/>
-        <line num="32" count="0" type="stmt"/>
-        <line num="39" count="22" type="stmt"/>
-        <line num="51" count="45" type="stmt"/>
+        <line num="8" count="79" type="stmt"/>
+        <line num="15" count="76" type="stmt"/>
+        <line num="19" count="76" type="stmt"/>
+        <line num="22" count="76" type="stmt"/>
+        <line num="26" count="53" type="stmt"/>
+        <line num="30" count="76" type="cond" truecount="1" falsecount="1"/>
+        <line num="31" count="0" type="stmt"/>
+        <line num="38" count="45" type="stmt"/>
+        <line num="49" count="42" type="stmt"/>
       </file>
       <file name="ExpressionNodeBase.ts" path="/Users/huba/repos/vue-expression-builder/src/core/ExpressionNodeBase.ts">
-        <metrics statements="15" coveredstatements="13" conditionals="7" coveredconditionals="5" methods="5" coveredmethods="5"/>
+        <metrics statements="7" coveredstatements="6" conditionals="4" coveredconditionals="3" methods="3" coveredmethods="3"/>
         <line num="2" count="3" type="stmt"/>
-        <line num="4" count="3" type="stmt"/>
-        <line num="9" count="3" type="stmt"/>
-        <line num="13" count="159" type="stmt"/>
-        <line num="17" count="159" type="stmt"/>
-        <line num="18" count="159" type="stmt"/>
-        <line num="22" count="447" type="stmt"/>
-        <line num="26" count="275" type="cond" truecount="2" falsecount="0"/>
-        <line num="27" count="179" type="stmt"/>
-        <line num="28" count="96" type="cond" truecount="1" falsecount="1"/>
-        <line num="29" count="0" type="stmt"/>
-        <line num="33" count="159" type="cond" truecount="1" falsecount="1"/>
-        <line num="34" count="159" type="stmt"/>
-        <line num="36" count="0" type="stmt"/>
-        <line num="40" count="87" type="stmt"/>
+        <line num="9" count="159" type="stmt"/>
+        <line num="13" count="448" type="stmt"/>
+        <line num="17" count="275" type="cond" truecount="2" falsecount="0"/>
+        <line num="18" count="178" type="stmt"/>
+        <line num="19" count="97" type="cond" truecount="1" falsecount="1"/>
+        <line num="20" count="0" type="stmt"/>
       </file>
       <file name="ExpressionNodeGroup.ts" path="/Users/huba/repos/vue-expression-builder/src/core/ExpressionNodeGroup.ts">
-        <metrics statements="60" coveredstatements="58" conditionals="41" coveredconditionals="37" methods="18" coveredmethods="18"/>
+        <metrics statements="57" coveredstatements="55" conditionals="33" coveredconditionals="30" methods="23" coveredmethods="23"/>
         <line num="1" count="3" type="stmt"/>
         <line num="8" count="3" type="stmt"/>
         <line num="9" count="3" type="stmt"/>
-        <line num="14" count="117" type="stmt"/>
-        <line num="17" count="80" type="stmt"/>
-        <line num="18" count="80" type="stmt"/>
-        <line num="19" count="80" type="stmt"/>
-        <line num="24" count="80" type="stmt"/>
-        <line num="25" count="80" type="stmt"/>
-        <line num="26" count="80" type="stmt"/>
-        <line num="27" count="80" type="stmt"/>
-        <line num="28" count="80" type="stmt"/>
-        <line num="32" count="123" type="stmt"/>
-        <line num="33" count="63" type="cond" truecount="1" falsecount="1"/>
-        <line num="34" count="63" type="stmt"/>
-        <line num="35" count="63" type="stmt"/>
-        <line num="37" count="0" type="stmt"/>
-        <line num="42" count="193" type="stmt"/>
-        <line num="46" count="101" type="cond" truecount="4" falsecount="0"/>
-        <line num="47" count="100" type="stmt"/>
-        <line num="49" count="1" type="stmt"/>
-        <line num="53" count="120" type="stmt"/>
-        <line num="61" count="101" type="cond" truecount="6" falsecount="0"/>
-        <line num="62" count="100" type="stmt"/>
-        <line num="64" count="1" type="stmt"/>
-        <line num="68" count="73" type="stmt"/>
-        <line num="76" count="20" type="cond" truecount="2" falsecount="0"/>
-        <line num="78" count="30" type="stmt"/>
-        <line num="83" count="77" type="stmt"/>
-        <line num="89" count="43" type="stmt"/>
-        <line num="95" count="43" type="stmt"/>
-        <line num="96" count="63" type="stmt"/>
-        <line num="99" count="43" type="stmt"/>
-        <line num="113" count="13" type="stmt"/>
-        <line num="114" count="13" type="stmt"/>
-        <line num="115" count="13" type="stmt"/>
-        <line num="116" count="29" type="cond" truecount="2" falsecount="0"/>
-        <line num="117" count="22" type="cond" truecount="2" falsecount="0"/>
-        <line num="118" count="8" type="cond" truecount="2" falsecount="0"/>
-        <line num="119" count="6" type="stmt"/>
-        <line num="120" count="8" type="stmt"/>
-        <line num="121" count="14" type="stmt"/>
-        <line num="122" count="7" type="cond" truecount="1" falsecount="1"/>
-        <line num="123" count="7" type="cond" truecount="1" falsecount="1"/>
-        <line num="124" count="7" type="cond" truecount="2" falsecount="0"/>
-        <line num="125" count="3" type="stmt"/>
-        <line num="126" count="3" type="stmt"/>
-        <line num="128" count="7" type="cond" truecount="2" falsecount="0"/>
-        <line num="129" count="6" type="stmt"/>
-        <line num="130" count="6" type="stmt"/>
-        <line num="131" count="13" type="cond" truecount="2" falsecount="0"/>
-        <line num="132" count="10" type="stmt"/>
-        <line num="133" count="12" type="stmt"/>
-        <line num="135" count="3" type="stmt"/>
-        <line num="137" count="6" type="stmt"/>
-        <line num="139" count="1" type="stmt"/>
-        <line num="141" count="0" type="stmt"/>
-        <line num="143" count="13" type="cond" truecount="2" falsecount="0"/>
-        <line num="144" count="8" type="stmt"/>
-        <line num="145" count="13" type="stmt"/>
+        <line num="11" count="3" type="stmt"/>
+        <line num="16" count="3" type="stmt"/>
+        <line num="21" count="115" type="stmt"/>
+        <line num="24" count="83" type="stmt"/>
+        <line num="25" count="83" type="stmt"/>
+        <line num="26" count="83" type="stmt"/>
+        <line num="27" count="83" type="stmt"/>
+        <line num="31" count="83" type="stmt"/>
+        <line num="32" count="83" type="stmt"/>
+        <line num="33" count="83" type="stmt"/>
+        <line num="34" count="83" type="stmt"/>
+        <line num="35" count="83" type="stmt"/>
+        <line num="36" count="83" type="stmt"/>
+        <line num="40" count="83" type="cond" truecount="1" falsecount="1"/>
+        <line num="41" count="83" type="stmt"/>
+        <line num="43" count="0" type="stmt"/>
+        <line num="47" count="79" type="stmt"/>
+        <line num="51" count="128" type="stmt"/>
+        <line num="52" count="62" type="cond" truecount="1" falsecount="1"/>
+        <line num="53" count="62" type="stmt"/>
+        <line num="54" count="62" type="stmt"/>
+        <line num="56" count="0" type="stmt"/>
+        <line num="61" count="192" type="stmt"/>
+        <line num="65" count="106" type="cond" truecount="4" falsecount="0"/>
+        <line num="66" count="105" type="stmt"/>
+        <line num="68" count="1" type="stmt"/>
+        <line num="72" count="129" type="stmt"/>
+        <line num="80" count="106" type="cond" truecount="6" falsecount="0"/>
+        <line num="81" count="105" type="stmt"/>
+        <line num="83" count="1" type="stmt"/>
+        <line num="87" count="77" type="stmt"/>
+        <line num="94" count="22" type="cond" truecount="2" falsecount="0"/>
+        <line num="96" count="32" type="stmt"/>
+        <line num="101" count="78" type="cond" truecount="2" falsecount="0"/>
+        <line num="107" count="45" type="stmt"/>
+        <line num="113" count="45" type="stmt"/>
+        <line num="114" count="62" type="stmt"/>
+        <line num="117" count="45" type="stmt"/>
+        <line num="132" count="15" type="stmt"/>
+        <line num="135" count="32" type="stmt"/>
+        <line num="137" count="32" type="stmt"/>
+        <line num="138" count="15" type="stmt"/>
+        <line num="139" count="24" type="cond" truecount="2" falsecount="0"/>
+        <line num="140" count="12" type="stmt"/>
+        <line num="142" count="12" type="stmt"/>
+        <line num="144" count="15" type="stmt"/>
+        <line num="145" count="8" type="cond" truecount="2" falsecount="0"/>
+        <line num="146" count="5" type="stmt"/>
+        <line num="147" count="5" type="stmt"/>
+        <line num="148" count="6" type="stmt"/>
+        <line num="149" count="14" type="stmt"/>
+        <line num="150" count="5" type="stmt"/>
+        <line num="151" count="3" type="stmt"/>
+        <line num="153" count="15" type="stmt"/>
       </file>
       <file name="Interfaces.ts" path="/Users/huba/repos/vue-expression-builder/src/core/Interfaces.ts">
         <metrics statements="2" coveredstatements="2" conditionals="4" coveredconditionals="4" methods="2" coveredmethods="2"/>
-        <line num="19" count="63" type="cond" truecount="2" falsecount="0"/>
-        <line num="31" count="79" type="cond" truecount="2" falsecount="0"/>
+        <line num="18" count="62" type="cond" truecount="2" falsecount="0"/>
+        <line num="30" count="76" type="cond" truecount="2" falsecount="0"/>
       </file>
     </package>
     <package name="tests">

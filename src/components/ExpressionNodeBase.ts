@@ -1,6 +1,5 @@
 import {Component, Prop, Vue} from "vue-property-decorator";
 import {IExpressionNode} from "@/core/Interfaces";
-import {connectionTypes} from "@/core/ExpressionNodeBase";
 import {actionTypes, InputEventBody} from "@/components/Utils";
 
 /**
@@ -24,15 +23,6 @@ export default class ExpressionNodeBase extends Vue {
     if (index != undefined)
       path.push(index);
     this.eventHub.$emit("input", {node, path, action} as InputEventBody)
-  }
-
-  toggleConnectionType(fromJSON: Function) {
-    const json = this.node.toJSON();
-    if (json.connectionType === connectionTypes.AND)
-      json.connectionType = connectionTypes.OR;
-    else
-      json.connectionType = connectionTypes.AND;
-    this.emitInput(fromJSON(json) as IExpressionNode);
   }
 
   emitDelete() {

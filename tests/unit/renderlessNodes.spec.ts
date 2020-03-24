@@ -10,64 +10,33 @@ import ExpressionNode from "@/core/ExpressionNode";
 
 describe("Renderless components", () => {
   describe("Nodes emiting events", () => {
-    it("toggleConnectionType - Base", () => {
+    it("toggleConnectionType - ExpressionNodeGroupRenderless", () => {
       return new Promise((resolve, reject) => {
         const group = ExpressionNodeGroup.fromJSON(testJSON);
         const eventHub0 = new Vue();
         eventHub0.$on("input", (body: InputEventBody) => {
           try {
-            expect(body.path).toStrictEqual([1]);
+            expect(body.path).toStrictEqual([0]);
             expect(body.action).toBe(actionTypes.SET);
-            expect((body.node as ExpressionNode).condition).toStrictEqual((group.children[1] as ExpressionNode).condition);
-            expect(body.node.connectionType).not.toBe(group.children[1].connectionType);
-          } catch (e) {
-            reject(e);
-          }
-          resolve();
-        });
-        const wrapper0 = mount(ExpressionNodeRenderless, {
-          propsData: {
-            eventHub: eventHub0,
-            node: group.children[1]
-          },
-          scopedSlots: {
-            default: () => null
-          }
-        });
-        expect(wrapper0.vm.eventHub).toBe(eventHub0);
-        wrapper0.vm.toggleConnectionType(ExpressionNode.fromJSON);
-      })
-    });
-
-    it("toggleConnectionType - Base - with deeper path", () => {
-      return new Promise((resolve, reject) => {
-        const group = ExpressionNodeGroup.fromJSON(testJSON);
-        const eventHub0 = new Vue();
-        eventHub0.$on("input", (body: InputEventBody) => {
-          try {
-            expect(body.path).toStrictEqual([0, 0]);
-            expect(body.action).toBe(actionTypes.SET);
-            expect((body.node as ExpressionNode).condition)
-              .toStrictEqual(((group.children[0] as ExpressionNodeGroup).children[0] as ExpressionNode).condition);
-            expect(body.node.connectionType).not
-              .toBe((group.children[0] as ExpressionNodeGroup).children[0].connectionType);
+            expect((body.node as ExpressionNodeGroup).connectionType).not
+              .toBe((group.children[0] as ExpressionNodeGroup).connectionType);
           } catch (e) {
             reject(e);
           }
           resolve();
 
         });
-        const wrapper0 = mount(ExpressionNodeRenderless, {
+        const wrapper0 = mount(ExpressionNodeGroupRenderless, {
           propsData: {
             eventHub: eventHub0,
-            node: (group.children[0] as ExpressionNodeGroup).children[0]
+            node: group.children[0]
           },
           scopedSlots: {
             default: () => null
           }
         });
         expect(wrapper0.vm.eventHub).toBe(eventHub0);
-        wrapper0.vm.toggleConnectionType(ExpressionNode.fromJSON);
+        wrapper0.vm.toggleConnectionType();
       })
     });
 

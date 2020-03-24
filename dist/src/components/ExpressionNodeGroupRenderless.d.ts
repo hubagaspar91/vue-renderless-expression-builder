@@ -7,5 +7,6 @@ export default class ExpressionNodeGroupRenderless extends ExpressionNodeBase {
     private add;
     addNode(): void;
     addGroup(): void;
+    toggleConnectionType(): void;
     render(): any;
 }

@@ -15,9 +15,8 @@ export default class ExpressionNode extends ExpressionNodeBase implements IExpre
   private _condition: ICondition = defaultCondition();
 
   constructor(condition: ICondition = defaultCondition(),
-              connectionType?: string,
               parentNode?: ExpressionNodeGroup) {
-    super(connectionType, parentNode);
+    super(parentNode);
 
     // to check for type
     this.condition = condition;
@@ -37,8 +36,7 @@ export default class ExpressionNode extends ExpressionNodeBase implements IExpre
    */
   toJSON(): IExpressionNodeJSON {
     return {
-      connectionType: this.connectionType,
-      condition: {...this.condition}
+      ...this.condition
     }
   }
 
@@ -48,6 +46,6 @@ export default class ExpressionNode extends ExpressionNodeBase implements IExpre
    * @param parentNode
    */
   static fromJSON(json: IExpressionNodeJSON, parentNode?: ExpressionNodeGroup): ExpressionNode {
-    return new ExpressionNode(json.condition, json.connectionType, parentNode)
+    return new ExpressionNode(json, parentNode)
   }
 }

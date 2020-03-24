@@ -2,7 +2,7 @@ import { Component, Prop } from 'vue-property-decorator';
 import ExpressionNodeBase from "@/components/ExpressionNodeBase";
 import {actionTypes} from "@/components/Utils";
 import {IExpressionNode} from "@/core/Interfaces";
-import ExpressionNodeGroup from "@/core/ExpressionNodeGroup";
+import ExpressionNodeGroup, {connectionTypes} from "@/core/ExpressionNodeGroup";
 import ExpressionNode from "@/core/ExpressionNode";
 
 @Component
@@ -25,11 +25,20 @@ export default class ExpressionNodeGroupRenderless extends ExpressionNodeBase {
     this.add(new ExpressionNodeGroup());
   }
 
+  toggleConnectionType() {
+    const json = this.node.toJSON();
+    if (json.connectionType === connectionTypes.AND)
+      json.connectionType = connectionTypes.OR;
+    else
+      json.connectionType = connectionTypes.AND;
+    this.emitInput(ExpressionNodeGroup.fromJSON(json));
+  }
+
   render() {
     return this.$scopedSlots.default!({
       node: this.node,
       index: this.index,
-      toggleConnectionType: () => this.toggleConnectionType(ExpressionNodeGroup.fromJSON),
+      toggleConnectionType: this.toggleConnectionType,
       deleteSelf: this.emitDelete,
       insert: this.insert,
       addNode: this.addNode,

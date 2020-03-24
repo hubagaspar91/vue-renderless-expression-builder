@@ -3,14 +3,13 @@
  */
 import ExpressionNodeGroup from "@/core/ExpressionNodeGroup";
 export interface IExpressionNodeBase {
-    connectionType: string;
     parentNode?: ExpressionNodeGroup;
 }
 /**
  * Interface for node types, inheriting from {ExpressionNodeBase}
  */
 export interface IExpressionNode extends IExpressionNodeBase {
-    toJSON(addMAxDepth?: boolean): IExpressionNodeJSON | IExpressionNodeGroupJSON;
+    toJSON(addMaxDepth?: boolean): IExpressionNodeJSON | IExpressionNodeGroupJSON;
 }
 export declare function isIExpressionNode(obj: Object): obj is IExpressionNode;
 /**
@@ -25,6 +24,7 @@ export declare function isICondition(obj: object): obj is ICondition;
  * Options object, describing data for {ExpressionNodeGroup}
  */
 export interface IExpressionNodeGroupOpts {
+    connectionType?: string;
     children?: IExpressionNode[];
     maxDepth?: number;
     currentDepth?: number;
@@ -32,14 +32,10 @@ export interface IExpressionNodeGroupOpts {
 /**
  * JSON representations of nodes and their data
  */
-interface IExpressionNodeBaseJSON {
+export interface IExpressionNodeJSON extends ICondition {
+}
+export interface IExpressionNodeGroupJSON {
     connectionType: string;
-}
-export interface IExpressionNodeJSON extends IExpressionNodeBaseJSON {
-    condition: ICondition;
-}
-export interface IExpressionNodeGroupJSON extends IExpressionNodeBaseJSON {
     children: (IExpressionNodeJSON | IExpressionNodeGroupJSON)[];
     maxDepth?: number;
 }
-export {};

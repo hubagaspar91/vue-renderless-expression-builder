@@ -1,5 +1,5 @@
 import { __decorate } from 'tslib';
-import { Prop, Component, Vue } from 'vue-property-decorator';
+import { Prop, Vue, Component } from 'vue-property-decorator';
 
 function _classCallCheck(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
@@ -269,27 +269,16 @@ function _inherits(subClass, superClass) {
 var inherits = _inherits;
 
 function isIExpressionNode(obj) {
-  return "toJSON" in obj && "connectionType" in obj;
+  return "toJSON" in obj && "parentNode" in obj;
 }
 function isICondition(obj) {
   return "name" in obj && "value" in obj;
 }
 
-var connectionTypes = {
-  AND: "and",
-  OR: "or"
-};
-var connectionTypesArray = Object.values(connectionTypes);
-
 var ExpressionNodeBase = /*#__PURE__*/function () {
-  function ExpressionNodeBase() {
-    var connectionType = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : connectionTypes.AND;
-    var parentNode = arguments.length > 1 ? arguments[1] : undefined;
-
+  function ExpressionNodeBase(parentNode) {
     classCallCheck(this, ExpressionNodeBase);
 
-    this._connectionType = connectionTypes.AND;
-    this.connectionType = connectionType;
     this.parentNode = parentNode;
   }
 
@@ -300,14 +289,6 @@ var ExpressionNodeBase = /*#__PURE__*/function () {
     },
     set: function set(val) {
       if (val instanceof ExpressionNodeGroup) this._parentNode = val;else if (val != undefined) throw new Error("Parent must be undefined or ExpressionNodeGroup");
-    }
-  }, {
-    key: "connectionType",
-    set: function set(value) {
-      if (Object.values(connectionTypesArray).includes(value)) this._connectionType = value;else throw new Error("ConnectionType not supported, possible values: " + connectionTypesArray.join(", "));
-    },
-    get: function get() {
-      return this._connectionType;
     }
   }]);
 
@@ -338,12 +319,11 @@ var ExpressionNode = /*#__PURE__*/function (_ExpressionNodeBase) {
     var _this;
 
     var condition = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : defaultCondition();
-    var connectionType = arguments.length > 1 ? arguments[1] : undefined;
-    var parentNode = arguments.length > 2 ? arguments[2] : undefined;
+    var parentNode = arguments.length > 1 ? arguments[1] : undefined;
 
     classCallCheck(this, ExpressionNode);
 
-    _this = _super.call(this, connectionType, parentNode);
+    _this = _super.call(this, parentNode);
     _this._condition = defaultCondition(); // to check for type
 
     _this.condition = condition;
@@ -357,10 +337,7 @@ var ExpressionNode = /*#__PURE__*/function (_ExpressionNodeBase) {
      * Exports the data as JSON
      */
     value: function toJSON() {
-      return {
-        connectionType: this.connectionType,
-        condition: objectSpread2({}, this.condition)
-      };
+      return objectSpread2({}, this.condition);
     }
     /**
      * Constructs an ExpressionNode from a JSON representation
@@ -379,13 +356,18 @@ var ExpressionNode = /*#__PURE__*/function (_ExpressionNodeBase) {
   }], [{
     key: "fromJSON",
     value: function fromJSON(json, parentNode) {
-      return new ExpressionNode(json.condition, json.connectionType, parentNode);
+      return new ExpressionNode(json, parentNode);
     }
   }]);
 
   return ExpressionNode;
 }(ExpressionNodeBase);
 
+var connectionTypes = {
+  AND: "and",
+  OR: "or"
+};
+var connectionTypesArray = Object.values(connectionTypes);
 /**
  * Factory fn, returning the default opts object for an ExpressionNodeGroup
  */
@@ -394,7 +376,8 @@ var defaultOpts = function defaultOpts() {
   return {
     maxDepth: 0,
     currentDepth: 0,
-    children: []
+    children: [],
+    connectionType: connectionTypes.AND
   };
 };
 
@@ -407,19 +390,20 @@ var ExpressionNodeGroup = /*#__PURE__*/function (_ExpressionNodeBase) {
     var _this;
 
     var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : defaultOpts();
-    var connectionType = arguments.length > 1 ? arguments[1] : undefined;
-    var parentNode = arguments.length > 2 ? arguments[2] : undefined;
+    var parentNode = arguments.length > 1 ? arguments[1] : undefined;
 
     classCallCheck(this, ExpressionNodeGroup);
 
-    _this = _super.call(this, connectionType, parentNode);
+    _this = _super.call(this, parentNode);
     _this._children = [];
     _this._maxDepth = 0;
     _this._currentDepth = 0;
+    _this._connectionType = connectionTypes.AND;
     opts = objectSpread2({}, defaultOpts(), {}, opts);
     _this.children = opts.children;
     _this.maxDepth = opts.maxDepth;
     _this.currentDepth = opts.currentDepth;
+    _this.connectionType = opts.connectionType;
     return _this;
   }
 
@@ -454,44 +438,47 @@ var ExpressionNodeGroup = /*#__PURE__*/function (_ExpressionNodeBase) {
      * It can be used for client side list filtering
      */
     value: function flatten() {
-      var currentGroup = [];
-      var flattenedList = [];
-      this.children.forEach(function (c) {
-        if (c instanceof ExpressionNode) {
-          if (c.connectionType === connectionTypes.OR) {
-            if (currentGroup.length > 0) flattenedList.push(currentGroup);
-            currentGroup = [Object.assign({}, c.condition)];
-          } else currentGroup.push(Object.assign({}, c.condition));
-        } else if (c instanceof ExpressionNodeGroup) {
-          if (c.children.length > 0) {
-            if (currentGroup.length > 0) {
-              flattenedList.push(currentGroup);
-              currentGroup = [];
-            }
+      var _this2 = this;
 
-            if (c.connectionType === connectionTypes.AND) {
-              var newFlattenedList = [];
-              c.flatten().forEach(function (g) {
-                if (flattenedList.length > 0) flattenedList.forEach(function (flg) {
-                  newFlattenedList.push([].concat(toConsumableArray(flg), toConsumableArray(g)));
-                });else newFlattenedList.push(g);
-              });
-              flattenedList = newFlattenedList;
-            } else flattenedList = [].concat(toConsumableArray(flattenedList), toConsumableArray(c.flatten()));
-          }
-        } else throw new Error("Node cannot be of type " + _typeof_1(c));
+      var flattenedList = this.connectionType === connectionTypes.AND ? [[]] : [];
+      var nodes = this.children.filter(function (c) {
+        return c instanceof ExpressionNode;
       });
-      if (currentGroup.length > 0) flattenedList.push(currentGroup);
+      var groups = this.children.filter(function (c) {
+        return c instanceof ExpressionNodeGroup;
+      });
+      nodes.forEach(function (node) {
+        if (_this2.connectionType == connectionTypes.AND) flattenedList[0].push(node.toJSON());else flattenedList.push([node.toJSON()]);
+      });
+      groups.forEach(function (group) {
+        if (_this2.connectionType == connectionTypes.AND) {
+          var newFlattenedList = [];
+          flattenedList.forEach(function (conditionGroup) {
+            return group.flatten().forEach(function (conditionGroupInner) {
+              return newFlattenedList.push([].concat(toConsumableArray(conditionGroup), toConsumableArray(conditionGroupInner)));
+            });
+          });
+          flattenedList = newFlattenedList;
+        } else flattenedList = [].concat(toConsumableArray(flattenedList), toConsumableArray(group.flatten()));
+      });
       return flattenedList;
+    }
+  }, {
+    key: "connectionType",
+    set: function set(value) {
+      if (Object.values(connectionTypesArray).includes(value)) this._connectionType = value;else throw new Error("ConnectionType not supported, possible values: " + connectionTypesArray.join(", "));
+    },
+    get: function get() {
+      return this._connectionType;
     }
   }, {
     key: "children",
     set: function set(value) {
-      var _this2 = this;
+      var _this3 = this;
 
       this._children = value.map(function (node) {
         if (isIExpressionNode(node)) {
-          node.parentNode = _this2;
+          node.parentNode = _this3;
           return node;
         } else throw new Error("Node must by ExpressionNode or ExpressionNodeGroup, got type: " + _typeof_1(node));
       });
@@ -523,7 +510,7 @@ var ExpressionNodeGroup = /*#__PURE__*/function (_ExpressionNodeBase) {
   }], [{
     key: "isJSONInstance",
     value: function isJSONInstance(object) {
-      return "children" in object;
+      return "children" in object && "connectionType" in object;
     }
   }, {
     key: "fromJSON",
@@ -537,8 +524,9 @@ var ExpressionNodeGroup = /*#__PURE__*/function (_ExpressionNodeBase) {
 
       var newGroup = new ExpressionNodeGroup({
         maxDepth: maxDepth,
-        currentDepth: currentDepth
-      }, json.connectionType, parentNode);
+        currentDepth: currentDepth,
+        connectionType: json.connectionType
+      }, parentNode);
       newGroup.children = json.children.map(function (cJSON) {
         return ExpressionNodeGroup.isJSONInstance(cJSON) ? ExpressionNodeGroup.fromJSON(cJSON, newGroup, currentDepth + 1) : ExpressionNode.fromJSON(cJSON, newGroup);
       });
@@ -704,13 +692,9 @@ var ExpressionBuilderRenderless = /*#__PURE__*/function (_Vue) {
   var _super = createSuper(ExpressionBuilderRenderless);
 
   function ExpressionBuilderRenderless() {
-    var _this;
-
     classCallCheck(this, ExpressionBuilderRenderless);
 
-    _this = _super.apply(this, arguments);
-    _this.eventHub = new Vue();
-    return _this;
+    return _super.apply(this, arguments);
   }
 
   createClass(ExpressionBuilderRenderless, [{
@@ -765,6 +749,14 @@ __decorate([Prop({
   required: true
 })], ExpressionBuilderRenderless.prototype, "value", void 0);
 
+__decorate([Prop({
+  type: Vue,
+  required: false,
+  default: function _default() {
+    return new Vue();
+  }
+})], ExpressionBuilderRenderless.prototype, "eventHub", void 0);
+
 ExpressionBuilderRenderless = __decorate([Component], ExpressionBuilderRenderless);
 var ExpressionBuilderRenderless$1 = ExpressionBuilderRenderless;
 
@@ -800,13 +792,6 @@ var ExpressionNodeBase$1 = /*#__PURE__*/function (_Vue) {
         path: path,
         action: action
       });
-    }
-  }, {
-    key: "toggleConnectionType",
-    value: function toggleConnectionType(fromJSON) {
-      var json = this.node.toJSON();
-      if (json.connectionType === connectionTypes.AND) json.connectionType = connectionTypes.OR;else json.connectionType = connectionTypes.AND;
-      this.emitInput(fromJSON(json));
     }
   }, {
     key: "emitDelete",
@@ -848,19 +833,14 @@ var ExpressionNodeRenderless = /*#__PURE__*/function (_ExpressionNodeBase) {
   createClass(ExpressionNodeRenderless, [{
     key: "update",
     value: function update(condition) {
-      this.emitInput(new ExpressionNode(condition, this.node.connectionType));
+      this.emitInput(new ExpressionNode(condition));
     }
   }, {
     key: "render",
     value: function render() {
-      var _this = this;
-
       return this.$scopedSlots.default({
         node: this.node,
         index: this.index,
-        toggleConnectionType: function toggleConnectionType() {
-          return _this.toggleConnectionType(ExpressionNode.fromJSON);
-        },
         updateCondition: this.update,
         deleteSelf: this.emitDelete
       });
@@ -910,16 +890,19 @@ var ExpressionNodeGroupRenderless = /*#__PURE__*/function (_ExpressionNodeBase) 
       this.add(new ExpressionNodeGroup());
     }
   }, {
+    key: "toggleConnectionType",
+    value: function toggleConnectionType() {
+      var json = this.node.toJSON();
+      if (json.connectionType === connectionTypes.AND) json.connectionType = connectionTypes.OR;else json.connectionType = connectionTypes.AND;
+      this.emitInput(ExpressionNodeGroup.fromJSON(json));
+    }
+  }, {
     key: "render",
     value: function render() {
-      var _this = this;
-
       return this.$scopedSlots.default({
         node: this.node,
         index: this.index,
-        toggleConnectionType: function toggleConnectionType() {
-          return _this.toggleConnectionType(ExpressionNodeGroup.fromJSON);
-        },
+        toggleConnectionType: this.toggleConnectionType,
         deleteSelf: this.emitDelete,
         insert: this.insert,
         addNode: this.addNode,

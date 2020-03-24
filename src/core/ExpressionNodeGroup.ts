@@ -6,26 +6,45 @@ import {
   isIExpressionNode
 } from "@/core/Interfaces";
 import ExpressionNode from "@/core/ExpressionNode";
-import ExpressionNodeBase, {connectionTypes} from "@/core/ExpressionNodeBase";
+import ExpressionNodeBase from "@/core/ExpressionNodeBase";
+
+export const connectionTypes = {
+  AND: "and",
+  OR: "or"
+};
+
+export const connectionTypesArray = Object.values(connectionTypes);
 
 /**
  * Factory fn, returning the default opts object for an ExpressionNodeGroup
  */
-const defaultOpts = () => ({maxDepth: 0, currentDepth: 0, children: []});
+const defaultOpts = () => ({maxDepth: 0, currentDepth: 0, children: [], connectionType: connectionTypes.AND});
 
 export default class ExpressionNodeGroup extends ExpressionNodeBase implements IExpressionNode {
   private _children: IExpressionNode[] = [];
   private _maxDepth: number = 0;
   private _currentDepth: number = 0;
+  private _connectionType: string = connectionTypes.AND;
 
   constructor(opts: IExpressionNodeGroupOpts = defaultOpts(),
-              connectionType?: string,
               parentNode?: ExpressionNodeGroup) {
-    super(connectionType, parentNode);
+    super(parentNode);
     opts = {...defaultOpts(), ...opts};
     this.children = opts.children as IExpressionNode[];
     this.maxDepth = opts.maxDepth as number;
     this.currentDepth = opts.currentDepth as number;
+    this.connectionType = opts.connectionType as string;
+  }
+
+  set connectionType(value: string) {
+    if (Object.values(connectionTypesArray).includes(value))
+      this._connectionType = value;
+    else
+      throw new Error("ConnectionType not supported, possible values: " + connectionTypesArray.join(", "));
+  }
+
+  get connectionType() {
+    return this._connectionType;
   }
 
   set children(value: IExpressionNode[]) {
@@ -68,7 +87,6 @@ export default class ExpressionNodeGroup extends ExpressionNodeBase implements I
     return this._currentDepth;
   }
 
-
   /**
    * Recursively creates a JSON representation of the expression tree
    */
@@ -80,7 +98,7 @@ export default class ExpressionNodeGroup extends ExpressionNodeBase implements I
   }
 
   static isJSONInstance(object: object): object is IExpressionNodeGroupJSON {
-    return "children" in object;
+    return "children" in object && "connectionType" in object;
   }
 
   static fromJSON(json: IExpressionNodeGroupJSON,
@@ -92,12 +110,13 @@ export default class ExpressionNodeGroup extends ExpressionNodeBase implements I
         : undefined  // else get default from constructor
       : parentNode.maxDepth;  // if parent node is defined, maxDepth is to be copied from it
 
-    const newGroup = new ExpressionNodeGroup({maxDepth, currentDepth}, json.connectionType, parentNode);
+    const newGroup = new ExpressionNodeGroup({maxDepth, currentDepth, connectionType: json.connectionType}, parentNode);
     newGroup.children = json.children.map(cJSON => (ExpressionNodeGroup.isJSONInstance(cJSON))
       ? ExpressionNodeGroup.fromJSON(cJSON as IExpressionNodeGroupJSON, newGroup, currentDepth + 1)
       : ExpressionNode.fromJSON(cJSON as IExpressionNodeJSON, newGroup));
     return newGroup;
   }
+
 
   /**
    * Flattens the expression, to a 1 depth array of arrays
@@ -110,38 +129,27 @@ export default class ExpressionNodeGroup extends ExpressionNodeBase implements I
    * It can be used for client side list filtering
    */
   flatten(): Array<ICondition[]> {
-    let currentGroup: ICondition[] = [];
-    let flattenedList: Array<ICondition[]> = [];
-    this.children.forEach(c => {
-      if (c instanceof ExpressionNode) {
-        if (c.connectionType === connectionTypes.OR) {
-          if (currentGroup.length > 0)
-            flattenedList.push(currentGroup);
-          currentGroup = [Object.assign({}, c.condition)]
-        } else currentGroup.push(Object.assign({}, c.condition));
-      } else if (c instanceof ExpressionNodeGroup) {
-        if (c.children.length > 0) {
-          if (currentGroup.length > 0) {
-            flattenedList.push(currentGroup);
-            currentGroup = [];
-          }
-          if (c.connectionType === connectionTypes.AND) {
-            const newFlattenedList: Array<ICondition[]> = [];
-            c.flatten().forEach((g) => {
-              if (flattenedList.length > 0)
-                flattenedList.forEach(flg => {
-                  newFlattenedList.push([...flg, ...g]);
-                });
-              else newFlattenedList.push(g);
-            });
-            flattenedList = newFlattenedList;
-          } else
-            flattenedList = [...flattenedList, ...c.flatten()]
-        }
-      } else throw new Error("Node cannot be of type " + typeof c);
+    let flattenedList: Array<ICondition[]> = this.connectionType === connectionTypes.AND
+      ? [[]]
+      : [];
+    let nodes = this.children.filter(c => c instanceof ExpressionNode) as ExpressionNode[];
+    let groups: ExpressionNodeGroup[] =
+      this.children.filter(c => c instanceof ExpressionNodeGroup) as ExpressionNodeGroup[];
+    nodes.forEach(node => {
+      if (this.connectionType == connectionTypes.AND)
+        flattenedList[0].push(node.toJSON());
+      else
+        flattenedList.push([node.toJSON()]);
     });
-    if (currentGroup.length > 0)
-      flattenedList.push(currentGroup);
+    groups.forEach(group => {
+      if (this.connectionType == connectionTypes.AND) {
+        let newFlattenedList: Array<ICondition[]> = [];
+        flattenedList.forEach(conditionGroup =>
+          group.flatten().forEach(conditionGroupInner =>
+            newFlattenedList.push([...conditionGroup, ...conditionGroupInner])));
+        flattenedList = newFlattenedList;
+      } else flattenedList = [...flattenedList, ...group.flatten()];
+    });
     return flattenedList;
   }
 }

@@ -6,7 +6,7 @@ import ExpressionNodeGroup from "@/core/ExpressionNodeGroup";
  */
 export default class ExpressionNode extends ExpressionNodeBase implements IExpressionNode {
     private _condition;
-    constructor(condition?: ICondition, connectionType?: string, parentNode?: ExpressionNodeGroup);
+    constructor(condition?: ICondition, parentNode?: ExpressionNodeGroup);
     get condition(): ICondition;
     set condition(condition: ICondition);
     /**

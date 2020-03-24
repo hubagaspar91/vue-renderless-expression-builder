@@ -8,20 +8,14 @@ export const testJSON: IExpressionNodeGroupJSON = {
       connectionType: "or",
       children: [
         {
-          connectionType: "and",
-          condition: {
-            name: "test",
-            value: 1
-          }
+          name: "test",
+          value: 1
         }
       ]
     },
     {
-      connectionType: "or",
-      condition: {
-        name: "test",
-        value: 2
-      }
+      name: "test",
+      value: 2
     }
   ]
 };

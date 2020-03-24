@@ -60,28 +60,6 @@ describe("ExpressionBuilderRenderless", () => {
       return {wrapper, nodeWrapper, selectedNode};
     };
 
-    it("toggleConnectionType - from ExpressionNodeRenderless", () => {
-      return new Promise((resolve, reject) => {
-
-        const {wrapper, nodeWrapper, selectedNode} = createBuilderAndNode();
-
-        wrapper.vm.$on("input", (builder: ExpressionBuilder) => {
-          const json = builder.root.toJSON();
-          try {
-            expect((json.children[0] as IExpressionNodeGroupJSON).children[0].connectionType).not.toBe(selectedNode.connectionType);
-            expect(((json.children[0] as IExpressionNodeGroupJSON).children[0] as IExpressionNodeJSON).condition)
-              .toStrictEqual((selectedNode as ExpressionNode).condition);
-          }
-          catch(e) {
-            reject(e);
-          }
-          resolve();
-        });
-
-        nodeWrapper.vm.toggleConnectionType(ExpressionNode.fromJSON);
-      })
-    });
-
     it("Delete - from ExpressionNodeRenderless", () => {
       return new Promise((resolve, reject) => {
         const {wrapper, nodeWrapper} = createBuilderAndNode();
@@ -109,9 +87,9 @@ describe("ExpressionBuilderRenderless", () => {
         wrapper.vm.$on("input", (builder: ExpressionBuilder) => {
           const json = builder.root.toJSON();
           try {
-            expect(((json.children[0] as IExpressionNodeGroupJSON).children[0] as IExpressionNodeJSON).condition)
+            expect((json.children[0] as IExpressionNodeGroupJSON).children[0] as IExpressionNodeJSON)
               .not.toStrictEqual((selectedNode as ExpressionNode).condition);
-            expect(((json.children[0] as IExpressionNodeGroupJSON).children[0] as IExpressionNodeJSON).condition)
+            expect((json.children[0] as IExpressionNodeGroupJSON).children[0] as IExpressionNodeJSON)
               .toStrictEqual(newCondition);
           }
           catch(e) {
@@ -148,6 +126,26 @@ describe("ExpressionBuilderRenderless", () => {
       return {wrapper, groupWrapper, selectedGroup};
     };
 
+    it("toggleConnectionType - from ExpressionNodeGroupRenderless", () => {
+      return new Promise((resolve, reject) => {
+
+        const {wrapper, groupWrapper, selectedGroup} = createBuilderAndGroup();
+
+        wrapper.vm.$on("input", (builder: ExpressionBuilder) => {
+          const json = builder.root.toJSON();
+          try {
+            expect((json.children[0] as IExpressionNodeGroupJSON).connectionType).not.toBe(selectedGroup.connectionType);
+          }
+          catch(e) {
+            reject(e);
+          }
+          resolve();
+        });
+
+        groupWrapper.vm.toggleConnectionType();
+      })
+    });
+
     const testActionOnGroup = (actionType: string, group: boolean, index?: number) => {
       return new Promise((resolve, reject) => {
         const {wrapper, groupWrapper} = createBuilderAndGroup();
@@ -163,9 +161,9 @@ describe("ExpressionBuilderRenderless", () => {
               expect("children" in newNodeJson).toBe(true);
             } else {
               if (actionType !== actionTypes.ADD)
-                expect((newNodeJson as IExpressionNodeJSON).condition).toStrictEqual(newCondition);
+                expect((newNodeJson as IExpressionNodeJSON)).toStrictEqual(newCondition);
               else
-                expect((newNodeJson as IExpressionNodeJSON).condition).toStrictEqual({name: null, value: null})
+                expect((newNodeJson as IExpressionNodeJSON)).toStrictEqual({name: null, value: null})
             }
           } catch(e) {
             reject(e);

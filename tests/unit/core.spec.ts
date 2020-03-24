@@ -1,5 +1,5 @@
 import ExpressionBuilder from "@/core/ExpressionBuilder";
-import {connectionTypes} from "@/core/ExpressionNodeBase";
+import {connectionTypes} from "@/core/ExpressionNodeGroup";
 import ExpressionNode from "@/core/ExpressionNode";
 import ExpressionNodeGroup from "@/core/ExpressionNodeGroup";
 import {testJSON} from "../utils";
@@ -45,13 +45,11 @@ describe("ExpressionBuilder - create and export instance", () => {
 
     // 0:0 child
     const child0_0 = <ExpressionNode>child0.children[0];
-    expect(child0_0.connectionType).toBe(connectionTypes.AND);
     expect(child0_0.condition.name).toBe("test");
     expect(child0_0.condition.value).toBe(1);
 
     // 0:1 child
     const child1 = <ExpressionNode>eb.root.children[1];
-    expect(child1.connectionType).toBe(connectionTypes.OR);
     expect(child1.condition.name).toBe("test");
     expect(child1.condition.value).toBe(2);
   });
@@ -68,8 +66,8 @@ describe("ExpressionBuilder - testing fluent api", () => {
   it("Tests add, insert, set, delete methods, and automatic context switch", () => {
     const eb = new ExpressionBuilder();
     const node0 = new ExpressionNode({name: "test", value: 0});
-    const node1 = new ExpressionNode({name: "test", value: 1}, connectionTypes.OR);
-    const node2 = new ExpressionNode({name: "test", value: 2}, connectionTypes.AND);
+    const node1 = new ExpressionNode({name: "test", value: 1});
+    const node2 = new ExpressionNode({name: "test", value: 2});
     const group0 = new ExpressionNodeGroup();
     eb.add(node0);
     expect(eb.root.children[0]).toBe(node0);
@@ -92,13 +90,11 @@ describe("ExpressionBuilder - testing fluent api", () => {
   it("Insert and set not yet existing, next possible index", () => {
     const eb = new ExpressionBuilder();
     const cond0 = {name: "test", value: 0};
-    eb.set(new ExpressionNode(cond0, connectionTypes.OR), 0);
+    eb.set(new ExpressionNode(cond0), 0);
     expect(eb.root.children).toHaveLength(1);
-    expect(eb.root.children[0].connectionType).toBe(connectionTypes.OR);
     expect((eb.root.children[0] as ExpressionNode).condition).toStrictEqual(cond0);
-    eb.insert(new ExpressionNode(cond0, connectionTypes.OR), 1);
+    eb.insert(new ExpressionNode(cond0), 1);
     expect(eb.root.children).toHaveLength(2);
-    expect(eb.root.children[1].connectionType).toBe(connectionTypes.OR);
     expect((eb.root.children[1] as ExpressionNode).condition).toStrictEqual(cond0);
   });
 
@@ -190,12 +186,12 @@ describe("ExpressionBuilder - testing flatten method", () => {
 
   it("node0 or node1 or node2", () => {
     const nodeCond0 = {name: "test", value: 0};
-    const node0 = new ExpressionNode(nodeCond0, connectionTypes.OR);
+    const node0 = new ExpressionNode(nodeCond0);
     const nodeCond1 = {name: "test", value: 1};
-    const node1 = new ExpressionNode(nodeCond1, connectionTypes.OR);
+    const node1 = new ExpressionNode(nodeCond1);
     const nodeCond2 = {name: "test", value: 2};
-    const node2 = new ExpressionNode(nodeCond2, connectionTypes.OR);
-    let eb = new ExpressionBuilder();
+    const node2 = new ExpressionNode(nodeCond2);
+    let eb = new ExpressionBuilder(new ExpressionNodeGroup({connectionType: connectionTypes.OR}));
     eb.add(node0).add(node1).add(node2);
     let flattened = eb.flatten();
     expect(flattened).toHaveLength(3);
@@ -211,15 +207,16 @@ describe("ExpressionBuilder - testing flatten method", () => {
     expect(flattened[2][0]).toStrictEqual(nodeCond2);
   });
 
-  it("node0 or node1 and node2", () => {
+  it("node0 or (node1 and node2)", () => {
     const nodeCond0 = {name: "test", value: 0};
-    const node0 = new ExpressionNode(nodeCond0, connectionTypes.OR);
+    const node0 = new ExpressionNode(nodeCond0);
     const nodeCond1 = {name: "test", value: 1};
-    const node1 = new ExpressionNode(nodeCond1, connectionTypes.OR);
+    const group0 = new ExpressionNodeGroup();
+    const node1 = new ExpressionNode(nodeCond1);
     const nodeCond2 = {name: "test", value: 2};
-    const node2 = new ExpressionNode(nodeCond2, connectionTypes.AND);
-    let eb = new ExpressionBuilder();
-    eb.add(node0).add(node1).add(node2);
+    const node2 = new ExpressionNode(nodeCond2);
+    let eb = new ExpressionBuilder(new ExpressionNodeGroup({connectionType: connectionTypes.OR}));
+    eb.add(node0).add(group0).add(node1).add(node2);
     let flattened = eb.flatten();
     expect(flattened).toHaveLength(2);
     expect(flattened).toBeInstanceOf(Array);
@@ -239,8 +236,8 @@ describe("ExpressionBuilder - testing flatten method", () => {
     const nodeCond1 = {name: "test", value: 1};
     const node1 = new ExpressionNode(nodeCond1);
     const nodeCond2 = {name: "test", value: 2};
-    const node2 = new ExpressionNode(nodeCond2, connectionTypes.OR);
-    const group0 = new ExpressionNodeGroup();
+    const node2 = new ExpressionNode(nodeCond2);
+    const group0 = new ExpressionNodeGroup({connectionType: connectionTypes.OR});
     let eb = new ExpressionBuilder();
     eb.add(node0).add(group0).add(node1).add(node2);
     let flattened = eb.flatten();
@@ -261,14 +258,14 @@ describe("ExpressionBuilder - testing flatten method", () => {
     const nodeCond1 = {name: "test", value: 1};
     const node1 = new ExpressionNode(nodeCond1);
     const nodeCond2 = {name: "test", value: 2};
-    const node2 = new ExpressionNode(nodeCond2, connectionTypes.AND);
+    const node2 = new ExpressionNode(nodeCond2);
     const nodeCond3 = {name: "test", value: 3};
     const node3 = new ExpressionNode(nodeCond3);
     const nodeCond4 = {name: "test", value: 4};
-    const node4 = new ExpressionNode(nodeCond4, connectionTypes.AND);
-    const group0 = new ExpressionNodeGroup();
+    const node4 = new ExpressionNode(nodeCond4);
+    const group0 = new ExpressionNodeGroup({connectionType: connectionTypes.OR});
     const group1 = new ExpressionNodeGroup();
-    const group2 = new ExpressionNodeGroup(undefined, connectionTypes.OR);
+    const group2 = new ExpressionNodeGroup();
     const eb = new ExpressionBuilder();
     eb.add(node0)
       .add(group0)
@@ -301,14 +298,14 @@ describe("ExpressionBuilder - testing flatten method", () => {
     const nodeCond1 = {name: "test", value: 1};
     const node1 = new ExpressionNode(nodeCond1);
     const nodeCond2 = {name: "test", value: 2};
-    const node2 = new ExpressionNode(nodeCond2, connectionTypes.OR);
+    const node2 = new ExpressionNode(nodeCond2);
     const nodeCond3 = {name: "test", value: 3};
     const node3 = new ExpressionNode(nodeCond3);
     const nodeCond4 = {name: "test", value: 4};
-    const node4 = new ExpressionNode(nodeCond4, connectionTypes.OR);
+    const node4 = new ExpressionNode(nodeCond4);
     const group0 = new ExpressionNodeGroup();
-    const group1 = new ExpressionNodeGroup();
-    const group2 = new ExpressionNodeGroup();
+    const group1 = new ExpressionNodeGroup({connectionType: connectionTypes.OR});
+    const group2 = new ExpressionNodeGroup({connectionType: connectionTypes.OR});
     const eb = new ExpressionBuilder();
     eb.add(node0)
       .add(group0)
@@ -321,6 +318,7 @@ describe("ExpressionBuilder - testing flatten method", () => {
       .add(node4);
 
     const flattened = eb.flatten();
+    console.log(flattened);
     expect(flattened).toBeInstanceOf(Array);
     expect(flattened).toHaveLength(4);
     expect(flattened[0]).toBeInstanceOf(Array);
@@ -331,13 +329,13 @@ describe("ExpressionBuilder - testing flatten method", () => {
     expect(flattened[1]).toBeInstanceOf(Array);
     expect(flattened[1]).toHaveLength(3);
     expect(flattened[1][0]).toStrictEqual(nodeCond0);
-    expect(flattened[1][1]).toStrictEqual(nodeCond2);
-    expect(flattened[1][2]).toStrictEqual(nodeCond3);
+    expect(flattened[1][1]).toStrictEqual(nodeCond1);
+    expect(flattened[1][2]).toStrictEqual(nodeCond4);
     expect(flattened[2]).toBeInstanceOf(Array);
     expect(flattened[2]).toHaveLength(3);
     expect(flattened[2][0]).toStrictEqual(nodeCond0);
-    expect(flattened[2][1]).toStrictEqual(nodeCond1);
-    expect(flattened[2][2]).toStrictEqual(nodeCond4);
+    expect(flattened[2][1]).toStrictEqual(nodeCond2);
+    expect(flattened[2][2]).toStrictEqual(nodeCond3);
     expect(flattened[3]).toBeInstanceOf(Array);
     expect(flattened[3]).toHaveLength(3);
     expect(flattened[3][0]).toStrictEqual(nodeCond0);

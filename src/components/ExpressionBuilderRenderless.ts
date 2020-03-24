@@ -6,9 +6,7 @@ import ExpressionNodeGroup from "@/core/ExpressionNodeGroup";
 @Component
 export default class ExpressionBuilderRenderless extends Vue {
   @Prop({type: ExpressionBuilder, required: true}) protected value!: ExpressionBuilder;
-
-  public eventHub: Vue = new Vue();
-
+  @Prop({type: Vue, required: false, default: () => new Vue()}) eventHub!: Vue;
 
   created() {
     this.eventHub.$on("input", this.handleInput);

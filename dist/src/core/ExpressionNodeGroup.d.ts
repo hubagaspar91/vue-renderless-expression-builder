@@ -1,10 +1,18 @@
 import { ICondition, IExpressionNode, IExpressionNodeGroupJSON, IExpressionNodeGroupOpts } from "@/core/Interfaces";
 import ExpressionNodeBase from "@/core/ExpressionNodeBase";
+export declare const connectionTypes: {
+    AND: string;
+    OR: string;
+};
+export declare const connectionTypesArray: string[];
 export default class ExpressionNodeGroup extends ExpressionNodeBase implements IExpressionNode {
     private _children;
     private _maxDepth;
     private _currentDepth;
-    constructor(opts?: IExpressionNodeGroupOpts, connectionType?: string, parentNode?: ExpressionNodeGroup);
+    private _connectionType;
+    constructor(opts?: IExpressionNodeGroupOpts, parentNode?: ExpressionNodeGroup);
+    set connectionType(value: string);
+    get connectionType(): string;
     set children(value: IExpressionNode[]);
     get children(): IExpressionNode[];
     set maxDepth(value: number);
