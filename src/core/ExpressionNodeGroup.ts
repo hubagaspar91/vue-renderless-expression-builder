@@ -22,8 +22,8 @@ const defaultOpts = () => ({maxDepth: 0, currentDepth: 0, children: [], connecti
 
 export default class ExpressionNodeGroup extends ExpressionNodeBase implements IExpressionNode {
   private _children: IExpressionNode[] = [];
-  private _maxDepth: number = 0;
-  private _currentDepth: number = 0;
+  private _maxDepth = 0;
+  private _currentDepth = 0;
   private _connectionType: string = connectionTypes.AND;
 
   constructor(opts: IExpressionNodeGroupOpts = defaultOpts(),
@@ -129,11 +129,9 @@ export default class ExpressionNodeGroup extends ExpressionNodeBase implements I
    * It can be used for client side list filtering
    */
   flatten(): Array<ICondition[]> {
-    let flattenedList: Array<ICondition[]> = this.connectionType === connectionTypes.AND
-      ? [[]]
-      : [];
-    let nodes = this.children.filter(c => c instanceof ExpressionNode) as ExpressionNode[];
-    let groups: ExpressionNodeGroup[] =
+    let flattenedList: Array<ICondition[]> = this.connectionType === connectionTypes.AND ? [[]] : [];
+    const nodes = this.children.filter(c => c instanceof ExpressionNode) as ExpressionNode[];
+    const groups: ExpressionNodeGroup[] =
       this.children.filter(c => c instanceof ExpressionNodeGroup) as ExpressionNodeGroup[];
     nodes.forEach(node => {
       if (this.connectionType == connectionTypes.AND)
@@ -143,7 +141,7 @@ export default class ExpressionNodeGroup extends ExpressionNodeBase implements I
     });
     groups.forEach(group => {
       if (this.connectionType == connectionTypes.AND) {
-        let newFlattenedList: Array<ICondition[]> = [];
+        const newFlattenedList: Array<ICondition[]> = [];
         flattenedList.forEach(conditionGroup =>
           group.flatten().forEach(conditionGroupInner =>
             newFlattenedList.push([...conditionGroup, ...conditionGroupInner])));

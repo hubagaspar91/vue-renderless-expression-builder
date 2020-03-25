@@ -1,18 +1,35 @@
-import {Component, Prop, Vue} from 'vue-property-decorator';
+import {Component, Prop, Provide, Vue} from 'vue-property-decorator';
 import ExpressionBuilder from "@/core/ExpressionBuilder";
 import {actionTypes, InputEventBody} from "@/components/Utils";
 import ExpressionNodeGroup from "@/core/ExpressionNodeGroup";
+import {returnDefaultFilters} from "@/conditions/Defaults";
+import {ConditionProviderField, ConditionProviderFilterDefinition} from "@/conditions/Interfaces";
+import ConditionProvider from "@/conditions/ConditionProvider";
+
+export const provideEventHubKey = "$__qb_event_hub__";
+export const provideConditionProviderKey = "$__qb_condition_provider__";
 
 @Component
 export default class ExpressionBuilderRenderless extends Vue {
   @Prop({type: ExpressionBuilder, required: true}) protected value!: ExpressionBuilder;
-  @Prop({type: Vue, required: false, default: () => new Vue()}) eventHub!: Vue;
+
+  @Provide(provideEventHubKey)
+  @Prop({type: Vue, required: false, default: () => new Vue()})
+  eventHub!: Vue;
+
+  @Prop({type: Array, required: false, default: returnDefaultFilters}) filters?: ConditionProviderFilterDefinition[];
+  @Prop({type: Array, required: true}) fields!: ConditionProviderField[];
+
+  @Provide(provideConditionProviderKey) conditionProvider = new ConditionProvider({
+    filters: this.filters as ConditionProviderFilterDefinition[],
+    fields: this.fields
+  });
 
   created() {
-    this.eventHub.$on("input", this.handleInput);
+    this.eventHub.$on("input", this._handleInput);
   }
 
-  handleInput(body: InputEventBody) {
+  private _handleInput(body: InputEventBody) {
     const pathToParent = body.path.slice(0, body.path.length-1),
       index = body.path[body.path.length-1];
 

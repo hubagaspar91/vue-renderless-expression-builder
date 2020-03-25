@@ -11,7 +11,7 @@ export interface IExpressionNodeBase {
 export interface IExpressionNode extends IExpressionNodeBase {
     toJSON(addMaxDepth?: boolean): IExpressionNodeJSON | IExpressionNodeGroupJSON;
 }
-export declare function isIExpressionNode(obj: Object): obj is IExpressionNode;
+export declare function isIExpressionNode(obj: object): obj is IExpressionNode;
 /**
  * Condition object schema for {ExpressionNode}
  */

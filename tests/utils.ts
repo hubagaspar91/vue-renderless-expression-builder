@@ -1,4 +1,6 @@
 import {IExpressionNodeGroupJSON} from "@/core/Interfaces";
+import {ConditionProviderField} from "@/conditions/Interfaces";
+import {fieldTypes, filterTypes} from "@/conditions/Defaults";
 
 export const testJSON: IExpressionNodeGroupJSON = {
   connectionType: "and",
@@ -19,3 +21,11 @@ export const testJSON: IExpressionNodeGroupJSON = {
     }
   ]
 };
+
+export const mockFields: ConditionProviderField[] = [
+  {
+    name: "test",
+    displayName: "TEST",
+    type: fieldTypes.TEXT
+  }
+];

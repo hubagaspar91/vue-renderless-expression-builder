@@ -1,21 +1,27 @@
-import {mount} from "@vue/test-utils";
-import ExpressionBuilderRenderless from "@/components/ExpressionBuilderRenderless";
+import {mount, shallowMount} from "@vue/test-utils";
+import ExpressionBuilderRenderless, {
+  provideConditionProviderKey,
+  provideEventHubKey
+} from "@/components/ExpressionBuilderRenderless";
 import ExpressionNode from "@/core/ExpressionNode";
 import ExpressionNodeGroup from "@/core/ExpressionNodeGroup";
 import {Vue} from "vue-property-decorator";
-import {testJSON} from "../utils";
+import {mockFields, testJSON} from "../utils";
 import ExpressionNodeRenderless from "@/components/ExpressionNodeRenderless";
 import {ICondition, IExpressionNodeGroupJSON, IExpressionNodeJSON} from "@/core/Interfaces";
 import ExpressionNodeGroupRenderless from "@/components/ExpressionNodeGroupRenderless";
 import {actionTypes} from "@/components/Utils";
 import ExpressionBuilder from "@/core/ExpressionBuilder";
+import mock = jest.mock;
+import ConditionProvider from "@/conditions/ConditionProvider";
 
 describe("ExpressionBuilderRenderless", () => {
 
   it("Create instance", () => {
     const wrapper = mount(ExpressionBuilderRenderless, {
       propsData: {
-        value: new ExpressionBuilder()
+        value: new ExpressionBuilder(),
+        fields: mockFields
       }
     });
     expect(wrapper.vm.root).toBeInstanceOf(ExpressionNodeGroup);
@@ -26,7 +32,8 @@ describe("ExpressionBuilderRenderless", () => {
   it("Create instance from json", () => {
     const wrapper = mount(ExpressionBuilderRenderless, {
       propsData: {
-        value: new ExpressionBuilder(testJSON)
+        value: new ExpressionBuilder(testJSON),
+        fields: mockFields
       }
     });
     expect(wrapper.vm.root).toBeInstanceOf(ExpressionNodeGroup);
@@ -41,7 +48,8 @@ describe("ExpressionBuilderRenderless", () => {
       // creating the renderless builder component
       const wrapper = mount(ExpressionBuilderRenderless, {
         propsData: {
-          value: new ExpressionBuilder(testJSON)
+          value: new ExpressionBuilder(testJSON),
+          fields: mockFields
         }
       });
 
@@ -50,13 +58,17 @@ describe("ExpressionBuilderRenderless", () => {
       // creating a renderless node from the root path [0, 0] node
       const nodeWrapper = mount(ExpressionNodeRenderless, {
         propsData: {
-          node: selectedNode,
-          eventHub: wrapper.vm.eventHub
+          node: selectedNode
+        },
+        provide: {
+          [provideEventHubKey]: wrapper.vm.eventHub,
+          [provideConditionProviderKey]: wrapper.vm.conditionProvider
         },
         scopedSlots: {
           default: () => null
         }
       });
+
       return {wrapper, nodeWrapper, selectedNode};
     };
 
@@ -68,7 +80,7 @@ describe("ExpressionBuilderRenderless", () => {
           const json = builder.root.toJSON();
           try {
             expect((json.children[0] as IExpressionNodeGroupJSON).children).toHaveLength(0);
-          } catch(e) {
+          } catch (e) {
             reject(e);
           }
           resolve();
@@ -91,8 +103,7 @@ describe("ExpressionBuilderRenderless", () => {
               .not.toStrictEqual((selectedNode as ExpressionNode).condition);
             expect((json.children[0] as IExpressionNodeGroupJSON).children[0] as IExpressionNodeJSON)
               .toStrictEqual(newCondition);
-          }
-          catch(e) {
+          } catch (e) {
             reject(e);
           }
           resolve();
@@ -106,7 +117,8 @@ describe("ExpressionBuilderRenderless", () => {
       // creating the renderless builder component
       const wrapper = mount(ExpressionBuilderRenderless, {
         propsData: {
-          value: new ExpressionBuilder(testJSON)
+          value: new ExpressionBuilder(testJSON),
+          fields: mockFields
         }
       });
 
@@ -117,6 +129,10 @@ describe("ExpressionBuilderRenderless", () => {
         propsData: {
           node: selectedGroup,
           eventHub: wrapper.vm.eventHub
+        },
+        provide: {
+          [provideEventHubKey]: wrapper.vm.eventHub,
+          [provideConditionProviderKey]: wrapper.vm.conditionProvider
         },
         scopedSlots: {
           default: () => null
@@ -135,8 +151,7 @@ describe("ExpressionBuilderRenderless", () => {
           const json = builder.root.toJSON();
           try {
             expect((json.children[0] as IExpressionNodeGroupJSON).connectionType).not.toBe(selectedGroup.connectionType);
-          }
-          catch(e) {
+          } catch (e) {
             reject(e);
           }
           resolve();
@@ -155,7 +170,7 @@ describe("ExpressionBuilderRenderless", () => {
         wrapper.vm.$on("input", (builder: ExpressionBuilder) => {
           const json = builder.root.toJSON();
           const parentJson = json.children[0] as IExpressionNodeGroupJSON;
-          const newNodeJson = parentJson.children[index != undefined ? index : parentJson.children.length-1];
+          const newNodeJson = parentJson.children[index != undefined ? index : parentJson.children.length - 1];
           try {
             if (group) {
               expect("children" in newNodeJson).toBe(true);
@@ -165,7 +180,7 @@ describe("ExpressionBuilderRenderless", () => {
               else
                 expect((newNodeJson as IExpressionNodeJSON)).toStrictEqual({name: null, value: null})
             }
-          } catch(e) {
+          } catch (e) {
             reject(e);
           }
           resolve();
@@ -184,21 +199,48 @@ describe("ExpressionBuilderRenderless", () => {
       });
     };
 
-    it("insertNode - from ExpressionNodeGroupRenderless",() => {
+    it("insertNode - from ExpressionNodeGroupRenderless", () => {
       return testActionOnGroup(actionTypes.INSERT, false, 0);
     });
 
-    it("insertGroup - from ExpressionNodeGroupRenderless",() => {
+    it("insertGroup - from ExpressionNodeGroupRenderless", () => {
       return testActionOnGroup(actionTypes.INSERT, true, 0);
     });
 
-    it("addNode - from ExpressionNodeGroupRenderless",() => {
+    it("addNode - from ExpressionNodeGroupRenderless", () => {
       return testActionOnGroup(actionTypes.ADD, false);
     });
 
-    it("addGroup - from ExpressionNodeGroupRenderless",() => {
+    it("addGroup - from ExpressionNodeGroupRenderless", () => {
       return testActionOnGroup(actionTypes.ADD, true);
     });
 
   });
+
+  it("Checks, whether the builder provides services properly", () => {
+    const wrapper = mount(ExpressionBuilderRenderless, {
+      propsData: {
+        value: new ExpressionBuilder(testJSON),
+        fields: mockFields
+      },
+      components: {
+        ExpressionNodeGroupRenderless
+      },
+      render(createElement, context) {
+        return createElement(ExpressionNodeGroupRenderless, {
+          props: {node: this.root}, scopedSlots: {
+            default: () => null
+          }
+        })
+      }
+    });
+
+    expect(wrapper.vm.$children).toHaveLength(1);
+    expect((wrapper.vm.$children[0] as ExpressionNodeGroupRenderless).eventHub).toBeInstanceOf(Vue);
+    expect((wrapper.vm.$children[0] as ExpressionNodeGroupRenderless).eventHub).toBe(wrapper.vm.eventHub);
+    expect((wrapper.vm.$children[0] as ExpressionNodeGroupRenderless).conditionProvider).toBeInstanceOf(ConditionProvider);
+    expect((wrapper.vm.$children[0] as ExpressionNodeGroupRenderless).conditionProvider).toBe(wrapper.vm.conditionProvider);
+    expect((wrapper.vm.$children[0] as ExpressionNodeGroupRenderless).conditionProvider.fields).toStrictEqual((wrapper.vm.conditionProvider).fields);
+    expect((wrapper.vm.$children[0] as ExpressionNodeGroupRenderless).conditionProvider.filters).toStrictEqual(wrapper.vm.conditionProvider.filters);
+  })
 });

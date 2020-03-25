@@ -5,8 +5,8 @@ const errorTypes = {
   INVALID_CONTEXT_PATH: "invalidContextPath"
 };
 
-interface errorTypeMessageFactoryMap {
-  [index:string]: Function
+interface ErrorTypeMessageFactoryMap {
+  [index: string]: Function;
 }
 
 const errorTypeMessageFactoryMap = {
@@ -18,7 +18,7 @@ const errorTypeMessageFactoryMap = {
 
 
 export const handleError = (type: string, customHandler?: Function, factoryParam?: any) => {
-  const msg = (errorTypeMessageFactoryMap as errorTypeMessageFactoryMap)[type](factoryParam);
+  const msg = (errorTypeMessageFactoryMap as ErrorTypeMessageFactoryMap)[type](factoryParam);
   if (customHandler)
     customHandler(type, msg);
   console.error(msg);

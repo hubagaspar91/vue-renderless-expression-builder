@@ -35,9 +35,7 @@ export default class ExpressionNode extends ExpressionNodeBase implements IExpre
    * Exports the data as JSON
    */
   toJSON(): IExpressionNodeJSON {
-    return {
-      ...this.condition
-    }
+    return JSON.parse(JSON.stringify(this.condition));
   }
 
   /**

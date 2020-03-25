@@ -1,11 +1,16 @@
 import {mount} from "@vue/test-utils";
-import {testJSON} from "../utils";
+import {mockFields, testJSON} from "../utils";
 import ExpressionNodeGroup from "@/core/ExpressionNodeGroup";
 import ExpressionNodeRenderless from "@/components/ExpressionNodeRenderless";
 import {Vue} from "vue-property-decorator";
 import {actionTypes, InputEventBody} from "@/components/Utils";
 import ExpressionNodeGroupRenderless from "@/components/ExpressionNodeGroupRenderless";
 import ExpressionNode from "@/core/ExpressionNode";
+import {provideConditionProviderKey, provideEventHubKey} from "@/components/ExpressionBuilderRenderless";
+import ConditionProvider from "@/conditions/ConditionProvider";
+import {returnDefaultFilters} from "@/conditions/Defaults";
+
+const returnConditionProvider = () => new ConditionProvider({fields: mockFields, filters: returnDefaultFilters()});
 
 
 describe("Renderless components", () => {
@@ -28,8 +33,11 @@ describe("Renderless components", () => {
         });
         const wrapper0 = mount(ExpressionNodeGroupRenderless, {
           propsData: {
-            eventHub: eventHub0,
             node: group.children[0]
+          },
+          provide: {
+            [provideEventHubKey]: eventHub0,
+            [provideConditionProviderKey]: returnConditionProvider()
           },
           scopedSlots: {
             default: () => null
@@ -57,8 +65,11 @@ describe("Renderless components", () => {
         });
         const wrapper0 = mount(ExpressionNodeRenderless, {
           propsData: {
-            eventHub: eventHub0,
             node: (group.children[0] as ExpressionNodeGroup).children[0]
+          },
+          provide: {
+            [provideEventHubKey]: eventHub0,
+            [provideConditionProviderKey]: returnConditionProvider()
           },
           scopedSlots: {
             default: () => null
@@ -87,8 +98,11 @@ describe("Renderless components", () => {
         });
         const wrapper0 = mount(ExpressionNodeRenderless, {
           propsData: {
-            eventHub: eventHub0,
             node: (group.children[0] as ExpressionNodeGroup).children[0]
+          },
+          provide: {
+            [provideEventHubKey]: eventHub0,
+            [provideConditionProviderKey]: returnConditionProvider()
           },
           scopedSlots: {
             default: () => null
@@ -135,8 +149,11 @@ describe("Renderless components", () => {
         });
         const wrapper0 = mount(ExpressionNodeGroupRenderless, {
           propsData: {
-            eventHub: eventHub0,
             node: group.children[0]
+          },
+          provide: {
+            [provideEventHubKey]: eventHub0,
+            [provideConditionProviderKey]: returnConditionProvider()
           },
           scopedSlots: {
             default: () => null

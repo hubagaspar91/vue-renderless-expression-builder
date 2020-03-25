@@ -1,6 +1,8 @@
-import {Component, Prop, Vue} from "vue-property-decorator";
+import {Component, Inject, Prop, Vue} from "vue-property-decorator";
 import {IExpressionNode} from "@/core/Interfaces";
 import {actionTypes, InputEventBody} from "@/components/Utils";
+import ConditionProvider from "@/conditions/ConditionProvider";
+import {provideConditionProviderKey, provideEventHubKey} from "@/components/ExpressionBuilderRenderless";
 
 /**
  * Helper to recursively get the path of the current node
@@ -16,10 +18,12 @@ const getNodePath = (node: IExpressionNode): number[] => {
 @Component({})
 export default class ExpressionNodeBase extends Vue {
   @Prop({required: true}) protected node!: IExpressionNode;
-  @Prop({required: true}) eventHub!: Vue;
 
-  emitInput(node?: IExpressionNode, action = actionTypes.SET, index?: number ): void {
-    let path = getNodePath(this.node);
+  @Inject(provideEventHubKey) eventHub!: Vue;
+  @Inject(provideConditionProviderKey) conditionProvider!: ConditionProvider;
+
+  emitInput(node?: IExpressionNode, action = actionTypes.SET, index?: number): void {
+    const path = getNodePath(this.node);
     if (index != undefined)
       path.push(index);
     this.eventHub.$emit("input", {node, path, action} as InputEventBody)
@@ -30,9 +34,8 @@ export default class ExpressionNodeBase extends Vue {
   }
 
   get index() {
-    if (this.node.parentNode)
-      return this.node.parentNode.children.indexOf(this.node);
-    else
-      return -1
+    return this.node.parentNode
+      ? this.node.parentNode.children.indexOf(this.node)
+      : -1;
   }
 }

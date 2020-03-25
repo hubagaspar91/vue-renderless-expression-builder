@@ -1,5 +1,5 @@
 import { __decorate } from 'tslib';
-import { Prop, Vue, Component } from 'vue-property-decorator';
+import { Prop, Provide, Vue, Component } from 'vue-property-decorator';
 
 function _classCallCheck(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
@@ -337,7 +337,7 @@ var ExpressionNode = /*#__PURE__*/function (_ExpressionNodeBase) {
      * Exports the data as JSON
      */
     value: function toJSON() {
-      return objectSpread2({}, this.condition);
+      return JSON.parse(JSON.stringify(this.condition));
     }
     /**
      * Constructs an ExpressionNode from a JSON representation
@@ -616,8 +616,7 @@ var ExpressionBuilder = /*#__PURE__*/function () {
   }, {
     key: "delete",
     value: function _delete(index) {
-      if (index >= 0 && index <= this.context.children.length - 1) this._context.children.splice(index, 1);
-      handleError(errorTypes.INVALID_INDEX_DELETE, this.errorHandler, index);
+      if (index >= 0 && index <= this.context.children.length - 1) this._context.children.splice(index, 1);else handleError(errorTypes.INVALID_INDEX_DELETE, this.errorHandler, index);
       return this;
     }
   }, {
@@ -649,7 +648,8 @@ var ExpressionBuilder = /*#__PURE__*/function () {
         if (pathIndex == path.length - 1) return foundNode;else return this.seekContext(path, foundNode, pathIndex + 1);
       }
 
-      if (path.length > 0) handleError(errorTypes.INVALID_CONTEXT_PATH, this.errorHandler, path);
+      if (path.length > 0) // if path is not empty, but no node group found, error
+        handleError(errorTypes.INVALID_CONTEXT_PATH, this.errorHandler, path);
       return this.root; // return root if [] is the path
     }
   }, {
@@ -700,11 +700,11 @@ var ExpressionBuilderRenderless = /*#__PURE__*/function (_Vue) {
   createClass(ExpressionBuilderRenderless, [{
     key: "created",
     value: function created() {
-      this.eventHub.$on("input", this.handleInput);
+      this.eventHub.$on("input", this._handleInput);
     }
   }, {
-    key: "handleInput",
-    value: function handleInput(body) {
+    key: "_handleInput",
+    value: function _handleInput(body) {
       var pathToParent = body.path.slice(0, body.path.length - 1),
           index = body.path[body.path.length - 1];
 
@@ -749,7 +749,7 @@ __decorate([Prop({
   required: true
 })], ExpressionBuilderRenderless.prototype, "value", void 0);
 
-__decorate([Prop({
+__decorate([Provide("$__qb_event_hub__"), Prop({
   type: Vue,
   required: false,
   default: function _default() {
@@ -801,7 +801,7 @@ var ExpressionNodeBase$1 = /*#__PURE__*/function (_Vue) {
   }, {
     key: "index",
     get: function get() {
-      if (this.node.parentNode) return this.node.parentNode.children.indexOf(this.node);else return -1;
+      return this.node.parentNode ? this.node.parentNode.children.indexOf(this.node) : -1;
     }
   }]);
 
@@ -934,6 +934,32 @@ var Core = {
   ExpressionNode: ExpressionNode,
   ErrorTypes: errorTypes
 };
-var Components = ImportedComponents;
+var Components = ImportedComponents; // const cp = new ConditionProvider({
+//   filters: Object.values(filterTypes),
+//   fields: [
+//     {
+//       type: "text",
+//       name: "fasz",
+//       displayName: "Fasz"
+//     },
+//     {
+//       type: "number",
+//       name: "faszhosst",
+//       displayName: "Fasz Hossz"
+//     },
+//     {
+//       type: "text",
+//       name: "genyofajta",
+//       displayName: "Genyo Fajta",
+//       availableValues: [
+//         "szép",
+//         "csúnya",
+//         "közép"
+//       ]
+//     }
+//   ]
+// });
+// console.log(cp);
+// console.log(cp.createFieldFilter("genyofajta", "in", "csúny"));
 
 export { Components, Core };

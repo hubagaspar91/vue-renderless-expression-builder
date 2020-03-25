@@ -76,7 +76,7 @@ export default class ExpressionBuilder {
   delete(index: number) {
     if (index >= 0 && index <= this.context.children.length-1)
       this._context.children.splice(index, 1);
-    handleError(errorTypes.INVALID_INDEX_DELETE, this.errorHandler, index);
+    else handleError(errorTypes.INVALID_INDEX_DELETE, this.errorHandler, index);
     return this;
   }
 
@@ -105,7 +105,7 @@ export default class ExpressionBuilder {
       else
         return this.seekContext(path, foundNode, pathIndex + 1);
     }
-    if (path.length > 0)
+    if (path.length > 0) // if path is not empty, but no node group found, error
       handleError(errorTypes.INVALID_CONTEXT_PATH, this.errorHandler, path);
     return this.root;  // return root if [] is the path
   }

@@ -22,16 +22,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">94.44% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>17/18</span>
+                <span class='fraction'>18/18</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">85.71% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>6/7</span>
+                <span class='fraction'>7/7</span>
             </div>
         
             
@@ -43,9 +43,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">94.12% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>16/17</span>
+                <span class='fraction'>17/17</span>
             </div>
         
             
@@ -93,7 +93,12 @@
 <a name='L35'></a><a href='#L35'>35</a>
 <a name='L36'></a><a href='#L36'>36</a>
 <a name='L37'></a><a href='#L37'>37</a>
-<a name='L38'></a><a href='#L38'>38</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">2x</span>
+<a name='L38'></a><a href='#L38'>38</a>
+<a name='L39'></a><a href='#L39'>39</a>
+<a name='L40'></a><a href='#L40'>40</a>
+<a name='L41'></a><a href='#L41'>41</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -111,6 +116,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -125,14 +132,15 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">14x</span>
-<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-yes">15x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import {Component, Prop, Vue} from "vue-property-decorator";
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import {Component, Inject, Prop, Vue} from "vue-property-decorator";
 import {IExpressionNode} from "@/core/Interfaces";
 import {actionTypes, InputEventBody} from "@/components/Utils";
+import ConditionProvider from "@/conditions/ConditionProvider";
+import {provideConditionProviderKey, provideEventHubKey} from "@/components/ExpressionBuilderRenderless";
 &nbsp;
 /**
  * Helper to recursively get the path of the current node
@@ -148,10 +156,12 @@ const getNodePath = (node: IExpressionNode): number[] =&gt; {
 @Component({})
 export default class ExpressionNodeBase extends Vue {
   @Prop({required: true}) protected node!: IExpressionNode;
-  @Prop({required: true}) eventHub!: Vue;
 &nbsp;
-  emitInput(node?: IExpressionNode, action = actionTypes.SET, index?: number ): void {
-    let path = getNodePath(this.node);
+  @Inject(provideEventHubKey) eventHub!: Vue;
+  @Inject(provideConditionProviderKey) conditionProvider!: ConditionProvider;
+&nbsp;
+  emitInput(node?: IExpressionNode, action = actionTypes.SET, index?: number): void {
+    const path = getNodePath(this.node);
     if (index != undefined)
       path.push(index);
     this.eventHub.$emit("input", {node, path, action} as InputEventBody)
@@ -162,10 +172,9 @@ export default class ExpressionNodeBase extends Vue {
   }
 &nbsp;
   get index() {
-    <span class="missing-if-branch" title="else path not taken" >E</span>if (this.node.parentNode)
-      return this.node.parentNode.children.indexOf(this.node);
-    else
-<span class="cstat-no" title="statement not covered" >      return -</span>1
+    return this.node.parentNode
+      ? this.node.parentNode.children.indexOf(this.node)
+      : -1;
   }
 }</pre></td></tr></table></pre>
 
@@ -174,7 +183,7 @@ export default class ExpressionNodeBase extends Vue {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Tue Mar 24 2020 14:30:43 GMT+0100 (CET)
+                at Wed Mar 25 2020 13:41:29 GMT+0100 (Central European Standard Time)
             </div>
         </div>
         <script src="../../prettify.js"></script>

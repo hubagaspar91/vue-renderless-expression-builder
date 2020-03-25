@@ -307,18 +307,18 @@ describe("ExpressionBuilder - testing flatten method", () => {
     const group1 = new ExpressionNodeGroup({connectionType: connectionTypes.OR});
     const group2 = new ExpressionNodeGroup({connectionType: connectionTypes.OR});
     const eb = new ExpressionBuilder();
-    eb.add(node0)
-      .add(group0)
+    eb.add(group0)
       .add(group1)
       .add(node1)
       .add(node2)
       .contextUp()
       .add(group2)
       .add(node3)
-      .add(node4);
+      .add(node4)
+      .contextToRoot()
+      .add(node0);
 
     const flattened = eb.flatten();
-    console.log(flattened);
     expect(flattened).toBeInstanceOf(Array);
     expect(flattened).toHaveLength(4);
     expect(flattened[0]).toBeInstanceOf(Array);
