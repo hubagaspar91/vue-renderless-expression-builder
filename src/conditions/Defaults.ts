@@ -1,4 +1,4 @@
-import {ConditionProviderFilter, ConditionProviderFilterDefinition} from "@/conditions/Interfaces";
+import {ConditionProviderFilterDefinition} from "@/conditions/Interfaces";
 
 export const fieldTypes = {
   TEXT: "text",
@@ -28,10 +28,10 @@ export const filterTypes = {
 
 export const defaultAvailableFilters = {
   [fieldTypes.TEXT]: [
-    filterTypes.CONTAINS,
-    filterTypes.NOT_CONTAINS,
     filterTypes.EQUALS,
     filterTypes.NOT_EQUALS,
+    filterTypes.CONTAINS,
+    filterTypes.NOT_CONTAINS,
     filterTypes.IS_EMPTY,
     filterTypes.NOT_IS_EMPTY,
     filterTypes.ENDS_WITH,
@@ -68,6 +68,5 @@ export const defaultAvailableFilters = {
 };
 
 export const returnDefaultFilters = (): ConditionProviderFilterDefinition[] => Object.values(filterTypes).map(t => ({
-  name: t,
-  availableFilters: defaultAvailableFilters[t]
+  name: t
 }));

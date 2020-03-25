@@ -3,12 +3,17 @@ export interface ConditionProviderField {
   name: string;
   displayName: string;
   availableFilters?: string[];
-  availableValues?: any[]  // used for selection, if IN and NOT_IN are enabled
+  availableValues?: any[];  // used, if select-type render is used
 }
 
 export interface ConditionProviderFilterDefinition {
-  name: string,
-  availableFilters: string[]
+  name: string; // filter name
+  renderComponent?: string;  // custom component name string, used fo rendering the filter
+}
+
+export interface ConditionProviderFieldTypeDefinition {
+  name: string;
+  defaultAvailableFilters: string[];
 }
 
 export interface ConditionProviderFilterValue {
@@ -18,10 +23,11 @@ export interface ConditionProviderFilterValue {
 
 export interface ConditionProviderFilter {
   name: string;
-  value: ConditionProviderFilterValue
+  value: ConditionProviderFilterValue;
 }
 
 export interface ConditionProviderOpts {
   fields: ConditionProviderField[];
-  filters: ConditionProviderFilterDefinition[]
+  filters: ConditionProviderFilterDefinition[];
+  customFieldTypes?: ConditionProviderFieldTypeDefinition[];
 }

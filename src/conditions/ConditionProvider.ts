@@ -1,5 +1,5 @@
 import {
-  ConditionProviderField,
+  ConditionProviderField, ConditionProviderFieldTypeDefinition,
   ConditionProviderFilter,
   ConditionProviderFilterDefinition,
   ConditionProviderOpts
@@ -48,6 +48,8 @@ export default class ConditionProvider {
   private _processOpts(opts: ConditionProviderOpts) {
     this._filters = JSON.parse(JSON.stringify(opts.filters));
     const filterNames = this._filters.map(f => f.name);
+    const customFieldNames = opts.customFieldTypes ? opts.customFieldTypes.map(t => t.name) : [];
+
     this._fields = opts.fields.map(field => {
       const innerField: ConditionProviderField = {
         type: field.type,
@@ -57,20 +59,26 @@ export default class ConditionProvider {
         availableFilters: []
       };
 
-      // check if all availableFilters are added to filter names
-      if (field.availableFilters) {
-        (field.availableFilters as string[]).forEach(af => {
-          if (!filterNames.includes(af))
-            throw new Error(`Filter ${af} is defined as available for field 
-          ${field.name}, but was not added in the constructor param.`);
-          (innerField.availableFilters as string[]).push(af);
-        });
-      }
-
       // setting availableFilters, if it was provided null or empty
       if (!field.availableFilters || field.availableFilters.length == 0) {
-        innerField.availableFilters = filterNames.filter(t =>
-          defaultAvailableFilters[innerField.type] && defaultAvailableFilters[innerField.type].includes(t));
+
+        innerField.availableFilters = filterNames.filter(filterName => {
+          // if filter is of a default filter type
+          if (defaultAvailableFilters[innerField.type])
+
+            // return true, if defaultAvailableFilter for the default filed type include it
+            return defaultAvailableFilters[innerField.type].includes(filterName);
+
+          // if the current field is of custom field type defined on the instance
+          else if (opts.customFieldTypes && customFieldNames.includes(innerField.type))
+
+            // return true, if the defaultAvailableFields of the customFieldType contain it
+            return (opts.customFieldTypes.find(t => t.name) as ConditionProviderFieldTypeDefinition)
+              .defaultAvailableFilters.includes(filterName);
+
+          return false;
+        });
+
         if (innerField.availableFilters.length == 0)
           throw new Error(`As per the settings your provided, field ${field.name} would not have any available filters.`);
       }

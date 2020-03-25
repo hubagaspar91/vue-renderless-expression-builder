@@ -8,7 +8,7 @@ export default class ExpressionBuilder {
   private _context: ExpressionNodeGroup;
 
   constructor(root?: ExpressionNodeGroup | IExpressionNodeGroupJSON, errorHandler?: Function) {
-    this.root = root  // if root is defined
+    this.root = root != undefined  // if root is defined
       ? ExpressionNodeGroup.isJSONInstance(root)  // and is a json representation
         ? ExpressionNodeGroup.fromJSON(root)  // parse it
         : root  // else use root as root, as it's an ExpressionNodeGroup

@@ -9,18 +9,40 @@ import ConditionProvider from "@/conditions/ConditionProvider";
 export const provideEventHubKey = "$__qb_event_hub__";
 export const provideConditionProviderKey = "$__qb_condition_provider__";
 
+
 @Component
 export default class ExpressionBuilderRenderless extends Vue {
+  /**
+   * Builder object, doing all the work, creating and preserving the consistency of the nested expression structure
+   */
   @Prop({type: ExpressionBuilder, required: true}) protected value!: ExpressionBuilder;
 
+  /**
+   * Event hub, through which nodes send the proposed state changes to the builder for execution, or dismissal
+   * Also injected in child nodes
+   */
   @Provide(provideEventHubKey)
   @Prop({type: Vue, required: false, default: () => new Vue()})
   eventHub!: Vue;
 
-  @Prop({type: Array, required: false, default: returnDefaultFilters}) filters?: ConditionProviderFilterDefinition[];
-  @Prop({type: Array, required: true}) fields!: ConditionProviderField[];
+  /**
+   * Filters, available for usage on the current builder instance
+   */
+  @Prop({type: Array, required: false, default: returnDefaultFilters})
+  filters?: ConditionProviderFilterDefinition[];
 
-  @Provide(provideConditionProviderKey) conditionProvider = new ConditionProvider({
+  /**
+   * Fields available for filtering on the current builder instance
+   */
+  @Prop({type: Array, required: true})
+  fields!: ConditionProviderField[];
+
+  /**
+   * Service for processing fields and filters into a factory service
+   * That creates individual conditions from field, filter and value
+   */
+  @Provide(provideConditionProviderKey)
+  conditionProvider = new ConditionProvider({
     filters: this.filters as ConditionProviderFilterDefinition[],
     fields: this.fields
   });
@@ -29,6 +51,12 @@ export default class ExpressionBuilderRenderless extends Vue {
     this.eventHub.$on("input", this._handleInput);
   }
 
+  /**
+   * Handles the input events from the child nodes, that suggests and change is to be made in the
+   * Expression structure
+   * @param body
+   * @private
+   */
   private _handleInput(body: InputEventBody) {
     const pathToParent = body.path.slice(0, body.path.length-1),
       index = body.path[body.path.length-1];

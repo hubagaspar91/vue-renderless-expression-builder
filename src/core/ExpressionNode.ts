@@ -18,7 +18,7 @@ export default class ExpressionNode extends ExpressionNodeBase implements IExpre
               parentNode?: ExpressionNodeGroup) {
     super(parentNode);
 
-    // to check for type
+    // checks for type
     this.condition = condition;
   }
 

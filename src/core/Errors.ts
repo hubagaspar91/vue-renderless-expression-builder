@@ -16,7 +16,12 @@ const errorTypeMessageFactoryMap = {
   [errorTypes.INVALID_CONTEXT_PATH]: (path: number[]) => `Invalid context path [${path.join(", ")}], new context must be an ExpressionNodeGroup node`
 };
 
-
+/**
+ * Logs the error to the console, and invokes the custom error handler, provided on the ExpressionNodeBuilder instance
+ * @param type
+ * @param customHandler
+ * @param factoryParam
+ */
 export const handleError = (type: string, customHandler?: Function, factoryParam?: any) => {
   const msg = (errorTypeMessageFactoryMap as ErrorTypeMessageFactoryMap)[type](factoryParam);
   if (customHandler)
