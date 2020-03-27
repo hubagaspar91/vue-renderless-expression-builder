@@ -1,5 +1,5 @@
 import ExpressionNodeBase from "@/core/ExpressionNodeBase";
-import {ICondition, IExpressionNode, IExpressionNodeJSON, isICondition} from "@/core/Interfaces";
+import {ICondition, IExpressionNode, IExpressionNodeJSON} from "@/core/Interfaces";
 import ExpressionNodeGroup from "@/core/ExpressionNodeGroup";
 
 /**
@@ -27,8 +27,9 @@ export default class ExpressionNode extends ExpressionNodeBase implements IExpre
   }
 
   set condition(condition) {
-    if (isICondition(condition)) this._condition = condition;
-    else throw new Error("Condition object must contain 'name' and 'value' keys.")
+    if (condition instanceof Object)
+      this._condition = condition;
+    else throw new Error("Condition must be an object.")
   }
 
   /**

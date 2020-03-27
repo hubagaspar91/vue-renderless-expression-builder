@@ -4,7 +4,7 @@ import ExpressionBuilder from "@/core/ExpressionBuilder";
 import {mockFields, testJSON} from "../../utils";
 import ExpressionNodeGroupRenderless from "@/components/ExpressionNodeGroupRenderless";
 import {Vue} from "vue-property-decorator";
-import ConditionProvider from "@/conditions/ConditionProvider";
+import ConditionFactory from "@/conditions/ConditionFactory";
 
 it("Checks, whether the builder provides services properly", () => {
   const wrapper = mount(ExpressionBuilderRenderless, {
@@ -27,8 +27,8 @@ it("Checks, whether the builder provides services properly", () => {
   expect(wrapper.vm.$children).toHaveLength(1);
   expect((wrapper.vm.$children[0] as ExpressionNodeGroupRenderless).eventHub).toBeInstanceOf(Vue);
   expect((wrapper.vm.$children[0] as ExpressionNodeGroupRenderless).eventHub).toBe(wrapper.vm.eventHub);
-  expect((wrapper.vm.$children[0] as ExpressionNodeGroupRenderless).conditionProvider).toBeInstanceOf(ConditionProvider);
-  expect((wrapper.vm.$children[0] as ExpressionNodeGroupRenderless).conditionProvider).toBe(wrapper.vm.conditionProvider);
-  expect((wrapper.vm.$children[0] as ExpressionNodeGroupRenderless).conditionProvider.fields).toStrictEqual((wrapper.vm.conditionProvider).fields);
-  expect((wrapper.vm.$children[0] as ExpressionNodeGroupRenderless).conditionProvider.filters).toStrictEqual(wrapper.vm.conditionProvider.filters);
+  expect((wrapper.vm.$children[0] as ExpressionNodeGroupRenderless).conditionFactory).toBeInstanceOf(ConditionFactory);
+  expect((wrapper.vm.$children[0] as ExpressionNodeGroupRenderless).conditionFactory).toBe(wrapper.vm.conditionProvider);
+  expect((wrapper.vm.$children[0] as ExpressionNodeGroupRenderless).conditionFactory.fields).toStrictEqual((wrapper.vm.conditionProvider).fields);
+  expect((wrapper.vm.$children[0] as ExpressionNodeGroupRenderless).conditionFactory.operators).toStrictEqual(wrapper.vm.conditionProvider.operators);
 });

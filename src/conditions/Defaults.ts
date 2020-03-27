@@ -1,13 +1,36 @@
-import {ConditionProviderFilterDefinition} from "@/conditions/Interfaces";
+import {ConditionFactoryFieldTypeDefinition, ConditionFactoryOperator} from "@/conditions/Interfaces";
 
-export const fieldTypes = {
+/**
+ * Default filed types available in the expression builder
+ */
+export const defaultFieldTypes = {
   TEXT: "text",
   DATE: "date",
   NUMBER: "number",
-  BOOLEAN: "boolean"
+  BOOLEAN: "boolean",
+  CHOICE: "radio",
+  MULTIPLE_CHOICE: "multipleChoice",
+  SELECT: "select"
 };
 
-export const filterTypes = {
+/**
+ * Labels (display names) for the default field types
+ */
+export const defaultFieldTypeLabels: Record<string, string> = {
+  TEXT: "text",
+  DATE: "date",
+  NUMBER: "number",
+  BOOLEAN: "boolean",
+  CHOICE: "radio",
+  MULTIPLE_CHOICE: "multiple choice",
+  SELECT: "select"
+};
+
+/**
+ * Kind of logical operators available in the expression builder, their place in a condition
+ * Field {operator} conditionValue
+ */
+export const defaultOperators: Record<string, string> = {
   EQUALS: "equals",
   NOT_EQUALS: "notEquals",
   CONTAINS: "contains",
@@ -23,50 +46,109 @@ export const filterTypes = {
   IS_EMPTY: "isEmpty",
   NOT_IS_EMPTY: "notIsEmpty",
   IS_NULL: "isNull",
-  NOT_IS_NULL: "notIsNull"
+  NOT_IS_NULL: "notIsNull",
+  IS_ONE_OF: "isOneOf",
+  NOT_IS_ONE_OF: "notIsOneOf"
 };
 
-export const defaultAvailableFilters = {
-  [fieldTypes.TEXT]: [
-    filterTypes.EQUALS,
-    filterTypes.NOT_EQUALS,
-    filterTypes.CONTAINS,
-    filterTypes.NOT_CONTAINS,
-    filterTypes.IS_EMPTY,
-    filterTypes.NOT_IS_EMPTY,
-    filterTypes.ENDS_WITH,
-    filterTypes.NOT_ENDS_WITH,
-    filterTypes.STARTS_WITH,
-    filterTypes.NOT_STARTS_WITH,
-    filterTypes.IS_NULL,
-    filterTypes.NOT_IS_NULL,
-    filterTypes.IN,
-    filterTypes.NOT_IN
+/**
+ * Lists of default available operators for every default field type
+ * Can be extended from input params
+ */
+export const defaultAvailableOperators: Record<string, string[]> = {
+  [defaultFieldTypes.TEXT]: [
+    defaultOperators.EQUALS,
+    defaultOperators.NOT_EQUALS,
+    defaultOperators.CONTAINS,
+    defaultOperators.NOT_CONTAINS,
+    defaultOperators.IS_EMPTY,
+    defaultOperators.NOT_IS_EMPTY,
+    defaultOperators.ENDS_WITH,
+    defaultOperators.NOT_ENDS_WITH,
+    defaultOperators.STARTS_WITH,
+    defaultOperators.NOT_STARTS_WITH,
+    defaultOperators.IS_NULL,
+    defaultOperators.NOT_IS_NULL,
+    defaultOperators.IN,
+    defaultOperators.NOT_IN
   ],
-  [fieldTypes.DATE]: [
-    filterTypes.EQUALS,
-    filterTypes.NOT_EQUALS,
-    filterTypes.IS_NULL,
-    filterTypes.NOT_IS_NULL,
-    filterTypes.GREATER_THAN,
-    filterTypes.LOWER_THAN
+  [defaultFieldTypes.DATE]: [
+    defaultOperators.EQUALS,
+    defaultOperators.NOT_EQUALS,
+    defaultOperators.IS_NULL,
+    defaultOperators.NOT_IS_NULL,
+    defaultOperators.GREATER_THAN,
+    defaultOperators.LOWER_THAN
   ],
-  [fieldTypes.NUMBER]: [
-    filterTypes.EQUALS,
-    filterTypes.NOT_EQUALS,
-    filterTypes.IS_NULL,
-    filterTypes.NOT_IS_NULL,
-    filterTypes.GREATER_THAN,
-    filterTypes.LOWER_THAN
+  [defaultFieldTypes.NUMBER]: [
+    defaultOperators.EQUALS,
+    defaultOperators.NOT_EQUALS,
+    defaultOperators.IS_NULL,
+    defaultOperators.NOT_IS_NULL,
+    defaultOperators.GREATER_THAN,
+    defaultOperators.LOWER_THAN
   ],
-  [fieldTypes.BOOLEAN]: [
-    filterTypes.EQUALS,
-    filterTypes.NOT_EQUALS,
-    filterTypes.IS_NULL,
-    filterTypes.NOT_IS_NULL
+  [defaultFieldTypes.BOOLEAN]: [
+    defaultOperators.EQUALS
   ],
+  [defaultFieldTypes.CHOICE]: [
+    defaultOperators.EQUALS,
+    defaultOperators.NOT_EQUALS
+  ],
+  [defaultFieldTypes.MULTIPLE_CHOICE]: [
+    defaultOperators.IN,
+    defaultOperators.NOT_IN
+  ],
+  [defaultFieldTypes.SELECT]: [
+    defaultOperators.EQUALS,
+    defaultOperators.NOT_EQUALS
+  ]
 };
 
-export const returnDefaultFilters = (): ConditionProviderFilterDefinition[] => Object.values(filterTypes).map(t => ({
-  name: t
+/**
+ * Labels (display names) for the default operators
+ */
+export const defaultOperatorLabels: Record<string, string> = {
+  [defaultOperators.EQUALS]: "equals",
+  [defaultOperators.NOT_EQUALS]: "not equals",
+  [defaultOperators.CONTAINS]: "contains",
+  [defaultOperators.NOT_CONTAINS]: "not contains",
+  [defaultOperators.GREATER_THAN]: "greater than",
+  [defaultOperators.LOWER_THAN]: "lower than",
+  [defaultOperators.IN]: "in",
+  [defaultOperators.NOT_IN]: "not in",
+  [defaultOperators.STARTS_WITH]: "starts with",
+  [defaultOperators.NOT_STARTS_WITH]: "doesn't start with",
+  [defaultOperators.ENDS_WITH]: "ends with",
+  [defaultOperators.NOT_ENDS_WITH]: "doesn't end with",
+  [defaultOperators.IS_EMPTY]: "is empty",
+  [defaultOperators.NOT_IS_EMPTY]: "is not empty",
+  [defaultOperators.IS_NULL]: "is null",
+  [defaultOperators.NOT_IS_NULL]: "is not null"
+};
+
+/**
+ * Default field types that require a select-type render implementation
+ */
+export const selectTypeFields = [
+  defaultFieldTypes.SELECT,
+  defaultFieldTypes.MULTIPLE_CHOICE,
+  defaultFieldTypes.CHOICE
+];
+
+/**
+ * Factory fn, returning the default operators with their default labels
+ */
+export const returnDefaultOperators = (): ConditionFactoryOperator[] => Object.values(defaultOperators).map(t => ({
+  name: t,
+  label: defaultOperatorLabels[t]
+}));
+
+/**
+ * Return the default field type objects
+ */
+export const returnDefaultFieldTypes = (): ConditionFactoryFieldTypeDefinition[] => Object.values(defaultFieldTypes).map(ft => ({
+  name: ft,
+  label: defaultFieldTypeLabels[ft],
+  availableOperators: defaultAvailableOperators[ft]
 }));

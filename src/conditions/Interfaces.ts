@@ -1,33 +1,31 @@
-export interface ConditionProviderField {
+export interface ConditionFactoryField {
   type: string;
   name: string;
-  displayName: string;
-  availableFilters?: string[];
-  availableValues?: any[];  // used, if select-type render is used
+  label: string;
+  operators?: string[];
+  choices?: any[];  // used, if select-type type is used
 }
 
-export interface ConditionProviderFilterDefinition {
-  name: string; // filter name
-  renderComponent?: string;  // custom component name string, used fo rendering the filter
-}
-
-export interface ConditionProviderFieldTypeDefinition {
+export interface ConditionFactoryOperator {
   name: string;
-  defaultAvailableFilters: string[];
+  label: string;  // operator display name
 }
 
-export interface ConditionProviderFilterValue {
-  fieldName: string;
-  filterValue: string;
-}
-
-export interface ConditionProviderFilter {
+export interface ConditionFactoryFieldTypeDefinition {
   name: string;
-  value: ConditionProviderFilterValue;
+  availableOperators: string[];  // operators available by default for the field type
+  label: string;  // display name for the field type
 }
 
-export interface ConditionProviderOpts {
-  fields: ConditionProviderField[];
-  filters: ConditionProviderFilterDefinition[];
-  customFieldTypes?: ConditionProviderFieldTypeDefinition[];
+export interface ConditionFactoryCondition {
+  field: ConditionFactoryField;
+  fieldType: ConditionFactoryFieldTypeDefinition;
+  operator: ConditionFactoryOperator;
+  value: any;
+}
+
+export interface ConditionFactoryOpts {
+  fields: ConditionFactoryField[];
+  operators?: ConditionFactoryOperator[];
+  fieldTypes?: ConditionFactoryFieldTypeDefinition[];
 }

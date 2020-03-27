@@ -1,6 +1,7 @@
 import {IExpressionNodeGroupJSON} from "@/core/Interfaces";
-import {ConditionProviderField} from "@/conditions/Interfaces";
-import {fieldTypes, filterTypes} from "@/conditions/Defaults";
+import {ConditionFactoryField} from "@/conditions/Interfaces";
+import {defaultFieldTypes, defaultOperators, returnDefaultOperators} from "@/conditions/Defaults";
+import ConditionFactory from "@/conditions/ConditionFactory";
 
 export const testJSON: IExpressionNodeGroupJSON = {
   connectionType: "and",
@@ -22,10 +23,13 @@ export const testJSON: IExpressionNodeGroupJSON = {
   ]
 };
 
-export const mockFields: ConditionProviderField[] = [
+export const mockFields: ConditionFactoryField[] = [
   {
     name: "test",
-    displayName: "TEST",
-    type: fieldTypes.TEXT
+    label: "TEST",
+    type: defaultFieldTypes.TEXT
   }
 ];
+
+export const returnConditionProvider = () =>
+  new ConditionFactory({fields: mockFields, operators: returnDefaultOperators()});

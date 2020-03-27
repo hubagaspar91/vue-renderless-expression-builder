@@ -10,7 +10,7 @@ export default class ExpressionNodeRenderless extends ExpressionNodeBase {
    * The node, represented by the current Vue component instance
    */
   @Prop({required: true, type: ExpressionNode})
-  protected node!: ExpressionNode;
+  public node!: ExpressionNode;
 
   /**
    * Emits an event towards the parent ExpressionBuilderRenderless, initializing
@@ -26,11 +26,11 @@ export default class ExpressionNodeRenderless extends ExpressionNodeBase {
    * Creates a new condition with the ConditionProvider, injected from the parent ExpressionBuilderRenderless
    * and sends an event to execute the update
    * @param fieldName
-   * @param filterType
+   * @param operator
    * @param value
    */
-  updateCondition(fieldName: string, filterType: string, value: string) {
-    this.update(this.conditionProvider.createFieldFilter(fieldName, filterType, value))
+  updateCondition(fieldName: string, operator: string, value: string) {
+    this.update(this.conditionFactory.create(fieldName, operator, value))
   }
 
   render() {
@@ -38,7 +38,8 @@ export default class ExpressionNodeRenderless extends ExpressionNodeBase {
       node: this.node,
       index: this.index,
       updateCondition: this.updateCondition,
-      deleteSelf: this.emitDelete
+      deleteSelf: this.emitDelete,
+      conditionFactory: this.conditionFactory
     }) as any
   }
 }

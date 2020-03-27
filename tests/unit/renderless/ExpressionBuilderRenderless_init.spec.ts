@@ -12,6 +12,9 @@ describe("ExpressionBuilderRenderless - Init Component", () => {
       propsData: {
         value: new ExpressionBuilder(),
         fields: mockFields
+      },
+      scopedSlots: {
+        default: () => null
       }
     });
     expect(wrapper.vm.root).toBeInstanceOf(ExpressionNodeGroup);
@@ -24,6 +27,9 @@ describe("ExpressionBuilderRenderless - Init Component", () => {
       propsData: {
         value: new ExpressionBuilder(testJSON),
         fields: mockFields
+      },
+      scopedSlots: {
+        default: () => null
       }
     });
     expect(wrapper.vm.root).toBeInstanceOf(ExpressionNodeGroup);

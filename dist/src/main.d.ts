@@ -17,3 +17,10 @@ export declare const Components: {
     ExpressionNodeRenderless: typeof import("./components/ExpressionNodeRenderless").default;
     ExpressionNodeGroupRenderless: typeof import("./components/ExpressionNodeGroupRenderless").default;
 };
+export declare const Conditions: {
+    ConditionFactory: typeof import("./conditions/ConditionFactory").default;
+    Defaults: {
+        returnDefaultOperators: () => import("./conditions/Interfaces").ConditionFactoryOperator[];
+        returnDefaultFieldTypes: () => import("./conditions/Interfaces").ConditionFactoryFieldTypeDefinition[];
+    };
+};

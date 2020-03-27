@@ -1,7 +1,7 @@
 import {mount, Wrapper} from "@vue/test-utils";
 import ExpressionBuilderRenderless, {
-  provideConditionProviderKey,
-  provideEventHubKey
+  PROVIDE_CONDITION_FACTORY_KEY,
+  PROVIDE_EVENT_HUB_KEY
 } from "@/components/ExpressionBuilderRenderless";
 import ExpressionBuilder from "@/core/ExpressionBuilder";
 import {mockFields, testJSON} from "../../utils";
@@ -9,7 +9,8 @@ import ExpressionNodeGroup from "@/core/ExpressionNodeGroup";
 import ExpressionNodeRenderless from "@/components/ExpressionNodeRenderless";
 import ExpressionNode from "@/core/ExpressionNode";
 import {IExpressionNodeGroupJSON, IExpressionNodeJSON} from "@/core/Interfaces";
-import {filterTypes} from "@/conditions/Defaults";
+import {defaultOperatorLabels, defaultOperators} from "@/conditions/Defaults";
+import {ConditionFactoryCondition} from "@/conditions/Interfaces";
 
 let wrapper: Wrapper<ExpressionBuilderRenderless>,
   nodeWrapper: Wrapper<ExpressionNodeRenderless>,
@@ -35,6 +36,9 @@ const createBuilderAndNode = () => {
     propsData: {
       value: new ExpressionBuilder(testJSON),
       fields: mockFields
+    },
+    scopedSlots: {
+      default: () => null
     }
   });
 
@@ -47,8 +51,8 @@ const createBuilderAndNode = () => {
       node: _selectedNode
     },
     provide: {
-      [provideEventHubKey]: _wrapper.vm.eventHub,
-      [provideConditionProviderKey]: _wrapper.vm.conditionProvider
+      [PROVIDE_EVENT_HUB_KEY]: _wrapper.vm.eventHub,
+      [PROVIDE_CONDITION_FACTORY_KEY]: _wrapper.vm.conditionProvider
     },
     scopedSlots: {
       default: () => null
@@ -63,9 +67,6 @@ describe("ExpressionBuilderRenderless - Events from ExpressionNodeRenderless com
 
   it("Delete", () => {
     return new Promise((resolve, reject) => {
-      console.log(wrapper);
-      console.log(nodeWrapper);
-      console.log(selectedNode);
 
       wrapper.vm.$on("input", (builder: ExpressionBuilder) => {
         const json = builder.root.toJSON();
@@ -87,21 +88,15 @@ describe("ExpressionBuilderRenderless - Events from ExpressionNodeRenderless com
       wrapper.vm.$on("input", (builder: ExpressionBuilder) => {
         const json = builder.root.toJSON();
         try {
-          expect((json.children[0] as IExpressionNodeGroupJSON).children[0] as IExpressionNodeJSON)
-            .toStrictEqual({
-              name: filterTypes.EQUALS,
-              value: {
-                fieldName: "test",
-                filterValue: "testValue"
-              }
-            });
+          expect(((json.children[0] as IExpressionNodeGroupJSON).children[0] as IExpressionNodeJSON).value)
+            .toBe("testValue");
         } catch (e) {
           reject(e);
         }
         resolve();
       });
 
-      nodeWrapper.vm.updateCondition("test", filterTypes.EQUALS, "testValue");
+      nodeWrapper.vm.updateCondition("test", defaultOperators.EQUALS, "testValue");
     })
   });
 });

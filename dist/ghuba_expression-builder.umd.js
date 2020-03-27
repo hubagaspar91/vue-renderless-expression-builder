@@ -1,5 +1,5 @@
 import { __decorate } from 'tslib';
-import { Prop, Provide, Vue, Component } from 'vue-property-decorator';
+import { Prop, Provide, Vue, Component, Inject } from 'vue-property-decorator';
 
 function _classCallCheck(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
@@ -61,6 +61,13 @@ var errorTypeMessageFactoryMap = (_errorTypeMessageFact = {}, defineProperty(_er
 }), defineProperty(_errorTypeMessageFact, errorTypes.INVALID_CONTEXT_PATH, function (path) {
   return "Invalid context path [".concat(path.join(", "), "], new context must be an ExpressionNodeGroup node");
 }), _errorTypeMessageFact);
+/**
+ * Logs the error to the console, and invokes the custom error handler, provided on the ExpressionNodeBuilder instance
+ * @param type
+ * @param customHandler
+ * @param factoryParam
+ */
+
 var handleError = function handleError(type, customHandler, factoryParam) {
   var msg = errorTypeMessageFactoryMap[type](factoryParam);
   if (customHandler) customHandler(type, msg);
@@ -271,9 +278,6 @@ var inherits = _inherits;
 function isIExpressionNode(obj) {
   return "toJSON" in obj && "parentNode" in obj;
 }
-function isICondition(obj) {
-  return "name" in obj && "value" in obj;
-}
 
 var ExpressionNodeBase = /*#__PURE__*/function () {
   function ExpressionNodeBase(parentNode) {
@@ -324,7 +328,7 @@ var ExpressionNode = /*#__PURE__*/function (_ExpressionNodeBase) {
     classCallCheck(this, ExpressionNode);
 
     _this = _super.call(this, parentNode);
-    _this._condition = defaultCondition(); // to check for type
+    _this._condition = defaultCondition(); // checks for type
 
     _this.condition = condition;
     return _this;
@@ -351,7 +355,7 @@ var ExpressionNode = /*#__PURE__*/function (_ExpressionNodeBase) {
       return this._condition;
     },
     set: function set(condition) {
-      if (isICondition(condition)) this._condition = condition;else throw new Error("Condition object must contain 'name' and 'value' keys.");
+      if (condition instanceof Object) this._condition = condition;else throw new Error("Condition must be an object.");
     }
   }], [{
     key: "fromJSON",
@@ -478,6 +482,7 @@ var ExpressionNodeGroup = /*#__PURE__*/function (_ExpressionNodeBase) {
 
       this._children = value.map(function (node) {
         if (isIExpressionNode(node)) {
+          // adding self as parentNode to all new children, to maintain consistency
           node.parentNode = _this3;
           return node;
         } else throw new Error("Node must by ExpressionNode or ExpressionNodeGroup, got type: " + _typeof_1(node));
@@ -541,7 +546,7 @@ var ExpressionBuilder = /*#__PURE__*/function () {
   function ExpressionBuilder(root, errorHandler) {
     classCallCheck(this, ExpressionBuilder);
 
-    this.root = root // if root is defined
+    this.root = root != undefined // if root is defined
     ? ExpressionNodeGroup.isJSONInstance(root) // and is a json representation
     ? ExpressionNodeGroup.fromJSON(root) // parse it
     : root // else use root as root, as it's an ExpressionNodeGroup
@@ -686,25 +691,248 @@ var actionTypes = {
   DELETE: "delete"
 };
 
+var _defaultAvailableOper, _defaultOperatorLabel;
+
+/**
+ * Default filed types available in the expression builder
+ */
+var defaultFieldTypes = {
+  TEXT: "text",
+  DATE: "date",
+  NUMBER: "number",
+  BOOLEAN: "boolean",
+  CHOICE: "radio",
+  MULTIPLE_CHOICE: "multipleChoice",
+  SELECT: "select"
+};
+/**
+ * Labels (display names) for the default field types
+ */
+
+var defaultFieldTypeLabels = {
+  TEXT: "text",
+  DATE: "date",
+  NUMBER: "number",
+  BOOLEAN: "boolean",
+  CHOICE: "radio",
+  MULTIPLE_CHOICE: "multiple choice",
+  SELECT: "select"
+};
+/**
+ * Kind of logical operators available in the expression builder, their place in a condition
+ * Field {operator} conditionValue
+ */
+
+var defaultOperators = {
+  EQUALS: "equals",
+  NOT_EQUALS: "notEquals",
+  CONTAINS: "contains",
+  NOT_CONTAINS: "notContains",
+  GREATER_THAN: "graterThan",
+  LOWER_THAN: "lowerThan",
+  IN: "in",
+  NOT_IN: "notIn",
+  STARTS_WITH: "startsWith",
+  NOT_STARTS_WITH: "notStartsWith",
+  ENDS_WITH: "endsWith",
+  NOT_ENDS_WITH: "notEndsWith",
+  IS_EMPTY: "isEmpty",
+  NOT_IS_EMPTY: "notIsEmpty",
+  IS_NULL: "isNull",
+  NOT_IS_NULL: "notIsNull",
+  IS_ONE_OF: "isOneOf",
+  NOT_IS_ONE_OF: "notIsOneOf"
+};
+/**
+ * Lists of default available operators for every default field type
+ * Can be extended from input params
+ */
+
+var defaultAvailableOperators = (_defaultAvailableOper = {}, defineProperty(_defaultAvailableOper, defaultFieldTypes.TEXT, [defaultOperators.EQUALS, defaultOperators.NOT_EQUALS, defaultOperators.CONTAINS, defaultOperators.NOT_CONTAINS, defaultOperators.IS_EMPTY, defaultOperators.NOT_IS_EMPTY, defaultOperators.ENDS_WITH, defaultOperators.NOT_ENDS_WITH, defaultOperators.STARTS_WITH, defaultOperators.NOT_STARTS_WITH, defaultOperators.IS_NULL, defaultOperators.NOT_IS_NULL, defaultOperators.IN, defaultOperators.NOT_IN]), defineProperty(_defaultAvailableOper, defaultFieldTypes.DATE, [defaultOperators.EQUALS, defaultOperators.NOT_EQUALS, defaultOperators.IS_NULL, defaultOperators.NOT_IS_NULL, defaultOperators.GREATER_THAN, defaultOperators.LOWER_THAN]), defineProperty(_defaultAvailableOper, defaultFieldTypes.NUMBER, [defaultOperators.EQUALS, defaultOperators.NOT_EQUALS, defaultOperators.IS_NULL, defaultOperators.NOT_IS_NULL, defaultOperators.GREATER_THAN, defaultOperators.LOWER_THAN]), defineProperty(_defaultAvailableOper, defaultFieldTypes.BOOLEAN, [defaultOperators.EQUALS]), defineProperty(_defaultAvailableOper, defaultFieldTypes.CHOICE, [defaultOperators.EQUALS, defaultOperators.NOT_EQUALS]), defineProperty(_defaultAvailableOper, defaultFieldTypes.MULTIPLE_CHOICE, [defaultOperators.IN, defaultOperators.NOT_IN]), defineProperty(_defaultAvailableOper, defaultFieldTypes.SELECT, [defaultOperators.EQUALS, defaultOperators.NOT_EQUALS]), _defaultAvailableOper);
+/**
+ * Labels (display names) for the default operators
+ */
+
+var defaultOperatorLabels = (_defaultOperatorLabel = {}, defineProperty(_defaultOperatorLabel, defaultOperators.EQUALS, "equals"), defineProperty(_defaultOperatorLabel, defaultOperators.NOT_EQUALS, "not equals"), defineProperty(_defaultOperatorLabel, defaultOperators.CONTAINS, "contains"), defineProperty(_defaultOperatorLabel, defaultOperators.NOT_CONTAINS, "not contains"), defineProperty(_defaultOperatorLabel, defaultOperators.GREATER_THAN, "greater than"), defineProperty(_defaultOperatorLabel, defaultOperators.LOWER_THAN, "lower than"), defineProperty(_defaultOperatorLabel, defaultOperators.IN, "in"), defineProperty(_defaultOperatorLabel, defaultOperators.NOT_IN, "not in"), defineProperty(_defaultOperatorLabel, defaultOperators.STARTS_WITH, "starts with"), defineProperty(_defaultOperatorLabel, defaultOperators.NOT_STARTS_WITH, "doesn't start with"), defineProperty(_defaultOperatorLabel, defaultOperators.ENDS_WITH, "ends with"), defineProperty(_defaultOperatorLabel, defaultOperators.NOT_ENDS_WITH, "doesn't end with"), defineProperty(_defaultOperatorLabel, defaultOperators.IS_EMPTY, "is empty"), defineProperty(_defaultOperatorLabel, defaultOperators.NOT_IS_EMPTY, "is not empty"), defineProperty(_defaultOperatorLabel, defaultOperators.IS_NULL, "is null"), defineProperty(_defaultOperatorLabel, defaultOperators.NOT_IS_NULL, "is not null"), _defaultOperatorLabel);
+/**
+ * Default field types that require a select-type render implementation
+ */
+
+var selectTypeFields = [defaultFieldTypes.SELECT, defaultFieldTypes.MULTIPLE_CHOICE, defaultFieldTypes.CHOICE];
+/**
+ * Factory fn, returning the default operators with their default labels
+ */
+
+var returnDefaultOperators = function returnDefaultOperators() {
+  return Object.values(defaultOperators).map(function (t) {
+    return {
+      name: t,
+      label: defaultOperatorLabels[t]
+    };
+  });
+};
+/**
+ * Return the default field type objects
+ */
+
+var returnDefaultFieldTypes = function returnDefaultFieldTypes() {
+  return Object.values(defaultFieldTypes).map(function (ft) {
+    return {
+      name: ft,
+      label: defaultFieldTypeLabels[ft],
+      availableOperators: defaultAvailableOperators[ft]
+    };
+  });
+};
+
+var ConditionFactory = /*#__PURE__*/function () {
+  function ConditionFactory(opts) {
+    classCallCheck(this, ConditionFactory);
+
+    this._operators = returnDefaultOperators();
+    this._fields = [];
+    this._fieldTypes = returnDefaultFieldTypes();
+    this._operators = opts.operators || this._operators;
+    this._fieldTypes = opts.fieldTypes || this._fieldTypes;
+    if (this._operators.length == 0) throw new Error("ConditionFactory initialized with 0 operators.");
+    if (opts.fields.length == 0) throw new Error("ConditionFactory initialized with 0 fields.");
+    if (this._fieldTypes.length == 0) throw new Error("ConditionFactory initialized with 0 fieldTypes.");
+
+    this._processOpts(opts);
+  }
+
+  createClass(ConditionFactory, [{
+    key: "create",
+    value: function create() {
+      var fieldName = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this._fields[0].name;
+      var operatorName = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this._fields[0].operators[0];
+      var value = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+
+      var operator = this._operators.find(function (f) {
+        return f.name == operatorName;
+      });
+
+      if (operator) {
+        var field = this._fields.find(function (f) {
+          return f.name == fieldName;
+        });
+
+        if (field == undefined) throw new Error("No such field " + fieldName);
+        if (!field.operators.includes(operatorName)) throw new Error("Operator ".concat(operatorName, " is not available for field ").concat(field.name));
+        var fieldType = this.fieldTypes.find(function (ft) {
+          return ft.name == field.type;
+        });
+        if (!fieldType) throw new Error("Field type ".concat(field.type, " is not defined on the instance. \n          Options are: ").concat(this.fieldTypes.map(function (ft) {
+          return ft.name;
+        }).join(", ")));
+        return {
+          operator: operator,
+          field: field,
+          fieldType: fieldType,
+          value: value
+        };
+      }
+
+      throw new Error("Operator type ".concat(operatorName, ", does not exist, available options are \n      ").concat(this._operators.map(function (o) {
+        return o.name;
+      }).join(", ")));
+    }
+  }, {
+    key: "_processOpts",
+    value: function _processOpts(opts) {
+      var _this = this;
+
+      this._fields = opts.fields.map(function (field) {
+        var innerField = {
+          type: field.type,
+          name: field.name,
+          label: field.label,
+          choices: field.choices,
+          operators: field.operators
+        };
+        if (selectTypeFields.includes(innerField.type) && (!innerField.choices || innerField.choices.length == 0)) throw new Error("Need to specify available choices for field ".concat(field.name, " of type ").concat(field.type)); // setting operators, if it was provided null or empty
+
+        if (!innerField.operators || innerField.operators.length == 0) {
+          // finding the field type object, for the type of the field
+          var fieldTypeObject = _this._fieldTypes.find(function (t) {
+            return t.name == innerField.type;
+          });
+
+          if (!fieldTypeObject) throw new Error("Field type ".concat(innerField.type, " is not added to the instance")); // populating the field's operators from the default, defined in the fieldTypeDefinition
+
+          innerField.operators = _this._operators.filter(function (operator) {
+            return fieldTypeObject.availableOperators.includes(operator.name);
+          }).map(function (o) {
+            return o.name;
+          });
+          if (innerField.operators.length == 0) throw new Error("As per the settings your provided, field ".concat(field.name, " would not have any available operators."));
+        }
+
+        return innerField;
+      });
+    }
+  }, {
+    key: "fields",
+    get: function get() {
+      return this._fields;
+    }
+  }, {
+    key: "operators",
+    get: function get() {
+      return this._operators;
+    }
+  }, {
+    key: "fieldTypes",
+    get: function get() {
+      return this._fieldTypes;
+    }
+  }]);
+
+  return ConditionFactory;
+}();
+
+var PROVIDE_EVENT_HUB_KEY = "$__qb_event_hub__";
+var PROVIDE_CONDITION_FACTORY_KEY = "$__qb_condition_factory__";
+
 var ExpressionBuilderRenderless = /*#__PURE__*/function (_Vue) {
   inherits(ExpressionBuilderRenderless, _Vue);
 
   var _super = createSuper(ExpressionBuilderRenderless);
 
   function ExpressionBuilderRenderless() {
+    var _this;
+
     classCallCheck(this, ExpressionBuilderRenderless);
 
-    return _super.apply(this, arguments);
+    _this = _super.apply(this, arguments);
+    /**
+     * Service for processing fields and filters into a factory service
+     * That creates individual conditions from field, filter and value
+     */
+
+    _this.conditionProvider = new ConditionFactory({
+      operators: _this.operators,
+      fields: _this.fields,
+      fieldTypes: _this.fieldTypes
+    });
+    return _this;
   }
 
   createClass(ExpressionBuilderRenderless, [{
     key: "created",
     value: function created() {
-      this.eventHub.$on("input", this._handleInput);
+      this.eventHub.$on("input", this.handleInput);
     }
+    /**
+     * Handles the input events from the child nodes, that suggests and change is to be made in the
+     * Expression structure
+     * @param body
+     * @private
+     */
+
   }, {
-    key: "_handleInput",
-    value: function _handleInput(body) {
+    key: "handleInput",
+    value: function handleInput(body) {
       var pathToParent = body.path.slice(0, body.path.length - 1),
           index = body.path[body.path.length - 1];
 
@@ -732,7 +960,7 @@ var ExpressionBuilderRenderless = /*#__PURE__*/function (_Vue) {
   }, {
     key: "render",
     value: function render() {
-      return null;
+      return this.$scopedSlots.default({});
     }
   }, {
     key: "root",
@@ -749,13 +977,32 @@ __decorate([Prop({
   required: true
 })], ExpressionBuilderRenderless.prototype, "value", void 0);
 
-__decorate([Provide("$__qb_event_hub__"), Prop({
+__decorate([Provide(PROVIDE_EVENT_HUB_KEY), Prop({
   type: Vue,
   required: false,
   default: function _default() {
     return new Vue();
   }
 })], ExpressionBuilderRenderless.prototype, "eventHub", void 0);
+
+__decorate([Prop({
+  type: Array,
+  required: false,
+  default: returnDefaultOperators
+})], ExpressionBuilderRenderless.prototype, "operators", void 0);
+
+__decorate([Prop({
+  type: Array,
+  required: true
+})], ExpressionBuilderRenderless.prototype, "fields", void 0);
+
+__decorate([Prop({
+  type: Array,
+  required: false,
+  default: returnDefaultFieldTypes
+})], ExpressionBuilderRenderless.prototype, "fieldTypes", void 0);
+
+__decorate([Provide(PROVIDE_CONDITION_FACTORY_KEY)], ExpressionBuilderRenderless.prototype, "conditionProvider", void 0);
 
 ExpressionBuilderRenderless = __decorate([Component], ExpressionBuilderRenderless);
 var ExpressionBuilderRenderless$1 = ExpressionBuilderRenderless;
@@ -782,6 +1029,14 @@ var ExpressionNodeBase$1 = /*#__PURE__*/function (_Vue) {
 
   createClass(ExpressionNodeBase, [{
     key: "emitInput",
+
+    /**
+     * Emit an input event towards the parent ExpressionBuilderRenderless, that initializes a change
+     * in the nested expression structure
+     * @param node
+     * @param action
+     * @param index
+     */
     value: function emitInput(node) {
       var action = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : actionTypes.SET;
       var index = arguments.length > 2 ? arguments[2] : undefined;
@@ -793,6 +1048,10 @@ var ExpressionNodeBase$1 = /*#__PURE__*/function (_Vue) {
         action: action
       });
     }
+    /**
+     * Initializes the deletion of the current node
+     */
+
   }, {
     key: "emitDelete",
     value: function emitDelete() {
@@ -812,9 +1071,9 @@ __decorate([Prop({
   required: true
 })], ExpressionNodeBase$1.prototype, "node", void 0);
 
-__decorate([Prop({
-  required: true
-})], ExpressionNodeBase$1.prototype, "eventHub", void 0);
+__decorate([Inject(PROVIDE_EVENT_HUB_KEY)], ExpressionNodeBase$1.prototype, "eventHub", void 0);
+
+__decorate([Inject(PROVIDE_CONDITION_FACTORY_KEY)], ExpressionNodeBase$1.prototype, "conditionFactory", void 0);
 
 ExpressionNodeBase$1 = __decorate([Component({})], ExpressionNodeBase$1);
 var ExpressionNodeBase$2 = ExpressionNodeBase$1;
@@ -832,8 +1091,28 @@ var ExpressionNodeRenderless = /*#__PURE__*/function (_ExpressionNodeBase) {
 
   createClass(ExpressionNodeRenderless, [{
     key: "update",
+
+    /**
+     * Emits an event towards the parent ExpressionBuilderRenderless, initializing
+     * the update of its condition
+     * @param condition
+     * @private
+     */
     value: function update(condition) {
       this.emitInput(new ExpressionNode(condition));
+    }
+    /**
+     * Creates a new condition with the ConditionProvider, injected from the parent ExpressionBuilderRenderless
+     * and sends an event to execute the update
+     * @param fieldName
+     * @param operator
+     * @param value
+     */
+
+  }, {
+    key: "updateCondition",
+    value: function updateCondition(fieldName, operator, value) {
+      this.update(this.conditionFactory.create(fieldName, operator, value));
     }
   }, {
     key: "render",
@@ -841,8 +1120,9 @@ var ExpressionNodeRenderless = /*#__PURE__*/function (_ExpressionNodeBase) {
       return this.$scopedSlots.default({
         node: this.node,
         index: this.index,
-        updateCondition: this.update,
-        deleteSelf: this.emitDelete
+        updateCondition: this.updateCondition,
+        deleteSelf: this.emitDelete,
+        conditionFactory: this.conditionFactory
       });
     }
   }]);
@@ -871,30 +1151,55 @@ var ExpressionNodeGroupRenderless = /*#__PURE__*/function (_ExpressionNodeBase) 
 
   createClass(ExpressionNodeGroupRenderless, [{
     key: "insert",
+
+    /**
+     * Initializes the insertion of {node}, to the {index} index of the parent ExpressionNodeGroup
+     * Emits and event towards the parent ExpressionBuilderRenderless
+     * @param node
+     * @param index
+     */
     value: function insert(node, index) {
       this.emitInput(node, actionTypes.INSERT, index);
     }
+    /**
+     * Initializes the addition of node or node group, by pushing it to the children list of the parent ExpressionNodeGroup
+     * Emits and event towards the parent ExpressionBuilderRenderless
+     * @param node
+     */
+
   }, {
     key: "add",
     value: function add(node) {
       this.emitInput(node, actionTypes.ADD);
     }
+    /**
+     * Initializes the addition of a node with the default condition, returned by the ConditionProvider instance
+     * injected from the parent ExpressionBuilderRenderless
+     */
+
   }, {
     key: "addNode",
-    value: function addNode() {
-      this.add(new ExpressionNode());
+    value: function addNode(condition) {
+      this.add(new ExpressionNode(condition || this.conditionFactory.create()));
     }
+    /**
+     * Initializes the addition of an empty node group with the default condition, returned by the ConditionProvider instance
+     * injected from the parent ExpressionBuilderRenderless
+     */
+
   }, {
     key: "addGroup",
     value: function addGroup() {
       this.add(new ExpressionNodeGroup());
     }
+    /**
+     * Toggles the connection type (and - or) between its child nodes
+     */
+
   }, {
     key: "toggleConnectionType",
     value: function toggleConnectionType() {
-      var json = this.node.toJSON();
-      if (json.connectionType === connectionTypes.AND) json.connectionType = connectionTypes.OR;else json.connectionType = connectionTypes.AND;
-      this.emitInput(ExpressionNodeGroup.fromJSON(json));
+      if (this.node.connectionType === connectionTypes.AND) this.node.connectionType = connectionTypes.OR;else this.node.connectionType = connectionTypes.AND;
     }
   }, {
     key: "render",
@@ -906,7 +1211,8 @@ var ExpressionNodeGroupRenderless = /*#__PURE__*/function (_ExpressionNodeBase) 
         deleteSelf: this.emitDelete,
         insert: this.insert,
         addNode: this.addNode,
-        addGroup: this.addGroup
+        addGroup: this.addGroup,
+        conditionFactory: this.conditionFactory
       });
     }
   }]);
@@ -928,38 +1234,21 @@ var ImportedComponents = {
   ExpressionNodeGroupRenderless: ExpressionNodeGroupRenderless$1
 };
 
+var ImportedConditions = {
+  ConditionFactory: ConditionFactory,
+  Defaults: {
+    returnDefaultOperators: returnDefaultOperators,
+    returnDefaultFieldTypes: returnDefaultFieldTypes
+  }
+};
+
 var Core = {
   ExpressionBuilder: ExpressionBuilder,
   ExpressionNodeGroup: ExpressionNodeGroup,
   ExpressionNode: ExpressionNode,
   ErrorTypes: errorTypes
 };
-var Components = ImportedComponents; // const cp = new ConditionProvider({
-//   filters: Object.values(filterTypes),
-//   fields: [
-//     {
-//       type: "text",
-//       name: "fasz",
-//       displayName: "Fasz"
-//     },
-//     {
-//       type: "number",
-//       name: "faszhosst",
-//       displayName: "Fasz Hossz"
-//     },
-//     {
-//       type: "text",
-//       name: "genyofajta",
-//       displayName: "Genyo Fajta",
-//       availableValues: [
-//         "szép",
-//         "csúnya",
-//         "közép"
-//       ]
-//     }
-//   ]
-// });
-// console.log(cp);
-// console.log(cp.createFieldFilter("genyofajta", "in", "csúny"));
+var Components = ImportedComponents;
+var Conditions = ImportedConditions;
 
-export { Components, Core };
+export { Components, Conditions, Core };

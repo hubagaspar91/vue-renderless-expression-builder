@@ -16,10 +16,8 @@ export declare function isIExpressionNode(obj: object): obj is IExpressionNode;
  * Condition object schema for {ExpressionNode}
  */
 export interface ICondition {
-    name: string | null;
-    value: any;
+    [index: string]: any;
 }
-export declare function isICondition(obj: object): obj is ICondition;
 /**
  * Options object, describing data for {ExpressionNodeGroup}
  */

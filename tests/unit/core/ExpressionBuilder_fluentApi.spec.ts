@@ -70,7 +70,7 @@ describe("ExpressionBuilder - Fluent API", () => {
     // cant switch to ExpressionNode as context
     eb.contextTo([0, 1, 0, 0]);
     expect(handleError).toHaveBeenCalledWith(errorTypes.INVALID_CONTEXT_PATH, undefined, [0, 1, 0, 0]);
-    // cant switch to non-exitent path
+    // cant switch to non-existent path
     eb.contextTo([0, 1, 0, 1]);
     expect(handleError).toHaveBeenCalledWith(errorTypes.INVALID_CONTEXT_PATH, undefined, [0, 1, 0, 1]);
   });

@@ -12,7 +12,7 @@ export default class ExpressionNodeGroupRenderless extends ExpressionNodeBase {
    * The node group, represented by the current Vue component instance
    */
   @Prop({required: true, type: ExpressionNodeGroup})
-  protected node!: ExpressionNodeGroup;
+  public node!: ExpressionNodeGroup;
 
   /**
    * Initializes the insertion of {node}, to the {index} index of the parent ExpressionNodeGroup
@@ -37,8 +37,8 @@ export default class ExpressionNodeGroupRenderless extends ExpressionNodeBase {
    * Initializes the addition of a node with the default condition, returned by the ConditionProvider instance
    * injected from the parent ExpressionBuilderRenderless
    */
-  public addNode() {
-    this.add(new ExpressionNode(this.conditionProvider.createFieldFilter()));
+  public addNode(condition?: object) {
+    this.add(new ExpressionNode(condition || this.conditionFactory.create()));
   }
 
   /**
@@ -53,12 +53,10 @@ export default class ExpressionNodeGroupRenderless extends ExpressionNodeBase {
    * Toggles the connection type (and - or) between its child nodes
    */
   toggleConnectionType() {
-    const json = this.node.toJSON();
-    if (json.connectionType === connectionTypes.AND)
-      json.connectionType = connectionTypes.OR;
+    if (this.node.connectionType === connectionTypes.AND)
+      this.node.connectionType = connectionTypes.OR;
     else
-      json.connectionType = connectionTypes.AND;
-    this.emitInput(ExpressionNodeGroup.fromJSON(json));
+      this.node.connectionType = connectionTypes.AND;
   }
 
   render() {
@@ -69,7 +67,8 @@ export default class ExpressionNodeGroupRenderless extends ExpressionNodeBase {
       deleteSelf: this.emitDelete,
       insert: this.insert,
       addNode: this.addNode,
-      addGroup: this.addGroup
+      addGroup: this.addGroup,
+      conditionFactory: this.conditionFactory
     }) as any
   }
 }

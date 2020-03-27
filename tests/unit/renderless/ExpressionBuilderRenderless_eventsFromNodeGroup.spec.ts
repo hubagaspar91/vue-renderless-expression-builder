@@ -1,7 +1,7 @@
 import {mount, Wrapper} from "@vue/test-utils";
 import ExpressionBuilderRenderless, {
-  provideConditionProviderKey,
-  provideEventHubKey
+  PROVIDE_CONDITION_FACTORY_KEY,
+  PROVIDE_EVENT_HUB_KEY
 } from "@/components/ExpressionBuilderRenderless";
 import ExpressionBuilder from "@/core/ExpressionBuilder";
 import {mockFields, testJSON} from "../../utils";
@@ -10,7 +10,8 @@ import ExpressionNodeGroupRenderless from "@/components/ExpressionNodeGroupRende
 import {ICondition, IExpressionNodeGroupJSON, IExpressionNodeJSON} from "@/core/Interfaces";
 import {actionTypes} from "@/components/Utils";
 import ExpressionNode from "@/core/ExpressionNode";
-import {filterTypes} from "@/conditions/Defaults";
+import {defaultOperatorLabels, defaultOperators} from "@/conditions/Defaults";
+import {ConditionFactoryCondition} from "@/conditions/Interfaces";
 
 let wrapper: Wrapper<ExpressionBuilderRenderless>,
   groupWrapper: Wrapper<ExpressionNodeGroupRenderless>,
@@ -36,6 +37,9 @@ const createBuilderAndGroup = () => {
     propsData: {
       value: new ExpressionBuilder(testJSON),
       fields: mockFields
+    },
+    scopedSlots: {
+      default: () => null
     }
   });
 
@@ -45,11 +49,10 @@ const createBuilderAndGroup = () => {
   const _groupWrapper = mount(ExpressionNodeGroupRenderless, {
     propsData: {
       node: _selectedGroup,
-      eventHub: _wrapper.vm.eventHub
     },
     provide: {
-      [provideEventHubKey]: _wrapper.vm.eventHub,
-      [provideConditionProviderKey]: _wrapper.vm.conditionProvider
+      [PROVIDE_EVENT_HUB_KEY]: _wrapper.vm.eventHub,
+      [PROVIDE_CONDITION_FACTORY_KEY]: _wrapper.vm.conditionProvider
     },
     scopedSlots: {
       default: () => null
@@ -74,13 +77,9 @@ const testActionOnGroup = (actionType: string, group: boolean, index?: number) =
         } else {
           if (actionType !== actionTypes.ADD)
             expect((newNodeJson as IExpressionNodeJSON)).toStrictEqual(newCondition);
-          else
-            expect((newNodeJson as IExpressionNodeJSON)).toStrictEqual({
-              name: filterTypes.EQUALS, value: {
-                fieldName: "test",
-                filterValue: null
-              }
-            });
+          else {
+            expect((newNodeJson as IExpressionNodeJSON).field.name).toStrictEqual("test");
+          }
         }
       } catch (e) {
         reject(e);
@@ -103,36 +102,19 @@ const testActionOnGroup = (actionType: string, group: boolean, index?: number) =
 
 describe("ExpressionBuilderRenderless - Events from ExpressionNodeGroupRenderless components", () => {
 
-  it("toggleConnectionType", () => {
-    return new Promise((resolve, reject) => {
-
-      wrapper.vm.$on("input", (builder: ExpressionBuilder) => {
-        const json = builder.root.toJSON();
-        try {
-          expect((json.children[0] as IExpressionNodeGroupJSON).connectionType).not.toBe(selectedGroup.connectionType);
-        } catch (e) {
-          reject(e);
-        }
-        resolve();
-      });
-
-      groupWrapper.vm.toggleConnectionType();
-    })
-  });
-
-  it("insertNode - from ExpressionNodeGroupRenderless", () => {
+  it("insertNode", () => {
     return testActionOnGroup(actionTypes.INSERT, false, 0);
   });
 
-  it("insertGroup - from ExpressionNodeGroupRenderless", () => {
+  it("insertGroup", () => {
     return testActionOnGroup(actionTypes.INSERT, true, 0);
   });
 
-  it("addNode - from ExpressionNodeGroupRenderless", () => {
+  it("addNode", () => {
     return testActionOnGroup(actionTypes.ADD, false);
   });
 
-  it("addGroup - from ExpressionNodeGroupRenderless", () => {
+  it("addGroup", () => {
     return testActionOnGroup(actionTypes.ADD, true);
   });
 

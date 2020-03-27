@@ -1,8 +1,8 @@
 import {Component, Inject, Prop, Vue} from "vue-property-decorator";
 import {IExpressionNode} from "@/core/Interfaces";
 import {actionTypes, InputEventBody} from "@/components/Utils";
-import ConditionProvider from "@/conditions/ConditionProvider";
-import {provideConditionProviderKey, provideEventHubKey} from "@/components/ExpressionBuilderRenderless";
+import ConditionFactory from "@/conditions/ConditionFactory";
+import {PROVIDE_CONDITION_FACTORY_KEY, PROVIDE_EVENT_HUB_KEY} from "@/components/ExpressionBuilderRenderless";
 
 /**
  * Helper to recursively get the path of the current node
@@ -22,18 +22,19 @@ export default class ExpressionNodeBase extends Vue {
    * The node or node group, represented by the current Vue component instance
    */
   @Prop({required: true})
-  protected node!: IExpressionNode;
+  public node!: IExpressionNode;
 
   /**
    * Injected eventHub to communicate with its parent ExpressionBuilderRenderless
    */
-  @Inject(provideEventHubKey)
+  @Inject(PROVIDE_EVENT_HUB_KEY)
   eventHub!: Vue;
 
   /**
    * Injected conditionProvider to create and update conditions of individual nodes
    */
-  @Inject(provideConditionProviderKey) conditionProvider!: ConditionProvider;
+  @Inject(PROVIDE_CONDITION_FACTORY_KEY)
+  conditionFactory!: ConditionFactory;
 
   /**
    * Emit an input event towards the parent ExpressionBuilderRenderless, that initializes a change

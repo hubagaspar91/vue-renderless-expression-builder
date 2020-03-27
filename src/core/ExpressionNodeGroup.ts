@@ -50,6 +50,7 @@ export default class ExpressionNodeGroup extends ExpressionNodeBase implements I
   set children(value: IExpressionNode[]) {
     this._children = value.map(node => {
       if (isIExpressionNode(node)) {
+        // adding self as parentNode to all new children, to maintain consistency
         node.parentNode = this;
         return node;
       }

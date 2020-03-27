@@ -2,12 +2,16 @@ import {Component, Prop, Provide, Vue} from 'vue-property-decorator';
 import ExpressionBuilder from "@/core/ExpressionBuilder";
 import {actionTypes, InputEventBody} from "@/components/Utils";
 import ExpressionNodeGroup from "@/core/ExpressionNodeGroup";
-import {returnDefaultFilters} from "@/conditions/Defaults";
-import {ConditionProviderField, ConditionProviderFilterDefinition} from "@/conditions/Interfaces";
-import ConditionProvider from "@/conditions/ConditionProvider";
+import {returnDefaultFieldTypes, returnDefaultOperators} from "@/conditions/Defaults";
+import {
+  ConditionFactoryField,
+  ConditionFactoryFieldTypeDefinition,
+  ConditionFactoryOperator
+} from "@/conditions/Interfaces";
+import ConditionFactory from "@/conditions/ConditionFactory";
 
-export const provideEventHubKey = "$__qb_event_hub__";
-export const provideConditionProviderKey = "$__qb_condition_provider__";
+export const PROVIDE_EVENT_HUB_KEY = "$__qb_event_hub__";
+export const PROVIDE_CONDITION_FACTORY_KEY = "$__qb_condition_factory__";
 
 
 @Component
@@ -15,40 +19,48 @@ export default class ExpressionBuilderRenderless extends Vue {
   /**
    * Builder object, doing all the work, creating and preserving the consistency of the nested expression structure
    */
-  @Prop({type: ExpressionBuilder, required: true}) protected value!: ExpressionBuilder;
+  @Prop({type: ExpressionBuilder, required: true})
+  protected value!: ExpressionBuilder;
 
   /**
    * Event hub, through which nodes send the proposed state changes to the builder for execution, or dismissal
    * Also injected in child nodes
    */
-  @Provide(provideEventHubKey)
+  @Provide(PROVIDE_EVENT_HUB_KEY)
   @Prop({type: Vue, required: false, default: () => new Vue()})
   eventHub!: Vue;
 
   /**
    * Filters, available for usage on the current builder instance
    */
-  @Prop({type: Array, required: false, default: returnDefaultFilters})
-  filters?: ConditionProviderFilterDefinition[];
+  @Prop({type: Array, required: false, default: returnDefaultOperators})
+  operators?: ConditionFactoryOperator[];
 
   /**
    * Fields available for filtering on the current builder instance
    */
   @Prop({type: Array, required: true})
-  fields!: ConditionProviderField[];
+  fields!: ConditionFactoryField[];
+
+  /**
+   * Field types available on the instance
+   */
+  @Prop({type: Array, required: false, default: returnDefaultFieldTypes})
+  fieldTypes?: ConditionFactoryFieldTypeDefinition[];
 
   /**
    * Service for processing fields and filters into a factory service
    * That creates individual conditions from field, filter and value
    */
-  @Provide(provideConditionProviderKey)
-  conditionProvider = new ConditionProvider({
-    filters: this.filters as ConditionProviderFilterDefinition[],
-    fields: this.fields
+  @Provide(PROVIDE_CONDITION_FACTORY_KEY)
+  conditionProvider = new ConditionFactory({
+    operators: this.operators as ConditionFactoryOperator[],
+    fields: this.fields,
+    fieldTypes: this.fieldTypes
   });
 
   created() {
-    this.eventHub.$on("input", this._handleInput);
+    this.eventHub.$on("input", this.handleInput);
   }
 
   /**
@@ -57,7 +69,7 @@ export default class ExpressionBuilderRenderless extends Vue {
    * @param body
    * @private
    */
-  private _handleInput(body: InputEventBody) {
+  private handleInput(body: InputEventBody) {
     const pathToParent = body.path.slice(0, body.path.length-1),
       index = body.path[body.path.length-1];
 
@@ -86,7 +98,7 @@ export default class ExpressionBuilderRenderless extends Vue {
   }
 
   render() {
-    return null
+    return this.$scopedSlots.default!({}) as any
   }
 
 }

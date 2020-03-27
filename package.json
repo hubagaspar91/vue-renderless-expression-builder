@@ -1,6 +1,6 @@
 {
   "name": "@ghuba/expression-builder",
-  "version": "0.4.22",
+  "version": "0.6.15",
   "private": false,
   "main": "dist/ghuba_expression-builder.umd.js",
   "unpkg": "dist/ghuba_expression-builder.umd.js",

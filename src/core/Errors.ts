@@ -1,4 +1,4 @@
-const errorTypes = {
+export const errorTypes = {
   MAX_DEPTH_REACHED: "maxDepthReached",
   INVALID_INDEX_INSERT: "invalidIndexInsert",
   INVALID_INDEX_DELETE: "invalidIndexDelete",
