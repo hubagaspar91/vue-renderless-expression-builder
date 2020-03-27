@@ -32,7 +32,7 @@ afterEach(() => {
 });
 
 const createBuilderAndGroup = () => {
-  // creating the renderless builder component
+  // creating the components builder component
   const _wrapper = mount(ExpressionBuilderRenderless, {
     propsData: {
       value: new ExpressionBuilder(testJSON),

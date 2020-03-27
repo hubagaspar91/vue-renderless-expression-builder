@@ -8,7 +8,7 @@ import {
 } from "@/conditions/Defaults";
 import {ConditionFactoryFieldTypeDefinition} from "@/conditions/Interfaces";
 
-describe("ConditionProvider - initialization", () => {
+describe("ConditionFactory - initialization", () => {
   it("With 1 simple field, and default operators", () => {
     const cp = new ConditionFactory({
       fields: mockFields
@@ -19,25 +19,7 @@ describe("ConditionProvider - initialization", () => {
       .toStrictEqual(defaultAvailableOperators[mockFields[0].type].sort());
   });
 
-  it("With 1 simple, and another custom field, implicitly defined", () => {
-    const fieldWithCustomType =
-      {name: "test0", type: "custom", label: "Custom", operators: [defaultOperators.EQUALS, defaultOperators.NOT_EQUALS]};
-    const cp = new ConditionFactory({
-      fields: mockFields.concat(fieldWithCustomType),
-      operators: returnDefaultOperators()
-    });
-
-    expect(cp.operators).toStrictEqual(returnDefaultOperators());
-    expect(cp.fields).toHaveLength(2);
-    expect((cp.fields[1].name)).toBe(fieldWithCustomType.name);
-    expect((cp.fields[1].label)).toBe(fieldWithCustomType.label);
-    expect((cp.fields[1].type)).toBe(fieldWithCustomType.type);
-    expect((cp.fields[1].operators as string[])).toHaveLength(2);
-    expect((cp.fields[1].operators as string[])).toContain(defaultOperators.EQUALS);
-    expect((cp.fields[1].operators as string[])).toContain(defaultOperators.NOT_EQUALS);
-  });
-
-  it("With 1 simple, and another custom field, explicitly defined", () => {
+  it("With 1 simple, and another custom field", () => {
     const fieldWithCustomType = {name: "test0", type: "custom", label: "Custom"};
 
     const customFieldType: ConditionFactoryFieldTypeDefinition = {
@@ -93,6 +75,17 @@ describe("ConditionProvider - initialization", () => {
       fields: mockFields.concat(fieldWithCustomType),
       fieldTypes: returnDefaultFieldTypes().concat([customFieldType])
     })).toThrow(/would not have any available operators/);
+
+  });
+
+  it("With a field with undefined filedType", () => {
+    const fieldWithCustomType =
+      {name: "test0", type: "custom", label: "Custom"};
+
+
+    expect(() => new ConditionFactory({
+      fields: mockFields.concat(fieldWithCustomType)
+    })).toThrow(/Field test0 has undefined type custom/);
 
   });
 });

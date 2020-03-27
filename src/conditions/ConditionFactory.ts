@@ -83,6 +83,9 @@ export default class ConditionFactory {
         operators: field.operators
       };
 
+      if (!this.fieldTypes.find(ft => ft.name == innerField.type))
+        throw new Error(`Field ${innerField.name} has undefined type ${innerField.type}`);
+
       if (selectTypeFields.includes(innerField.type) && (!innerField.choices || innerField.choices.length == 0))
         throw new Error(`Need to specify available choices for field ${field.name} of type ${field.type}`);
 

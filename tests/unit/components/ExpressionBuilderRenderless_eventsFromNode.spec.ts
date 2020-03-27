@@ -31,7 +31,7 @@ afterEach(() => {
 });
 
 const createBuilderAndNode = () => {
-  // creating the renderless builder component
+  // creating the components builder component
   const _wrapper = mount(ExpressionBuilderRenderless, {
     propsData: {
       value: new ExpressionBuilder(testJSON),
@@ -45,7 +45,7 @@ const createBuilderAndNode = () => {
   const _selectedNode: ExpressionNode =
     (_wrapper.vm.root.children[0] as ExpressionNodeGroup).children[0] as ExpressionNode;
 
-  // creating a renderless node from the root path [0, 0] node
+  // creating a components node from the root path [0, 0] node
   const _nodeWrapper = mount(ExpressionNodeRenderless, {
     propsData: {
       node: _selectedNode

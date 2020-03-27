@@ -26,7 +26,7 @@ beforeAll(() => {
   });
 });
 
-describe("ConditionFactory - creatFieldFilter method", () => {
+describe("ConditionFactory - create method", () => {
   it("Default", () => {
 
     const textFieldType = returnDefaultFieldTypes().find(ft => ft.name == "text") as ConditionFactoryFieldTypeDefinition;
