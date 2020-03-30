@@ -9,8 +9,7 @@ import ExpressionNodeGroup from "@/core/ExpressionNodeGroup";
 import ExpressionNodeRenderless from "@/components/ExpressionNodeRenderless";
 import ExpressionNode from "@/core/ExpressionNode";
 import {IExpressionNodeGroupJSON, IExpressionNodeJSON} from "@/core/Interfaces";
-import {defaultOperatorLabels, defaultOperators} from "@/conditions/Defaults";
-import {ConditionFactoryCondition} from "@/conditions/Interfaces";
+import {defaultOperators} from "@/conditions/Defaults";
 
 let wrapper: Wrapper<ExpressionBuilderRenderless>,
   nodeWrapper: Wrapper<ExpressionNodeRenderless>,

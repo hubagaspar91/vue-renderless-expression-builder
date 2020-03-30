@@ -16,6 +16,33 @@ export const connectionTypes = {
 export const connectionTypesArray = Object.values(connectionTypes);
 
 /**
+ * Validate, whether a nodeGroup to be added, can be added, without its children exceeding the maxDepth
+ * If the maxDepth is 3 and the currentDepth is 2
+ * A new nodeGroup cannot be added, as its children will be in depth 4
+ * If nodeGroup maxDepth is 0, there is no depth limit
+ * @param maxDepth
+ * @param currentDepth
+ * @param groupToInsert
+ */
+export const validateProposedDepth = (maxDepth: number, currentDepth: number, groupToInsert: ExpressionNodeGroup) => {
+  return Boolean(maxDepth == 0 || maxDepth > currentDepth + getNodeGroupDepth(groupToInsert))
+};
+
+/**
+ * Takes a node group, traverses it's children recursively, and determines its depth
+ * @param group
+ */
+export const getNodeGroupDepth = (group: ExpressionNodeGroup) => {
+  let depth = 1;  // by default, it adds one depth to the place of insertion
+  let childDepths: number[] = [0];  // start with zero, to return zero in case of 0 length children array
+  group.children.forEach(child => {
+    if (child instanceof ExpressionNodeGroup)
+      childDepths.push(getNodeGroupDepth(child))
+  });
+  return depth + Math.max(...childDepths);
+};
+
+/**
  * Factory fn, returning the default opts object for an ExpressionNodeGroup
  */
 const defaultOpts = () => ({maxDepth: 0, currentDepth: 0, children: [], connectionType: connectionTypes.AND});
@@ -47,14 +74,29 @@ export default class ExpressionNodeGroup extends ExpressionNodeBase implements I
     return this._connectionType;
   }
 
+  /**
+   * Setting children of the nodeGroup, but validating the input list, to
+   * - only contain IExpressionNode objects
+   * - not lead to exceeding the maxDepth defined on the current group
+   *
+   * Also setting the current nodeGroup instance as parent of the children
+   *
+   * @param value {IExpressionNode}
+   */
   set children(value: IExpressionNode[]) {
     this._children = value.map(node => {
       if (isIExpressionNode(node)) {
+        if (node instanceof ExpressionNodeGroup) {
+          if (!validateProposedDepth(this.maxDepth, this.currentDepth, node))
+            throw new Error("Cannot add group to group, as its children would exceed the maxDepth " + this.maxDepth);
+          node.parentNode = this;
+          node.maxDepth = this.maxDepth;
+          node.currentDepth = this.currentDepth + 1;
+        } else node.parentNode = this;
         // adding self as parentNode to all new children, to maintain consistency
-        node.parentNode = this;
         return node;
       }
-      else throw new Error("Node must by ExpressionNode or ExpressionNodeGroup, got type: " + typeof node);
+      else throw new Error("Node must be ExpressionNode or ExpressionNodeGroup, got type: " + typeof node);
     });
   }
 

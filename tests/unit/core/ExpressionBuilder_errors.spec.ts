@@ -13,8 +13,16 @@ describe("ExpressionBuilder - Restrictions, Error Handler", () => {
     eb.add(new ExpressionNodeGroup())
       .add(new ExpressionNodeGroup())
       .add(new ExpressionNodeGroup())
+      .add(new ExpressionNodeGroup())
       .add(new ExpressionNodeGroup());
     expect(handleError).toHaveBeenCalledWith(errorTypes.MAX_DEPTH_REACHED, undefined, 5);
+  });
+
+  it("Cannot be nested below maxDepth - inserting nested structure", () => {
+    const eb = new ExpressionBuilder(new ExpressionNodeGroup({maxDepth: 3}));
+    eb.add(new ExpressionNodeGroup())
+      .add(new ExpressionNodeGroup({children: [new ExpressionNodeGroup()]}));
+    expect(handleError).toHaveBeenCalledWith(errorTypes.MAX_DEPTH_REACHED, undefined, 3);
   });
 
   it("Cannot insert, set and delete non-existent index", () => {

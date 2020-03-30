@@ -53,7 +53,7 @@ var errorTypes = {
   INVALID_CONTEXT_PATH: "invalidContextPath"
 };
 var errorTypeMessageFactoryMap = (_errorTypeMessageFact = {}, defineProperty(_errorTypeMessageFact, errorTypes.MAX_DEPTH_REACHED, function (maxDepth) {
-  return "Reached max depth: ".concat(maxDepth, ". Cannot nest conditions any further.");
+  return "Cannot add group to group, as its children would exceed the maximum depth ".concat(maxDepth);
 }), defineProperty(_errorTypeMessageFact, errorTypes.INVALID_INDEX_INSERT, function (index) {
   return "Cannot insert node to non-existent index: ".concat(index);
 }), defineProperty(_errorTypeMessageFact, errorTypes.INVALID_INDEX_DELETE, function (index) {
@@ -373,6 +373,34 @@ var connectionTypes = {
 };
 var connectionTypesArray = Object.values(connectionTypes);
 /**
+ * Validate, whether a nodeGroup to be added, can be added, without its children exceeding the maxDepth
+ * If the maxDepth is 3 and the currentDepth is 2
+ * A new nodeGroup cannot be added, as its children will be in depth 4
+ * If nodeGroup maxDepth is 0, there is no depth limit
+ * @param maxDepth
+ * @param currentDepth
+ * @param groupToInsert
+ */
+
+var validateProposedDepth = function validateProposedDepth(maxDepth, currentDepth, groupToInsert) {
+  return Boolean(maxDepth == 0 || maxDepth > currentDepth + getNodeGroupDepth(groupToInsert));
+};
+/**
+ * Takes a node group, traverses it's children recursively, and determines its depth
+ * @param group
+ */
+
+var getNodeGroupDepth = function getNodeGroupDepth(group) {
+  var depth = 1; // by default, it adds one depth to the place of insertion
+
+  var childDepths = [0]; // start with zero, to return zero in case of 0 length children array
+
+  group.children.forEach(function (child) {
+    if (child instanceof ExpressionNodeGroup) childDepths.push(getNodeGroupDepth(child));
+  });
+  return depth + Math.max.apply(Math, childDepths);
+};
+/**
  * Factory fn, returning the default opts object for an ExpressionNodeGroup
  */
 
@@ -475,6 +503,16 @@ var ExpressionNodeGroup = /*#__PURE__*/function (_ExpressionNodeBase) {
     get: function get() {
       return this._connectionType;
     }
+    /**
+     * Setting children of the nodeGroup, but validating the input list, to
+     * - only contain IExpressionNode objects
+     * - not lead to exceeding the maxDepth defined on the current group
+     *
+     * Also setting the current nodeGroup instance as parent of the children
+     *
+     * @param value {IExpressionNode}
+     */
+
   }, {
     key: "children",
     set: function set(value) {
@@ -482,10 +520,16 @@ var ExpressionNodeGroup = /*#__PURE__*/function (_ExpressionNodeBase) {
 
       this._children = value.map(function (node) {
         if (isIExpressionNode(node)) {
-          // adding self as parentNode to all new children, to maintain consistency
-          node.parentNode = _this3;
+          if (node instanceof ExpressionNodeGroup) {
+            if (!validateProposedDepth(_this3.maxDepth, _this3.currentDepth, node)) throw new Error("Cannot add group to group, as its children would exceed the maxDepth " + _this3.maxDepth);
+            node.parentNode = _this3;
+            node.maxDepth = _this3.maxDepth;
+            node.currentDepth = _this3.currentDepth + 1;
+          } else node.parentNode = _this3; // adding self as parentNode to all new children, to maintain consistency
+
+
           return node;
-        } else throw new Error("Node must by ExpressionNode or ExpressionNodeGroup, got type: " + _typeof_1(node));
+        } else throw new Error("Node must be ExpressionNode or ExpressionNodeGroup, got type: " + _typeof_1(node));
       });
     },
     get: function get() {
@@ -561,24 +605,34 @@ var ExpressionBuilder = /*#__PURE__*/function () {
     value: function _validateIndex(index) {
       return Boolean(index == undefined || index >= 0 && index <= this._context.children.length);
     }
+    /**
+     * Wraps an operation, by validating whether
+     * - Insertion is done to a valid index
+     * - If inserting a group, that its children don't exceed the maxDepth
+     * @param node
+     * @param operation
+     * @param index
+     * @private
+     */
+
   }, {
     key: "_fluentInsertion",
     value: function _fluentInsertion(node, operation, index) {
       var newContext; // if valid index
 
       if (this._validateIndex(index)) {
-        node.parentNode = this._context; // If group, check if will reach max depth
-
+        // If group, check if will reach max depth
         if (node instanceof ExpressionNodeGroup) {
-          if (this.context.maxDepth > 0 && this.context.currentDepth >= this.context.maxDepth - 2) {
+          if (!validateProposedDepth(this.context.maxDepth, this.context.currentDepth, node)) {
             handleError(errorTypes.MAX_DEPTH_REACHED, this.errorHandler, this.context.maxDepth);
             return this;
           }
 
+          node.parentNode = this._context;
           node.maxDepth = this._context.maxDepth;
           node.currentDepth = this._context.currentDepth + 1;
           newContext = node;
-        }
+        } else node.parentNode = this._context;
 
         operation(node, index);
         this._context = newContext ? newContext : this._context;
@@ -850,6 +904,9 @@ var ConditionFactory = /*#__PURE__*/function () {
           choices: field.choices,
           operators: field.operators
         };
+        if (!_this.fieldTypes.find(function (ft) {
+          return ft.name == innerField.type;
+        })) throw new Error("Field ".concat(innerField.name, " has undefined type ").concat(innerField.type));
         if (selectTypeFields.includes(innerField.type) && (!innerField.choices || innerField.choices.length == 0)) throw new Error("Need to specify available choices for field ".concat(field.name, " of type ").concat(field.type)); // setting operators, if it was provided null or empty
 
         if (!innerField.operators || innerField.operators.length == 0) {

@@ -10,7 +10,7 @@ interface ErrorTypeMessageFactoryMap {
 }
 
 const errorTypeMessageFactoryMap = {
-  [errorTypes.MAX_DEPTH_REACHED]: (maxDepth: number) => `Reached max depth: ${maxDepth}. Cannot nest conditions any further.`,
+  [errorTypes.MAX_DEPTH_REACHED]: (maxDepth: number) => `Cannot add group to group, as its children would exceed the maximum depth ${maxDepth}`,
   [errorTypes.INVALID_INDEX_INSERT]: (index: number) => `Cannot insert node to non-existent index: ${index}`,
   [errorTypes.INVALID_INDEX_DELETE]: (index: number) => `Cannot delete node from non-existent index: ${index}`,
   [errorTypes.INVALID_CONTEXT_PATH]: (path: number[]) => `Invalid context path [${path.join(", ")}], new context must be an ExpressionNodeGroup node`

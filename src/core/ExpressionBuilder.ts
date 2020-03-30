@@ -1,6 +1,6 @@
 import {ICondition, IExpressionNode, IExpressionNodeGroupJSON} from "@/core/Interfaces";
 import errorTypes, {handleError} from "@/core/Errors";
-import ExpressionNodeGroup from "@/core/ExpressionNodeGroup";
+import ExpressionNodeGroup, {validateProposedDepth} from "@/core/ExpressionNodeGroup";
 
 export default class ExpressionBuilder {
   public readonly root: ExpressionNodeGroup;
@@ -26,21 +26,30 @@ export default class ExpressionBuilder {
       || (index >= 0 && index <= this._context.children.length));
   }
 
+  /**
+   * Wraps an operation, by validating whether
+   * - Insertion is done to a valid index
+   * - If inserting a group, that its children don't exceed the maxDepth
+   * @param node
+   * @param operation
+   * @param index
+   * @private
+   */
   private _fluentInsertion(node: IExpressionNode, operation: Function, index?: number): ExpressionBuilder {
     let newContext;
     // if valid index
     if (this._validateIndex(index)) {
-      node.parentNode = this._context;
       // If group, check if will reach max depth
       if (node instanceof ExpressionNodeGroup) {
-        if (this.context.maxDepth > 0 && this.context.currentDepth >= (this.context.maxDepth - 2)) {
+        if (!validateProposedDepth(this.context.maxDepth, this.context.currentDepth, node)) {
           handleError(errorTypes.MAX_DEPTH_REACHED, this.errorHandler, this.context.maxDepth);
           return this;
         }
+        node.parentNode = this._context;
         node.maxDepth = this._context.maxDepth;
         node.currentDepth = this._context.currentDepth + 1;
         newContext = node;
-      }
+      } else node.parentNode = this._context;
       operation(node, index);
       this._context = newContext ? newContext : this._context;
       return this;

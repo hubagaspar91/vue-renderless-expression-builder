@@ -7,6 +7,15 @@ export default class ExpressionBuilder {
     constructor(root?: ExpressionNodeGroup | IExpressionNodeGroupJSON, errorHandler?: Function);
     get context(): ExpressionNodeGroup;
     private _validateIndex;
+    /**
+     * Wraps an operation, by validating whether
+     * - Insertion is done to a valid index
+     * - If inserting a group, that its children don't exceed the maxDepth
+     * @param node
+     * @param operation
+     * @param index
+     * @private
+     */
     private _fluentInsertion;
     private _insert;
     insert(node: IExpressionNode, index: number): ExpressionBuilder;

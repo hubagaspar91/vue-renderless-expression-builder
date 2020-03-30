@@ -5,6 +5,21 @@ export declare const connectionTypes: {
     OR: string;
 };
 export declare const connectionTypesArray: string[];
+/**
+ * Validate, whether a nodeGroup to be added, can be added, without its children exceeding the maxDepth
+ * If the maxDepth is 3 and the currentDepth is 2
+ * A new nodeGroup cannot be added, as its children will be in depth 4
+ * If nodeGroup maxDepth is 0, there is no depth limit
+ * @param maxDepth
+ * @param currentDepth
+ * @param groupToInsert
+ */
+export declare const validateProposedDepth: (maxDepth: number, currentDepth: number, groupToInsert: ExpressionNodeGroup) => boolean;
+/**
+ * Takes a node group, traverses it's children recursively, and determines its depth
+ * @param group
+ */
+export declare const getNodeGroupDepth: (group: ExpressionNodeGroup) => number;
 export default class ExpressionNodeGroup extends ExpressionNodeBase implements IExpressionNode {
     private _children;
     private _maxDepth;
@@ -13,6 +28,15 @@ export default class ExpressionNodeGroup extends ExpressionNodeBase implements I
     constructor(opts?: IExpressionNodeGroupOpts, parentNode?: ExpressionNodeGroup);
     set connectionType(value: string);
     get connectionType(): string;
+    /**
+     * Setting children of the nodeGroup, but validating the input list, to
+     * - only contain IExpressionNode objects
+     * - not lead to exceeding the maxDepth defined on the current group
+     *
+     * Also setting the current nodeGroup instance as parent of the children
+     *
+     * @param value {IExpressionNode}
+     */
     set children(value: IExpressionNode[]);
     get children(): IExpressionNode[];
     set maxDepth(value: number);
