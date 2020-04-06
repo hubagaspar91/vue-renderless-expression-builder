@@ -22,5 +22,15 @@ export declare const Conditions: {
     Defaults: {
         returnDefaultOperators: () => import("./conditions/Interfaces").ConditionFactoryOperator[];
         returnDefaultFieldTypes: () => import("./conditions/Interfaces").ConditionFactoryFieldTypeDefinition[];
+        defaultFieldTypes: {
+            TEXT: string;
+            DATE: string;
+            NUMBER: string;
+            BOOLEAN: string;
+            CHOICE: string;
+            MULTIPLE_CHOICE: string;
+            SELECT: string;
+        };
+        defaultOperators: Record<string, string>;
     };
 };
