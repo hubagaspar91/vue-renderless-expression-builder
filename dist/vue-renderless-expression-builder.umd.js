@@ -1295,7 +1295,9 @@ var ImportedConditions = {
   ConditionFactory: ConditionFactory,
   Defaults: {
     returnDefaultOperators: returnDefaultOperators,
-    returnDefaultFieldTypes: returnDefaultFieldTypes
+    returnDefaultFieldTypes: returnDefaultFieldTypes,
+    defaultFieldTypes: defaultFieldTypes,
+    defaultOperators: defaultOperators
   }
 };
 
