@@ -23,7 +23,7 @@ Available named exports are:
 - Conditions - the default conditions and conditionFactory class, used internally by the renderless components
 
 ## Example implementation
-The working expression builder comprises of 3 components:
+The working expression builder is comprised of 3 components:
 - ExpressionNode (building on ExpressionNodeRenderless, from the lib) - representing one condition
 - ExpressionNodeGroup (building on ExpressionNodeGroupRenderless, from the lib) - representing a group of expression nodes, connected by either 'and' or 'or'
 - ExpressionBuilder (building on ExpressionBuilderRenderless, from the lib) - Manages the nested structure, inserts, deletes nodes, injects the dependencies into its child nodes and node groups
@@ -58,8 +58,8 @@ Condition object schema:
   operator: {
     name: string,
     label: string
-  }
-  value: any;
+  },
+  value: any
 }
 ```
 #### Sample component implementation
@@ -152,7 +152,7 @@ Core.ExpressionNodeGroup members:
 |currentDepth | number | the depth of the current node group in the current nested strucure |
 | toJSON  | function  | Recursively creates a json representation of the current node group and its children   |
 | fromJSON (static)  | function  |Creates a new Core.ExpressionNodeGroup object from a json representation |
-| flatten | function | returns a 1 depth array of arrays, flattening the nested condition, Where the elements of each array are connected by AND and the inner arrays are connected by OR, so the result can be used for client-side filtering like this: flattened.some(flattened.map(group => group.every(validateNode)), n => n) |
+| flatten | function | returns a 1 depth array of arrays, flattening the nested condition, where the elements of each array are conditions of ExpressionNodes and are connected by AND and the inner arrays are connected by OR, so the result can be used for client-side filtering like this: list.filter(elem => flattened.map(group => group.every(condition => validateElem(condition, elem))).some(c => c)) |
 
 #### Sample component implementation
 
@@ -181,6 +181,10 @@ Core.ExpressionNodeGroup members:
                    <expression-node v-else :node="child"></expression-node>
                </li>
            </ul>
+           <!-- Adds a new node group as the last child of the current node group -->
+           <span @click="addGroup">add group</span>
+           <!-- Adds a new node as the last child of the current node group -->
+           <span @click="addNode">add node</span>
        </div>
    </expression-node-group-renderless>
 </template>
@@ -219,15 +223,15 @@ Core.ExpressionBuilder members:
 |---|---|---|
 |root | Core.ExpressionNodeGroup | the root node group of the current expression/query |
 |context | Core.ExpressionNodeGroup | the current context, for which insertion and deletion method calls apply |
-| insert | function(node, index) | Inserts a node or node group at a given index in the children array of the context node group. If a node group was inserted sets it as the new context. Returns the context, for fluent editing |
-| set | function(node, index) | Sets a node at a for a given index in the children array of the context node group. If a node group was inserted sets it as the new context, Returns the context, for fluent editing |
+| insert | function(node, index) | Inserts a node or node group at a given index in the children array of the context node group. If a node group was inserted, sets it as the new context. Returns the context, for fluent editing |
+| set | function(node, index) | Sets a node at a for a given index in the children array of the context node group. If a node group was inserted, sets it as the new context, Returns the context, for fluent editing |
 |delete | function(index) | Deletes a node from a given index in the children array of the context node group. Returns the context, for fluent editing |
-| add | function(node) | Inserts a node or node group at the end of the children array of the context node group. If a node group was inserted sets it as the new context, Returns the context, for fluent editing |
+| add | function(node) | Inserts a node or node group at the end of the children array of the context node group. If a node group was inserted, sets it as the new context, Returns the context, for fluent editing |
 | contextUp | function | sets the parentNode of the current context as the new context |
 | contextToRoot | function | sets the root as the new context |
-| contextTo | function(path: numbert[]) | sets a node group by a path from the root, as the new context ie. the first child of the root node can be set as context by calling contextTo([0]) |
+| contextTo | function(path: number[]) | sets a node group by a path from the root, as the new context ie. the first child of the root node can be set as context by calling contextTo([0]) |
 |flatten | function | Calls the faltten method of the root Core.ExprssionNodeGroup |
-| toJSON  | function  | Calls the toJSON method of the root Core.ExprssionNodeGroup  |  
+| toJSON  | function  | Calls the toJSON method of the root Core.ExpressionNodeGroup  |  
 
 
 
