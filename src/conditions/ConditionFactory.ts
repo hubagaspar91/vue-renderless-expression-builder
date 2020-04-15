@@ -62,9 +62,9 @@ export default class ConditionFactory {
           Options are: ${this.fieldTypes.map(ft => ft.name).join(", ")}`);
 
       return {
-        operator,
-        field,
-        fieldType,
+        operatorName: operator.name,
+        fieldName: field.name,
+        fieldTypeName: fieldType.name,
         value
       }
 

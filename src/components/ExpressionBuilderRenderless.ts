@@ -11,7 +11,7 @@ import {
 import ConditionFactory from "@/conditions/ConditionFactory";
 
 export const PROVIDE_EVENT_HUB_KEY = "$__qb_event_hub__";
-export const PROVIDE_CONDITION_FACTORY_KEY = "$__qb_condition_factory__";
+  export const PROVIDE_CONDITION_FACTORY_KEY = "$__qb_condition_factory__";
 
 
 @Component

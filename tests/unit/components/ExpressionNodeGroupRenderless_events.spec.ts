@@ -49,7 +49,7 @@ const testGroupAction = (actionType: string, group: boolean, index?: number) => 
           if (actionType !== actionTypes.ADD)
             expect((body.node as ExpressionNode).condition).toStrictEqual(newCondition);
           else {
-            expect((body.node as ExpressionNode).condition.field.name).toBe("test");
+            expect((body.node as ExpressionNode).condition.fieldName).toBe("test");
           }
           expect(body.node).toBeInstanceOf(ExpressionNode);
         } else expect(body.node).toBeInstanceOf(ExpressionNodeGroup);

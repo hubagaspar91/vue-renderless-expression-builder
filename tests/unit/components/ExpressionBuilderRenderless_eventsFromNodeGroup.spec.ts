@@ -78,7 +78,7 @@ const testActionOnGroup = (actionType: string, group: boolean, index?: number) =
           if (actionType !== actionTypes.ADD)
             expect((newNodeJson as IExpressionNodeJSON)).toStrictEqual(newCondition);
           else {
-            expect((newNodeJson as IExpressionNodeJSON).field.name).toStrictEqual("test");
+            expect((newNodeJson as IExpressionNodeJSON).fieldName).toStrictEqual("test");
           }
         }
       } catch (e) {

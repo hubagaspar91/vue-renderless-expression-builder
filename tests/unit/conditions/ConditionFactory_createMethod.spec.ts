@@ -1,6 +1,6 @@
 import ConditionFactory from "@/conditions/ConditionFactory";
 import {
-  defaultOperatorLabels,
+  defaultFieldTypes,
   defaultOperators,
   returnDefaultFieldTypes,
   returnDefaultOperators
@@ -8,10 +8,10 @@ import {
 import {mockFields} from "../../utils";
 import {ConditionFactoryCondition, ConditionFactoryFieldTypeDefinition} from "@/conditions/Interfaces";
 
-let cp: ConditionFactory;
+let cf: ConditionFactory;
 
 beforeAll(() => {
-  cp = new ConditionFactory({
+  cf = new ConditionFactory({
     operators: returnDefaultOperators(),
     fields: mockFields
       .concat({name: "custom", label: "Custom", type: "text"})
@@ -29,23 +29,17 @@ beforeAll(() => {
 describe("ConditionFactory - create method", () => {
   it("Default", () => {
 
-    const textFieldType = returnDefaultFieldTypes().find(ft => ft.name == "text") as ConditionFactoryFieldTypeDefinition;
-
     const expected: ConditionFactoryCondition = {
-      fieldType: textFieldType,
-      field: Object.assign(mockFields[0], {operators: textFieldType.availableOperators, choices: undefined}),
-      operator: {
-        name: defaultOperators.EQUALS,
-        label: defaultOperatorLabels[defaultOperators.EQUALS]
-      },
+      fieldTypeName: defaultFieldTypes.TEXT,
+      fieldName: mockFields[0].name,
+      operatorName: defaultOperators.EQUALS,
       value: null
     };
 
-    const created = cp.create();
-    expect(created.operator).toStrictEqual(expected.operator);
-    expect(created.fieldType.availableOperators.sort()).toStrictEqual(expected.fieldType.availableOperators.sort());
-    expect(created.fieldType.name).toBe(expected.fieldType.name);
-    expect(created.field.name).toBe(expected.field.name);
+    const created = cf.create();
+    expect(created.operatorName).toBe(expected.operatorName);
+    expect(created.fieldTypeName).toBe(expected.fieldTypeName);
+    expect(created.fieldName).toBe(expected.fieldName);
   });
 
   it("Named - default type", () => {
@@ -53,61 +47,47 @@ describe("ConditionFactory - create method", () => {
     const textFieldType = returnDefaultFieldTypes().find(ft => ft.name == "text") as ConditionFactoryFieldTypeDefinition;
 
     const expected: ConditionFactoryCondition = {
-      fieldType: textFieldType,
-      field: Object.assign({name: "custom", label: "Custom", type: "text"},
-        {operators: textFieldType.availableOperators, choices: undefined}),
-      operator: {
-        name: defaultOperators.NOT_EQUALS,
-        label: defaultOperatorLabels[defaultOperators.NOT_EQUALS]
-      },
+      fieldTypeName: defaultFieldTypes.TEXT,
+      fieldName: "custom",
+      operatorName: defaultOperators.NOT_EQUALS,
       value: "hello"
     };
 
-    const created = cp.create("custom", defaultOperators.NOT_EQUALS, "hello");
-    expect(created.operator).toStrictEqual(expected.operator);
-    expect(created.fieldType.availableOperators.sort()).toStrictEqual(expected.fieldType.availableOperators.sort());
-    expect(created.fieldType.name).toBe(expected.fieldType.name);
-    expect(created.field.name).toBe(expected.field.name);
+    const created = cf.create("custom", defaultOperators.NOT_EQUALS, "hello");
+    expect(created.operatorName).toBe(expected.operatorName);
+    expect(created.fieldTypeName).toBe(expected.fieldTypeName);
+    expect(created.fieldName).toBe(expected.fieldName);
 
   });
 
   it("Named - custom type", () => {
 
     const expected: ConditionFactoryCondition = {
-      fieldType: {
-        name: "customFieldType",
-        label: "CustomFieldType",
-        availableOperators: [defaultOperators.EQUALS]
-      },
-      field: {name: "custom0", label: "Custom0", type: "customFieldType",
-        operators: [defaultOperators.EQUALS], choices: undefined},
-      operator: {
-        name: defaultOperators.EQUALS,
-        label: defaultOperatorLabels[defaultOperators.EQUALS]
-      },
+      fieldTypeName: "customFieldType",
+      fieldName: "custom0",
+      operatorName: defaultOperators.EQUALS,
       value: "hello"
     };
 
-    const created = cp.create("custom0", defaultOperators.EQUALS, "hello");
-    expect(created.operator).toStrictEqual(expected.operator);
-    expect(created.fieldType.availableOperators.sort()).toStrictEqual(expected.fieldType.availableOperators.sort());
-    expect(created.fieldType.name).toBe(expected.fieldType.name);
-    expect(created.field.name).toBe(expected.field.name);
+    const created = cf.create("custom0", defaultOperators.EQUALS, "hello");
+    expect(created.operatorName).toBe(expected.operatorName);
+    expect(created.fieldTypeName).toBe(expected.fieldTypeName);
+    expect(created.fieldName).toBe(expected.fieldName);
 
   });
 
   it("Undefined operator", () => {
-    expect(() => cp.create("custom", "nonExistent", "hello"))
+    expect(() => cf.create("custom", "nonExistent", "hello"))
       .toThrow(/[oO]perator .+ does not exist, available options are/);
   });
 
   it("Undefined field", () => {
-    expect(() => cp.create("nonExistent", defaultOperators.EQUALS, "hello"))
+    expect(() => cf.create("nonExistent", defaultOperators.EQUALS, "hello"))
       .toThrow(/No such field/);
   });
 
   it("operator not available for field type", () => {
-    expect(() => cp.create("custom0", defaultOperators.NOT_EQUALS, "hello"))
+    expect(() => cf.create("custom0", defaultOperators.NOT_EQUALS, "hello"))
       .toThrow(/is not available for field/);
   });
 

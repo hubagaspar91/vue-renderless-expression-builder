@@ -18,9 +18,9 @@ export interface ConditionFactoryFieldTypeDefinition {
 }
 
 export interface ConditionFactoryCondition {
-  field: ConditionFactoryField;
-  fieldType: ConditionFactoryFieldTypeDefinition;
-  operator: ConditionFactoryOperator;
+  fieldName: string;
+  fieldTypeName: string;
+  operatorName: string;
   value: any;
 }
 
