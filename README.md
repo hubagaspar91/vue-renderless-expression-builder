@@ -2,6 +2,8 @@
 
 This is something I needed for a project, where I had to build an expression (or query) builder, with a layout drastically different from the standard query builder interface (such as the [jQuery QueryBuilder](https://querybuilder.js.org/)), but with very similar functionality. This library is a layout-agnostic implementaiton, meaning, that it aims to serve as a core for flexibly creating query builder components with different complexities and specifications.
 
+[Demo implementation (with Bootstrap Vue)](http://devel.gasparhuba.hu/vue-renderless-expression-builder-examples/)
+
 ## What it does:
 - Creates and manages the nested structure (nodes and node groups)
 - Let's you define a set of available fields for filtering (First Name, Created At, etc.), field types (date, text, number, bool, etc.), and operators (equals, contains, etc.).

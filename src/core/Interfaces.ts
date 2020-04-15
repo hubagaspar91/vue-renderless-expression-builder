@@ -22,7 +22,7 @@ export function isIExpressionNode(obj: object): obj is IExpressionNode {
  * Condition object schema for {ExpressionNode}
  */
 export interface ICondition {
-    [index: string]: any
+    [index: string]: any;
 }
 
 /**

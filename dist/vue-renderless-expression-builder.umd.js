@@ -880,9 +880,9 @@ var ConditionFactory = /*#__PURE__*/function () {
           return ft.name;
         }).join(", ")));
         return {
-          operator: operator,
-          field: field,
-          fieldType: fieldType,
+          operatorName: operator.name,
+          fieldName: field.name,
+          fieldTypeName: fieldType.name,
           value: value
         };
       }
