@@ -76,7 +76,7 @@ Provided keys ([provide/inject API](https://vuejs.org/v2/api/#provide-inject)):
 | Key  | Type  | Description  |
 |---|---|---|
 | `$__qb_condition_factory__` | `ConditionFactory` | ConditionFactory, that's injected to all ExpressionNodeRenderless and ExpressionNodeGroupRenderless components, but you can inject in the implementations as well |
-| `__qb__event_hub__` | `Vue` | eventHub, that the builder and nodes use to communicate |
+| `$__qb__event_hub__` | `Vue` | eventHub, that the builder and nodes use to communicate |
 
 ## Core
 
