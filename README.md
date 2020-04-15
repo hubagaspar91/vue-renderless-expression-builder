@@ -2,7 +2,8 @@
 
 This is something I needed for a project, where I had to build an expression (or query) builder, with a layout drastically different from the standard query builder interface (such as the [jQuery QueryBuilder](https://querybuilder.js.org/)), but with very similar functionality. This library is a layout-agnostic implementaiton, meaning, that it aims to serve as a core for flexibly creating query builder components with different complexities and specifications.
 
-[Demo implementation (with Bootstrap Vue)](http://devel.gasparhuba.hu/vue-renderless-expression-builder-examples/)
+[Demo implementation (with Bootstrap Vue)](http://devel.gasparhuba.hu/vue-renderless-expression-builder-examples/)  
+[Demo code](https://github.com/hubagaspar91/vue-renderless-expression-builder/tree/master/demo)
 
 ## What it does:
 - Creates and manages the nested structure (nodes and node groups)
@@ -24,300 +25,293 @@ Available named exports are:
 - Components - the actual renderless components
 - Conditions - the default conditions and conditionFactory class, used internally by the renderless components
 
-## Example implementation
-The working expression builder is comprised of 3 components:
-- ExpressionNode (building on ExpressionNodeRenderless, from the lib) - representing one condition
-- ExpressionNodeGroup (building on ExpressionNodeGroupRenderless, from the lib) - representing a group of expression nodes, connected by either 'and' or 'or'
-- ExpressionBuilder (building on ExpressionBuilderRenderless, from the lib) - Manages the nested structure, inserts, deletes nodes, injects the dependencies into its child nodes and node groups
+## Components
 
-### ExpressionNode
+### ExpressionNodeRenderless
 
-Core.ExpressionNode members:
+Props:
+| Prop  | Type  | Description  |
+|---|---|---|
+| `node` | `Core.ExpressionNode` | node represented by the component |
+
+Available scopedSlots:
+| Slot  | Type  | Description  |
+|---|---|---|
+| `node` | `Core.ExpressionNode` | node object, represented by the component |
+| `index` | `number` | index of the current node, in its parent's children array |
+| `updateCondition` | `Function(fieldName: string, operatorName: string, value: any)` | calls ConditionFactory.create with the params and updates the condition of the current node |
+| `deleteSelf` | `Function` | deletes the current node |
+| `conditionFactory` | `ConditionFactory` | condition factory instance |
+
+### ExpressionNodeGroupRenderless
+Props:
+| Prop  | Type  | Description  |
+|---|---|---|
+| `node` | Core.ExpressionNodeGroup | node group represented by the component |
+
+Available scopedSlots:
+| Slot  | Type  | Description  |
+|---|---|---|
+| `node` | `Core.ExpressionNodeGroup` | node group object, represented by the component |
+| `index` | `number` | index of the current node, in its parent's children array |
+| `deleteSelf` | `Function` | deletes the current node |
+| `conditionFactory` | `ConditionFactory` | condition factory instance |
+| `toggleConnectionType` | `Function` | toggles group's connection type between 'and' and 'or' |
+| `addNode` | `Function(condition: Object?)` | adds a node at the end of the childrens array of the group |
+| `addGroup` | `Function` | adds a node group at the end of the childrens array of the group |
+| `insert` | `Function(node: Core.ExpressionNode(Group), index: number)` | inserts a node or node group at a given index |
+
+### ExpressionBuilderRenderless
+
+Props:
+| Prop  | Type  | Description  |
+|---|---|---|
+| `value` | `Core.ExpressionBuilder?` | ExpressionBuilder instance to be represented by the component |
+| `fields` | `ConditionFactoryField[]` (below) | list of user defined fields to be used in the builder |
+| `operators` | `ConditionFactoryOperator[]` (below) | a list of operators available in the builder - default: Conditions.returnDefaultOperators |
+| `fieldTypes` | `ConditionFactoryFieldTypeDefinition[]` (below) | a list of field types available in the builder - default: Conditions.returnDefaultFieldTypes | 
+| `eventHub` | `Vue?` | eventHub, that the builder and nodes use to communicate |
+
+Provided keys ([provide/inject API](https://vuejs.org/v2/api/#provide-inject)):
+| Key  | Type  | Description  |
+|---|---|---|
+| `$__qb_condition_factory__` | `ConditionFactory` | ConditionFactory, that's injected to all ExpressionNodeRenderless and ExpressionNodeGroupRenderless components, but you can inject in the implementations as well |
+| `__qb__event_hub__` | `Vue` | eventHub, that the builder and nodes use to communicate |
+
+## Core
+
+### Core.ExpressionNode
 
 | Member  | Type  | Description  |
 |---|---|---|
-| parentNode  | Core.ExpressionNodeGroup  | The node group containing this node  |
-| toJSON  | function  | Returns a json representation of the current condition object  |
-| fromJSON (static)  | function  |Creates a new Core.ExpressionNode instance from a json representation |
-| condition |Object  | Can be any object, however, the conditionFactory creates the condition objects with a specific schema - see below  |
+| `parentNode`  | `Core.ExpressionNodeGroup`  | The node group containing this node  |
+| `toJSON`  | `Function`  | Returns a json representation of the current condition object  |
+| `fromJSON` (static) | `Function(json: Object)`  |Creates a new Core.ExpressionNode instance from a json representation |
+| `condition` | `Object` | Can be any object, however, the conditionFactory creates the condition objects with a specific schema - see below  |
 
 Condition object schema:
 ```js
-
 {
-  field: {
-    type: string,
-    name: string,
-    label: string,
-    operators?: string[],
-    choices?: any[]  // used, if select-type type is used
-  },
-  fieldType: {
-    name: string,
-    availableOperators: string[],  // operators available by default for the field type
-    label: string,  // display name for the field type
-  },
-  operator: {
-    name: string,
-    label: string
-  },
-  value: any
+  fieldName: "string",  // name of the field (fisrtName, dateOfBirth, etc.)
+  operatorName: "string",  // name of the operator (equals, contains, etc.)
+  fieldTypeName: "string"  // name of the field type (text, date, etc.)
+  value: any  // condition value
 }
 ```
-#### Sample component implementation
 
-```vue
-<template>
-    <expression-node-renderless :node="node" v-slot="{
-     node,  // the current node
-     index,  // the index of this node amongst its parent's children
-     updateCondition,  // function, updates the condition of the current node,
-     // takes params: field, operator, value ('firstName', 'startsWith', 'Jo')
-     deleteSelf,  // deletes the current node
-     conditionFactory  // it stores the defined fields, fieldTypes and operators,
-     // and creates new conditions with its create method - injected by the parent ExpressionBuilderRenderless
-   }">
-        <div class="expression-node">
-            <!-- Choosing the field from the ones provided when initialized the ExpressionBuilder -->
-            <label for="field">Field</label>
-            <select name="field" id="field" v-model="selectedField">
-                <option v-for="field in conditionFactory.fields" :value="field">
-                    {{field.label}}
-                </option>
-            </select>
-
-            <!-- Choosing an operator from the ones that are available for the chosen field -->
-            <label for="operator">Operator</label>
-            <select name="operator" id="operator" v-model="selectedOperator">
-                <option v-for="operator in selectedField.operators" :value="operator">
-                    {{operator.label}}
-                </option>
-            </select>
-
-            <!-- Providing the actual filter value for the current condition,
-            this can be a custom component in case of different field types - ie a date picker for field type 'date' -->
-            <label for="value">Value</label>
-            <input type="text" id="value" v-model="value">
-
-            <!-- Ideally, saving should happen automatically,
-            this is just to showcase the usage of updateCondition, which simply calls conditionFactory.create -->
-            <button @click="updateCondition(selectedField.name, selectedOperator.name, value)">Save</button>
-        </div>
-    </expression-node-renderless>
-</template>
-<script>
-  import {Components, Core} from "vue-renderless-expression-builder";
-  const {ExpressionNodeRenderless} = Components;
-
-  export default {
-    name: "ExpressionNode",
-    components: {
-      ExpressionNodeRenderless
-    },
-    props: {
-      node: {
-        // The model for the node
-        type: Core.ExpressionNode,
-        required: true
-      }
-    },
-    data() {
-      return {
-        selectedField: null,
-        selectedOperator: null,
-        value: null
-      }
-    },
-    watch: {
-      selectedField() {
-        this.selectedOperator = this.value = null;
-      }
-    }
-  }
-</script>
-```
-
-### ExpressionNodeGroup
+### Core.ExpressionNodeGroup
 Core.ExpressionNodeGroup constructor params:  
-- opts:
-  - type: Object
-  - default: {maxDepth: 0, currentDepth: 0, children: [], connectionType: connectionTypes.AND}
-- parentNode (optional)
-  - type: core.ExpressionNodeGroup
-  - desc: its parent node group, undefined if it is the root  
+| Param  | Type  | Description  |
+|---|---|---|
+| `opts` | `Object` | default: {maxDepth: 0, currentDepth: 0, children: [], connectionType: "and"} |
+| `parentNode` | `Core.ExpressionNodeGroup` | The node group containing this node |
   
 Core.ExpressionNodeGroup members:  
 | Member  | Type  | Description  |
 |---|---|---|
-| parentNode  | Core.ExpressionNodeGroup  | The node group containing this node  |
-| maxDepth | number | the max depth of the nested structure, defaults to 0 (meaning infinite depth)|
-|currentDepth | number | the depth of the current node group in the current nested strucure |
-| toJSON  | function  | Recursively creates a json representation of the current node group and its children   |
-| fromJSON (static)  | function  |Creates a new Core.ExpressionNodeGroup object from a json representation |
-| flatten | function | returns a 1 depth array of arrays, flattening the nested condition, where the elements of each array are conditions of ExpressionNodes and are connected by AND and the inner arrays are connected by OR, so the result can be used for client-side filtering like this: list.filter(elem => flattened.map(group => group.every(condition => validateElem(condition, elem))).some(c => c)) |
+| `parentNode`  | `Core.ExpressionNodeGroup`  | The node group containing this node  |
+| `maxDepth` | `number` | the max depth of the nested structure, defaults to 0 (meaning infinite depth)|
+| `currentDepth` | `number` | the depth of the current node group in the current nested strucure |
+| `toJSON`  | `Function`  | Recursively creates a json representation of the current node group and its children   |
+| `fromJSON` (static)  | `Function(json: Object)`  | reates a new Core.ExpressionNodeGroup object from a json representation |
+| `flatten` | `Function` | returns a 1 depth array of arrays, flattening the nested condition, where the elements of each array are conditions of ExpressionNodes and are connected by AND and the inner arrays are connected by OR, so the result can be used for client-side filtering like this: list.filter(elem => flattened.map(group => group.every(condition => validateElem(condition, elem))).some(c => c)) |
 
-#### Sample component implementation
-
-```vue
-<template>
-   <expression-node-group-renderless :node="node" v-slot="{
-     node,  // the current node (node group in this case)
-     index,  // the index of this node amongst its parent's children, if it is the root, returns -1
-     deleteSelf,  // deletes the current node group with all its children
-     toggleConnectionType,  // toggles between 'and' and 'or', or 'all', and 'any'
-     insert,  // inserts a new node, at a given index
-     addNode,  // pushes a node to the end of the children list of this node group
-     addGroup,  // pushes a node group to the end of the children list of this node group
-     conditionFactory  // it stores the defined fields, fieldTypes and operators, and creates new conditions with its create method
-   }">
-       <div class="expression-node-group">
-           <!-- The connection type property of the node group determines, whether all or any of their children have to eval to true, in order for the group to eval to true -->
-           <div class="toggle-ct" @click="toggleConnectionType">
-               <span :class="{selected: node.connectionType === 'and'}">AND</span>
-               <span :class="{selected: node.connectionType === 'or'}">OR</span>
-           </div>
-           <ul>
-               <li v-for="child in node.children">
-                   <!-- The ExpressionNodeGroup component has to be recursive by nature -->
-                   <expression-node-group v-if="child.children" :node="child"></expression-node-group>
-                   <expression-node v-else :node="child"></expression-node>
-               </li>
-           </ul>
-           <!-- Adds a new node group as the last child of the current node group -->
-           <span @click="addGroup">add group</span>
-           <!-- Adds a new node as the last child of the current node group -->
-           <span @click="addNode">add node</span>
-       </div>
-   </expression-node-group-renderless>
-</template>
-<script>
-  import {Components, Core} from "vue-renderless-expression-builder";
-  const {ExpressionNodeGroupRenderless} = Components;
-  import ExpressionNode from "./ExpressionNode" // your own implementation
-
-  export default {
-    name: "ExpressionNodeGroup",
-    components: {
-      ExpressionNodeGroupRenderless,
-      // This is your implementation of the ExpressionNodeRenderless
-      ExpressionNode
-    },
-    props: {
-      // the model for the node group
-      node: {
-        type: Core.ExpressionNodeGroup,
-        required: true
-      }
-    }
-  }
-</script>
-```
-### ExpressionBuilder
+### Core.ExpressionBuilder
 Core.ExpressionBuilder constructor params
-- root
-  - type: null (creates a new root node) | Core.ExpressionNodeGroup | Object (json representation of Core.ExpressionNodeGroup)
-- errorHandler 
-  - type: function
-  - desc: called when an error occurs (like reaching max depth), can be used for notifying the user of errors
+| Param  | Type  | Description  |
+|---|---|---|
+| `root` | `Core.ExpressionNodeGroup?` or `Object?` (json representation) | if it's undefined, a new Core.ExpressionNodeGroup is created |
+| `errorHandler` | `Function(key: string, msg: string)` | called when an error occurs (like reaching max depth), can be used for notifying the user of errors |
   
 Core.ExpressionBuilder members:
 | Member  | Type  | Description  |
 |---|---|---|
-|root | Core.ExpressionNodeGroup | the root node group of the current expression/query |
-|context | Core.ExpressionNodeGroup | the current context, for which insertion and deletion method calls apply |
-| insert | function(node, index) | Inserts a node or node group at a given index in the children array of the context node group. If a node group was inserted, sets it as the new context. Returns the context, for fluent editing |
-| set | function(node, index) | Sets a node at a for a given index in the children array of the context node group. If a node group was inserted, sets it as the new context, Returns the context, for fluent editing |
-|delete | function(index) | Deletes a node from a given index in the children array of the context node group. Returns the context, for fluent editing |
-| add | function(node) | Inserts a node or node group at the end of the children array of the context node group. If a node group was inserted, sets it as the new context, Returns the context, for fluent editing |
-| contextUp | function | sets the parentNode of the current context as the new context |
-| contextToRoot | function | sets the root as the new context |
-| contextTo | function(path: number[]) | sets a node group by a path from the root, as the new context ie. the first child of the root node can be set as context by calling contextTo([0]) |
-|flatten | function | Calls the faltten method of the root Core.ExprssionNodeGroup |
-| toJSON  | function  | Calls the toJSON method of the root Core.ExpressionNodeGroup  |  
+| `root` | `Core.ExpressionNodeGroup` | the root node group of the current expression/query |
+| `context` | `Core.ExpressionNodeGroup` | the current context, for which insertion and deletion method calls apply |
+| `insert` | `Function(node: Core.ExpressionNode(Group), index: number)` | Inserts a node or node group at a given index in the children array of the context node group. If a node group was inserted, sets it as the new context. Returns the context, for fluent editing |
+| `set` | `Function(node: Core.ExpressionNode(Group), index: number)` | Sets a node at a for a given index in the children array of the context node group. If a node group was inserted, sets it as the new context, Returns the context, for fluent editing |
+| `delete` | `Function(index: number)` | Deletes a node from a given index in the children array of the context node group. Returns the context, for fluent editing |
+| `add` | `Function(node: Core.ExpressionNode(Group))` | Inserts a node or node group at the end of the children array of the context node group. If a node group was inserted, sets it as the new context, Returns the context, for fluent editing |
+| `contextUp` | `Function` | sets the parentNode of the current context as the new context |
+| `contextToRoot` | `Function` | sets the root as the new context |
+| `contextTo` | `Function(path: number[])` | sets a node group by a path from the root, as the new context ie. the first child of the root node can be set as context by calling contextTo([0]) |
+| `flatten` | `Function` | Calls the faltten method of the root Core.ExprssionNodeGroup |
+| `toJSON`  | `Function`  | Calls the toJSON method of the root Core.ExpressionNodeGroup  |  
 
+## Conditions
 
+### ConditionFactory
 
-#### Sample component implementation
+ConditionFactory constructor opts
 
-```vue
-<template>
-    <!-- The Core.ExpressionBuilder object instance is the model for the renderless expression builder -->
-    <expression-builder-renderless v-model="builder" :fields="fields" :fieldTypes="fieldTypes" :operators="operators">
-        <!-- This is your implementation of the ExpressionNodeGroupRenderless  -->
-        <expression-node-group :node="builder.root"></expression-node-group>
-    </expression-builder-renderless>
-</template>
-<script>
-  import {Components, Core, Conditions} from "vue-renderless-expression-builder";
-  const {ExpressionBuilderRenderless} = Components;
-  const {defaultFieldTypes, returnDefaultFieldTypes, returnDefaultOperators} = Conditions;
-    
-    export default {
-      name: "ExpressionBuilder",
-      components: {
-        ExpressionBuilderRenderless,
-        // This is your implementation of the ExpressionNodeGroupRenderless
-        ExpressionNodeGroup
-      },
-      props: {
-        // the model for the builder
-        builder: {
-          type: Core.ExpressionBuilder,
-          default: new Core.ExpressionBuilder()
-        }
-      },
-      data() {
-        return {
-          fields: [
-            {
-              name: "firstName",
-              type: defaultFieldTypes.TEXT,
-              label: "First Name"
-            },
-            {
-              name: "lastName",
-              type: defaultFieldTypes.TEXT,
-              label: "Last Name"
-            },
-            {
-              name: "dateOfBirth",
-              type: defaultFieldTypes.DATE,
-              label: "Date of Birth",
-              // If you specify operators for a field here, only these will be available
-              // If you do not specify, the availableOperators of the fieldType will apply
-              operators: [defaultOperators.GREATER_THAN]
-            }
-          ],
-          
-          /**
-           * Returns the default fieldTypes, defined in the lib
-           * the object describing a field type looks like this:
-           * {
-           *     name: {string},
-           *     label: {string},
-           *     availableOperators: {string[]} - a list of operator names, available for the field type by default
-           * }
-           */
-          
-          fieldTypes: returnDefaultFieldTypes(),
-          
-          /**
-           * Returns the default operators, defined in the lib
-           * the object describing an operator looks like this:
-           * {
-           *     name: {string},
-           *     label: {string}
-           * }
-           */
-          operators: returnDefaultOperators()
-        }
-      },
-      watch: {
-        builder() {
-          // builder.toJSON() returns a JSON representation of the created query
-          this.$emit("builder-updated", this.builder.toJSON())
-        }
-      }
-    }
-</script>
+```ts
+interface ConditionFactoryOpts {
+  fields: ConditionFactoryField[];
+  operators?: ConditionFactoryOperator[];
+  fieldTypes?: ConditionFactoryFieldTypeDefinition[];
+}
+```
+
+| Param  | Type  | Description  |
+|---|---|---|
+| `fields` | `ConditionFactoryField[]` (below) | list of user defined fields to be used with the conditionFactory |
+| `operators` | `ConditionFactoryOperator[]` (below) | a list of operators available in the conditionFactory - default: returnDefaultOperators |
+| `fieldTypes` | `ConditionFactoryFieldTypeDefinition[]` (below) | a list of field types available in the conditionFactory - default: returnDefaultFieldTypes |
+
+ConditionFactory members:
+| Member  | Type  | Description  |
+|---|---|---|
+| `fields` | `ConditionFactoryField[]` | fields provided in the constructors |
+| `operators` | `ConditionFactoryOperator[]` | operators provided in the constructor |
+| `fieldTypes` | `ConditionFactoryFieldTypeDefinition[]` | fieldTypes provided in the constructor | 
+| `create` | `Function(fieldName: string, operatorName: string, value: any)` | returns: `ConditionFactoryCondition` (below) |
+
+```ts
+interface ConditionFactoryField {
+  type: string;
+  name: string;
+  label: string;
+  operators?: string[];
+  choices?: any[];  // used, if select-type type is used
+}
+
+interface ConditionFactoryOperator {
+  name: string;
+  label: string;  // operator display name
+}
+
+interface ConditionFactoryFieldTypeDefinition {
+  name: string;
+  availableOperators: string[];  // operators available by default for the field type
+  label: string;  // display name for the field type
+}
+
+export interface ConditionFactoryCondition {
+  fieldName: string;
+  fieldTypeName: string;
+  operatorName: string;
+  value: any;
+}
+```
+
+### Defaults
+
+`defaultFieldTypes`
+```js
+const defaultFieldTypes = {
+  TEXT: "text",
+  DATE: "date",
+  NUMBER: "number",
+  BOOLEAN: "boolean",
+  CHOICE: "radio",
+  MULTIPLE_CHOICE: "multipleChoice",
+  SELECT: "select"
+};
+```
+
+`defaultOperators`
+```js
+const defaultOperators = {
+  EQUALS: "equals",
+  NOT_EQUALS: "notEquals",
+  CONTAINS: "contains",
+  NOT_CONTAINS: "notContains",
+  GREATER_THAN: "graterThan",
+  LOWER_THAN: "lowerThan",
+  IN: "in",
+  NOT_IN: "notIn",
+  STARTS_WITH: "startsWith",
+  NOT_STARTS_WITH: "notStartsWith",
+  ENDS_WITH: "endsWith",
+  NOT_ENDS_WITH: "notEndsWith",
+  IS_EMPTY: "isEmpty",
+  NOT_IS_EMPTY: "notIsEmpty",
+  IS_NULL: "isNull",
+  NOT_IS_NULL: "notIsNull",
+  IS_ONE_OF: "isOneOf",
+  NOT_IS_ONE_OF: "notIsOneOf"
+};
+```
+
+`returnDefaultFieldTypes`
+```js
+[{
+    "name": "text",
+    "availableOperators": ["equals", "notEquals", "contains", "notContains", "isEmpty", "notIsEmpty", "endsWith", "notEndsWith", "startsWith", "notStartsWith", "isNull", "notIsNull", "in", "notIn"]
+}, {
+    "name": "date",
+    "availableOperators": ["equals", "notEquals", "isNull", "notIsNull", "graterThan", "lowerThan"]
+}, {
+    "name": "number",
+    "availableOperators": ["equals", "notEquals", "isNull", "notIsNull", "graterThan", "lowerThan"]
+}, {
+    "name": "boolean",
+    "availableOperators": ["equals"]
+}, {
+    "name": "radio",
+    "availableOperators": ["equals", "notEquals"]
+}, {
+    "name": "multipleChoice",
+    "availableOperators": ["in", "notIn"]
+}, {
+    "name": "select",
+    "availableOperators": ["equals", "notEquals"]
+}]
+```
+
+`returnDefaultOperators`
+```js
+[{
+    "name": "equals",
+    "label": "equals"
+}, {
+    "name": "notEquals",
+    "label": "not equals"
+}, {
+    "name": "contains",
+    "label": "contains"
+}, {
+    "name": "notContains",
+    "label": "not contains"
+}, {
+    "name": "graterThan",
+    "label": "greater than"
+}, {
+    "name": "lowerThan",
+    "label": "lower than"
+}, {
+    "name": "in",
+    "label": "in"
+}, {
+    "name": "notIn",
+    "label": "not in"
+}, {
+    "name": "startsWith",
+    "label": "starts with"
+}, {
+    "name": "notStartsWith",
+    "label": "doesn't start with"
+}, {
+    "name": "endsWith",
+    "label": "ends with"
+}, {
+    "name": "notEndsWith",
+    "label": "doesn't end with"
+}, {
+    "name": "isEmpty",
+    "label": "is empty"
+}, {
+    "name": "notIsEmpty",
+    "label": "is not empty"
+}, {
+    "name": "isNull",
+    "label": "is null"
+}, {
+    "name": "notIsNull",
+    "label": "is not null"
+}, {
+    "name": "isOneOf"
+}, {
+    "name": "notIsOneOf"
+}]
 ```
