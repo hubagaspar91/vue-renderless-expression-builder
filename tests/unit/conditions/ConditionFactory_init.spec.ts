@@ -15,8 +15,9 @@ describe("ConditionFactory - initialization", () => {
     });
     expect(cp.operators).toStrictEqual(returnDefaultOperators());
     expect(cp.fields).toHaveLength(1);
+    const defaultAvailableOperatorsCopy = Object.assign([], defaultAvailableOperators[mockFields[0].type]);
     expect((cp.fields[0].operators as string[]).sort())
-      .toStrictEqual(defaultAvailableOperators[mockFields[0].type].sort());
+      .toStrictEqual(defaultAvailableOperatorsCopy.sort());
   });
 
   it("With 1 simple, and another custom field", () => {

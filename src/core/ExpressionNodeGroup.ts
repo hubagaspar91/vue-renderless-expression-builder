@@ -15,6 +15,9 @@ export const connectionTypes = {
 
 export const connectionTypesArray = Object.values(connectionTypes);
 
+Object.freeze(connectionTypes);
+Object.freeze(connectionTypesArray);
+
 /**
  * Validate, whether a nodeGroup to be added, can be added, without its children exceeding the maxDepth
  * If the maxDepth is 3 and the currentDepth is 2

@@ -152,3 +152,14 @@ export const returnDefaultFieldTypes = (): ConditionFactoryFieldTypeDefinition[]
   label: defaultFieldTypeLabels[ft],
   availableOperators: defaultAvailableOperators[ft]
 }));
+
+Object.freeze(defaultFieldTypes);
+Object.freeze(defaultFieldTypeLabels);
+Object.freeze(defaultOperators);
+Object.freeze(defaultOperatorLabels);
+Object.freeze(defaultAvailableOperators);
+Object.keys(defaultAvailableOperators).forEach(key => {
+  Object.freeze(defaultAvailableOperators[key]);
+});
+Object.freeze(selectTypeFields);
+

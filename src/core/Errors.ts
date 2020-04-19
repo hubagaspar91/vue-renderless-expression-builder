@@ -16,6 +16,9 @@ const errorTypeMessageFactoryMap = {
   [errorTypes.INVALID_CONTEXT_PATH]: (path: number[]) => `Invalid context path [${path.join(", ")}], new context must be an ExpressionNodeGroup node`
 };
 
+Object.freeze(errorTypes);
+Object.freeze(errorTypeMessageFactoryMap);
+
 /**
  * Logs the error to the console, and invokes the custom error handler, provided on the ExpressionNodeBuilder instance
  * @param type

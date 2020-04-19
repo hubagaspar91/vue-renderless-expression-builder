@@ -12,3 +12,5 @@ export const actionTypes = {
   SET: "set",
   DELETE: "delete"
 };
+
+Object.freeze(actionTypes);
