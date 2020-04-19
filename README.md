@@ -114,7 +114,7 @@ Core.ExpressionNodeGroup members:
 | `currentDepth` | `number` | the depth of the current node group in the current nested strucure |
 | `toJSON`  | `Function`  | Recursively creates a json representation of the current node group and its children   |
 | `fromJSON` (static)  | `Function(json: Object)`  | reates a new Core.ExpressionNodeGroup object from a json representation |
-| `flatten` | `Function` | returns a 1 depth array of arrays, flattening the nested condition, where the elements of each array are conditions of ExpressionNodes and are connected by AND and the inner arrays are connected by OR, so the result can be used for client-side filtering like this: list.filter(elem => flattened.map(group => group.every(condition => validateElem(condition, elem))).some(c => c)) |
+| `flatten` | `Function` | returns a 1 depth array of arrays, flattening the nested condition, where the elements of each array are conditions of ExpressionNodes and are connected by AND and the inner arrays are connected by OR, so the result can be used for client-side filtering like this: list.filter(elem => flattened.map(group => group.every(condition => validateCondition(condition, elem))).some(groupIsTrue => groupIsTrue)) |
 
 ### Core.ExpressionBuilder
 Core.ExpressionBuilder constructor params

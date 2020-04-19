@@ -61,7 +61,7 @@ export default class ExpressionNodeGroup extends ExpressionNodeBase implements I
     super(parentNode);
     opts = {...defaultOpts(), ...opts};
     this.children = opts.children as IExpressionNode[];
-    this.maxDepth = opts.maxDepth as number;
+    this._maxDepth = opts.maxDepth as number;
     this.currentDepth = opts.currentDepth as number;
     this.connectionType = opts.connectionType as string;
   }
@@ -107,11 +107,17 @@ export default class ExpressionNodeGroup extends ExpressionNodeBase implements I
     return this._children;
   }
 
+  /**
+   * Max depth of root shouldn't be changed after the object is initialized
+   * @param value
+   */
   set maxDepth(value: number) {
-    if (!this.parentNode || value == this.parentNode.maxDepth)
-      this._maxDepth = value;
-    else
-      throw new Error("maxDepth cannot be different from that of the parentNode.")
+    if (this.parentNode) {
+      if (value == this.parentNode.maxDepth)
+        this._maxDepth = value;
+      else
+        throw new Error("maxDepth cannot be different from that of the parentNode.")
+    } else throw new Error("maxDepth of root cannot be set after initialization")
   }
 
   get maxDepth() {
@@ -144,7 +150,7 @@ export default class ExpressionNodeGroup extends ExpressionNodeBase implements I
   }
 
   static isJSONInstance(object: object): object is IExpressionNodeGroupJSON {
-    return "children" in object && "connectionType" in object;
+    return !(object instanceof ExpressionNodeGroup) && "children" in object && "connectionType" in object;
   }
 
   static fromJSON(json: IExpressionNodeGroupJSON,
@@ -163,16 +169,22 @@ export default class ExpressionNodeGroup extends ExpressionNodeBase implements I
     return newGroup;
   }
 
-
   /**
    * Flattens the expression, to a 1 depth array of arrays
    * Where the elements of each array are connected by AND
    * and the arrays are connected by OR
-   * This means, the output can be interpreted simply as
+   * This means, the output can be used for client side list filtering, as:
    *
-   * flattened.some(flattened.map(group => group.every(validateNode)), n => n)
+   * list.filter(elem => flattened.map(group => group.every(condition => validateCondition(condition, elem))).some(groupIsTrue => groupIsTrue))
    *
-   * It can be used for client side list filtering
+   *  -> where
+   *  -> list is the list of values to filter based on the expression
+   *  -> elem is an elem in the list
+   *  -> flattened is the flattened expression
+   *  -> group is a group of conditions in the flattened expression, between which there is an 'and' connection
+   *  -> condition is an object describing a single condition (lastName === "John")
+   *  -> validateCondition is a function returning a bool, validating a condition against an elem
+   *  -> groupIsTrue a bool, whether all conditions in a group were validated to true, if one group validates to true, the whole expression is true
    */
   flatten(): Array<ICondition[]> {
     let flattenedList: Array<ICondition[]> = this.connectionType === connectionTypes.AND ? [[]] : [];

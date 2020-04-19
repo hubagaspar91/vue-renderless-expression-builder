@@ -39,6 +39,10 @@ export default class ExpressionNodeGroup extends ExpressionNodeBase implements I
      */
     set children(value: IExpressionNode[]);
     get children(): IExpressionNode[];
+    /**
+     * Max depth of root shouldn't be changed after the object is initialized
+     * @param value
+     */
     set maxDepth(value: number);
     get maxDepth(): number;
     /**
@@ -57,11 +61,18 @@ export default class ExpressionNodeGroup extends ExpressionNodeBase implements I
      * Flattens the expression, to a 1 depth array of arrays
      * Where the elements of each array are connected by AND
      * and the arrays are connected by OR
-     * This means, the output can be interpreted simply as
+     * This means, the output can be used for client side list filtering, as:
      *
-     * flattened.some(flattened.map(group => group.every(validateNode)), n => n)
+     * list.filter(elem => flattened.map(group => group.every(condition => validateCondition(condition, elem))).some(groupIsTrue => groupIsTrue))
      *
-     * It can be used for client side list filtering
+     *  -> where
+     *  -> list is the list of values to filter based on the expression
+     *  -> elem is an elem in the list
+     *  -> flattened is the flattened expression
+     *  -> group is a group of conditions in the flattened expression, between which there is an 'and' connection
+     *  -> condition is an object describing a single condition (lastName === "John")
+     *  -> validateCondition is a function returning a bool, validating a condition against an elem
+     *  -> groupIsTrue a bool, whether all conditions in a group were validated to true, if one group validates to true, the whole expression is true
      */
     flatten(): Array<ICondition[]>;
 }
