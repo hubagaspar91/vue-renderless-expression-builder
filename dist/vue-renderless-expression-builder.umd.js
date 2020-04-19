@@ -61,6 +61,8 @@ var errorTypeMessageFactoryMap = (_errorTypeMessageFact = {}, defineProperty(_er
 }), defineProperty(_errorTypeMessageFact, errorTypes.INVALID_CONTEXT_PATH, function (path) {
   return "Invalid context path [".concat(path.join(", "), "], new context must be an ExpressionNodeGroup node");
 }), _errorTypeMessageFact);
+Object.freeze(errorTypes);
+Object.freeze(errorTypeMessageFactoryMap);
 /**
  * Logs the error to the console, and invokes the custom error handler, provided on the ExpressionNodeBuilder instance
  * @param type
@@ -372,6 +374,8 @@ var connectionTypes = {
   OR: "or"
 };
 var connectionTypesArray = Object.values(connectionTypes);
+Object.freeze(connectionTypes);
+Object.freeze(connectionTypesArray);
 /**
  * Validate, whether a nodeGroup to be added, can be added, without its children exceeding the maxDepth
  * If the maxDepth is 3 and the currentDepth is 2
@@ -744,6 +748,7 @@ var actionTypes = {
   SET: "set",
   DELETE: "delete"
 };
+Object.freeze(actionTypes);
 
 var _defaultAvailableOper, _defaultOperatorLabel;
 
@@ -838,6 +843,15 @@ var returnDefaultFieldTypes = function returnDefaultFieldTypes() {
     };
   });
 };
+Object.freeze(defaultFieldTypes);
+Object.freeze(defaultFieldTypeLabels);
+Object.freeze(defaultOperators);
+Object.freeze(defaultOperatorLabels);
+Object.freeze(defaultAvailableOperators);
+Object.keys(defaultAvailableOperators).forEach(function (key) {
+  Object.freeze(defaultAvailableOperators[key]);
+});
+Object.freeze(selectTypeFields);
 
 var ConditionFactory = /*#__PURE__*/function () {
   function ConditionFactory(opts) {
