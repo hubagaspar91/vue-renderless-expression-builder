@@ -1008,6 +1008,11 @@ var ExpressionBuilderRenderless = /*#__PURE__*/function (_Vue) {
     value: function created() {
       this.eventHub.$on("input", this.handleInput);
     }
+  }, {
+    key: "beforeDestroy",
+    value: function beforeDestroy() {
+      this.eventHub.$off("input", this.handleInput);
+    }
     /**
      * Handles the input events from the child nodes, that suggests and change is to be made in the
      * Expression structure

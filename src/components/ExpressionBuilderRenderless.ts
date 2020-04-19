@@ -63,6 +63,10 @@ export default class ExpressionBuilderRenderless extends Vue {
     this.eventHub.$on("input", this.handleInput);
   }
 
+  beforeDestroy() {
+    this.eventHub.$off("input", this.handleInput);
+  }
+
   /**
    * Handles the input events from the child nodes, that suggests and change is to be made in the
    * Expression structure
