@@ -2,46 +2,46 @@
     <expression-node-renderless :node="node" v-slot="{
      node,  // the current node
      index,  // the index of this node amongst its parent's children
-     updateCondition,  // function, updates the condition of the current node,
+     // function, updates the condition of the current node,
      // takes params: field, operator, value ('firstName', 'startsWith', 'Jo')
+     // this can also be done by the injected condition factory's createAndUpdate method, as in the example below
+     updateCondition,
      deleteSelf,  // deletes the current node
      conditionFactory  // it stores the defined fields, fieldTypes and operators,
      // and creates new conditions with its create method - injected by the parent ExpressionBuilderRenderless
    }">
         <div class="expression-node">
             <!-- For selecting which field to use in this node's condition -->
-            <b-form-select @change="onChange(updateCondition)" :options="fieldOptions" size="sm"
-                           v-model="selectedField"></b-form-select>
+            <b-form-select :options="fieldOptions" size="sm"
+                           v-model="fieldName"></b-form-select>
 
             <!-- For selecting which operator to use in this node's condition -->
-            <b-form-select @change="onChange(updateCondition)" :options="operatorOptions" size="sm"
-                           v-model="selectedOperator"></b-form-select>
+            <b-form-select :options="operatorOptions" size="sm"
+                           v-model="operatorName"></b-form-select>
 
             <!-- Input component, based on the type of the field selected -->
 
             <!-- simple input for text -->
-            <b-form-input v-if="selectedFieldObject.type === 'text'" @change="onChange(updateCondition)"
-                          v-model="value"></b-form-input>
+            <b-form-input v-if="selectedFieldObject.type === 'text'" v-model="conditionValue"></b-form-input>
 
             <!-- number input for number -->
-            <b-form-input v-else-if="selectedFieldObject.type === 'number'" type="number" @change="onChange(updateCondition)"
-                          v-model="value"></b-form-input>
+            <b-form-input v-else-if="selectedFieldObject.type === 'number'" type="number" v-model="conditionValue"></b-form-input>
 
             <!-- select component for select type field -->
-            <b-form-select v-else-if="selectedFieldObject.type === 'select'" :options="currentSelectTypeFieldChoices" @change="onChange(updateCondition)"
-                           v-model="value"></b-form-select>
+            <b-form-select v-else-if="selectedFieldObject.type === 'select'" :options="currentSelectTypeFieldChoices"
+                           v-model="conditionValue"></b-form-select>
 
             <!-- radio button component for radio (CHOICE) type field -->
-            <b-form-radio-group v-else-if="selectedFieldObject.type === 'radio'" :options="currentSelectTypeFieldChoices" @input="onChange(updateCondition)"
-                           v-model="value"></b-form-radio-group>
+            <b-form-radio-group v-else-if="selectedFieldObject.type === 'radio'" :options="currentSelectTypeFieldChoices"
+                           v-model="conditionValue"></b-form-radio-group>
 
             <!-- an implementation of the boolean field type -->
-            <b-form-radio-group v-else-if="selectedFieldObject.type === 'boolean'" :options="boolRadioGroup" @input="onChange(updateCondition)"
-                                v-model="value"></b-form-radio-group>
+            <b-form-radio-group v-else-if="selectedFieldObject.type === 'boolean'" :options="boolRadioGroup"
+                                v-model="conditionValue"></b-form-radio-group>
 
             <!-- date picker for date field type -->
-            <b-form-datepicker v-else-if="selectedFieldObject.type === 'date'" @input="onChange(updateCondition)"
-                               v-model="value"></b-form-datepicker>
+            <b-form-datepicker v-else-if="selectedFieldObject.type === 'date'"
+                               v-model="conditionValue"></b-form-datepicker>
             <div class="close-container">
                 <b-icon-x @click="deleteSelf"></b-icon-x>
             </div>
@@ -62,16 +62,30 @@
         required: true
       }
     },
-    // condition factory is available under this name,
-    // injected into all child components of the ExpressionBuilderRenderless component
-    inject: ["$__qb_condition_factory__"],
+    /**
+     * condition factory is available under this name,
+     * injected into all child components of the ExpressionBuilderRenderless component
+     *
+     * it stores field defined on the builder (fields prop)
+     * field types defined on the builder (fieldTypes prop)
+     * operators defined on the builder (operators)
+     *
+     * exposes create and createAndUpdate methods
+     *
+     * create(fieldName, operatorName, value) - creates a condition
+     * createAndUpdate(node, fieldName, operatorName, value) - creates a condition and updates the condition the node provided
+     *
+     * */
+    inject: {
+      conditions: "$__qb_condition_factory__"
+    },
     components: {
       ExpressionNodeRenderless
     },
     data() {
       return {
         // mapping fields to the format supported by the bootstrap select component
-        fieldOptions: this.$__qb_condition_factory__.fields.map(f => ({
+        fieldOptions: this.conditions.fields.map(f => ({
           value: f.name,
           text: f.label
         })),
@@ -86,57 +100,50 @@
             text: "False",
             value: false
           }
-        ],
-
-        // field name of the current condition
-        selectedField: null,
-
-        // operator name of the current condition
-        selectedOperator: null,
-
-        // filter value of the current condition
-        value: null
+        ]
       }
     },
-    created() {
-      // initialize the local variables from the node on create
-      this.selectedField = this.node.condition.fieldName;
-      this.selectedOperator = this.node.condition.operatorName;
-      this.value = this.node.condition.value;
-    },
     methods: {
-      /**
-       * Updates the current node's condition, using the updateCondition fn from the scoped slots
-       * @param updateCondition
-       * @param field
-       * @param operator
-       * @param value
-       */
-      update(updateCondition, {field, operator, value}) {
-        updateCondition(field, operator, value);
-      },
-
       /**
        * Returns an operator object {name, label} from an operator name
        */
       getOperator(operatorName) {
-        return this.$__qb_condition_factory__.operators.find(oObj => oObj.name === operatorName)
-      },
-
-      /**
-       * Updates the current node's condition, using the updateCondition fn from the scoped slots
-       * @param updateCondition
-       */
-      onChange(updateCondition) {
-        if (this.selectedField && this.selectedOperator)
-          this.update(updateCondition, {
-            field: this.selectedField,
-            operator: this.selectedOperator,
-            value: this.value
-          })
+        return this.conditions.operators.find(oObj => oObj.name === operatorName)
       }
     },
     computed: {
+
+      // fieldName computed, to use as v-model
+      fieldName: {
+        get() {
+          return this.node.condition.fieldName;
+        },
+        set(val) {
+          // when changing fields, null-out the value as well, to avoid data inconsistencies
+          // this can be better handled, I do this for the sake of simplicity here
+          this.conditions.createAndUpdate(this.node, val, this.node.condition.operatorName, null);
+        }
+      },
+
+      // operatorName computed, to use as v-model
+      operatorName: {
+        get() {
+          return this.node.condition.operatorName;
+        },
+        set(val) {
+          this.conditions.createAndUpdate(this.node, this.node.condition.fieldName, val, this.node.condition.value);
+        }
+      },
+
+      // value computed, to use as v-model
+      conditionValue: {
+        get() {
+          return this.node.condition.value;
+        },
+        set(val) {
+          this.conditions.createAndUpdate(this.node, this.node.condition.fieldName, this.node.condition.operatorName, val);
+        }
+      },
 
       /**
        * Returns the field object, from the field's name
@@ -153,8 +160,8 @@
        * @return {*}
        */
       selectedFieldObject() {
-        if (this.selectedField == null) return;
-        return this.$__qb_condition_factory__.fields.find(f => f.name === this.selectedField);
+        if (this.node.condition.fieldName == null) return;
+        return this.conditions.fields.find(f => f.name === this.node.condition.fieldName);
       },
 
       /**
@@ -162,7 +169,7 @@
        * @return {{text: *, value: *}[]|*[]}
        */
       operatorOptions() {
-        if (!this.selectedField) return [];
+        if (!this.selectedFieldObject) return [];
 
         return this.selectedFieldObject.operators.map(o => {
           const operatorObj = this.getOperator(o);
@@ -184,20 +191,6 @@
             text: c.name
           }));
         else return [];
-      }
-    },
-    watch: {
-
-      /**
-       * Reset the value var, whenever the field type is changed, i.e. text -> date
-       * not to generate inconsistent states
-       * @param newVal
-       * @param oldVal
-       */
-      "selectedFieldObject.type"(newVal, oldVal) {
-        if (oldVal !== newVal) {
-          this.value = null;
-        }
       }
     }
   }

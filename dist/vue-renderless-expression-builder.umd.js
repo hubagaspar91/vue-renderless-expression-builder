@@ -1,5 +1,5 @@
 import { __decorate } from 'tslib';
-import { Prop, Provide, Vue, Component, Inject } from 'vue-property-decorator';
+import { Vue, Prop, Provide, Component, Inject } from 'vue-property-decorator';
 
 function _classCallCheck(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
@@ -521,6 +521,9 @@ var ExpressionNodeGroup = /*#__PURE__*/function (_ExpressionNodeBase) {
      *
      * Also setting the current nodeGroup instance as parent of the children
      *
+     * this only executes when the children key is reassigned, for instance when manipulating
+     * the expression with 3rd party drag & drop libs
+     *
      * @param value {IExpressionNode}
      */
 
@@ -760,7 +763,8 @@ var actionTypes = {
   ADD: "add",
   INSERT: "insert",
   SET: "set",
-  DELETE: "delete"
+  DELETE: "delete",
+  UPDATED: "updated"
 };
 Object.freeze(actionTypes);
 
@@ -876,6 +880,7 @@ var ConditionFactory = /*#__PURE__*/function () {
     this._fieldTypes = returnDefaultFieldTypes();
     this._operators = opts.operators || this._operators;
     this._fieldTypes = opts.fieldTypes || this._fieldTypes;
+    this._eventHub = opts.eventHub;
     if (this._operators.length == 0) throw new Error("ConditionFactory initialized with 0 operators.");
     if (opts.fields.length == 0) throw new Error("ConditionFactory initialized with 0 fields.");
     if (this._fieldTypes.length == 0) throw new Error("ConditionFactory initialized with 0 fieldTypes.");
@@ -918,6 +923,33 @@ var ConditionFactory = /*#__PURE__*/function () {
       throw new Error("Operator type ".concat(operatorName, ", does not exist, available options are \n      ").concat(this._operators.map(function (o) {
         return o.name;
       }).join(", ")));
+    }
+    /**
+     * Creates a condition, and updates the provided node with Vue.set
+     * It then signals the builder, that the root has been updated
+     * @param node
+     * @param fieldName
+     * @param operatorName
+     * @param value
+     */
+
+  }, {
+    key: "createAndUpdate",
+    value: function createAndUpdate(node) {
+      var fieldName = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this._fields[0].name;
+      var operatorName = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : this._fields[0].operators[0];
+      var value = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+
+      if ("condition" in node) {
+        var condition = this.create(fieldName, operatorName, value);
+        Vue.set(node, "condition", condition);
+        if (this._eventHub) // sends updated event, if eventHub was passed to the constructor
+          this._eventHub.$emit("input", {
+            node: node,
+            action: actionTypes.UPDATED,
+            path: []
+          });
+      } else throw new Error("Node (first param) must be an ExpressionNode");
     }
   }, {
     key: "_processOpts",
@@ -998,7 +1030,8 @@ var ExpressionBuilderRenderless = /*#__PURE__*/function (_Vue) {
     _this.conditionProvider = new ConditionFactory({
       operators: _this.operators,
       fields: _this.fields,
-      fieldTypes: _this.fieldTypes
+      fieldTypes: _this.fieldTypes,
+      eventHub: _this.eventHub
     });
     return _this;
   }
@@ -1180,29 +1213,16 @@ var ExpressionNodeRenderless = /*#__PURE__*/function (_ExpressionNodeBase) {
   }
 
   createClass(ExpressionNodeRenderless, [{
-    key: "update",
+    key: "updateCondition",
 
     /**
-     * Emits an event towards the parent ExpressionBuilderRenderless, initializing
-     * the update of its condition
-     * @param condition
-     * @private
-     */
-    value: function update(condition) {
-      this.emitInput(new ExpressionNode(condition));
-    }
-    /**
-     * Creates a new condition with the ConditionProvider, injected from the parent ExpressionBuilderRenderless
-     * and sends an event to execute the update
+     * Updates the condition in place and signals the ExpressionBuilderRenderless through events
      * @param fieldName
      * @param operator
      * @param value
      */
-
-  }, {
-    key: "updateCondition",
     value: function updateCondition(fieldName, operator, value) {
-      this.update(this.conditionFactory.create(fieldName, operator, value));
+      this.conditionFactory.createAndUpdate(this.node, fieldName, operator, value);
     }
   }, {
     key: "render",

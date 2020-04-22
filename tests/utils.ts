@@ -31,5 +31,5 @@ export const mockFields: ConditionFactoryField[] = [
   }
 ];
 
-export const returnConditionProvider = () =>
-  new ConditionFactory({fields: mockFields, operators: returnDefaultOperators()});
+export const returnConditionProvider = (eventHub: Vue) =>
+  new ConditionFactory({fields: mockFields, operators: returnDefaultOperators(), eventHub: eventHub});

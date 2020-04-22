@@ -13,24 +13,13 @@ export default class ExpressionNodeRenderless extends ExpressionNodeBase {
   public node!: ExpressionNode;
 
   /**
-   * Emits an event towards the parent ExpressionBuilderRenderless, initializing
-   * the update of its condition
-   * @param condition
-   * @private
-   */
-  private update(condition: ICondition) {
-    this.emitInput(new ExpressionNode(condition));
-  }
-
-  /**
-   * Creates a new condition with the ConditionProvider, injected from the parent ExpressionBuilderRenderless
-   * and sends an event to execute the update
+   * Updates the condition in place and signals the ExpressionBuilderRenderless through events
    * @param fieldName
    * @param operator
    * @param value
    */
   updateCondition(fieldName: string, operator: string, value: string) {
-    this.update(this.conditionFactory.create(fieldName, operator, value))
+    this.conditionFactory.createAndUpdate(this.node, fieldName, operator, value);
   }
 
   render() {

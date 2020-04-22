@@ -10,7 +10,8 @@ export const actionTypes = {
   ADD: "add",
   INSERT: "insert",
   SET: "set",
-  DELETE: "delete"
+  DELETE: "delete",
+  UPDATED: "updated"
 };
 
 Object.freeze(actionTypes);

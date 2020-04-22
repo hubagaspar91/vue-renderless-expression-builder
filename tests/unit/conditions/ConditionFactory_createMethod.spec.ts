@@ -21,7 +21,7 @@ beforeAll(() => {
         name: "customFieldType",
         label: "CustomFieldType",
         availableOperators: [defaultOperators.EQUALS]
-      }
+      },
     ])
   });
 });
@@ -90,5 +90,14 @@ describe("ConditionFactory - create method", () => {
     expect(() => cf.create("custom0", defaultOperators.NOT_EQUALS, "hello"))
       .toThrow(/is not available for field/);
   });
+
+  it("tests createAndUpdate method", () => {
+    const node = {condition: {fieldName: 0, fieldTypeName: 0, operatorName: 0, value: 0}};
+    cf.createAndUpdate(node, "custom0", defaultOperators.EQUALS, "hello");
+    expect(node.condition.fieldName).toBe("custom0");
+    expect(node.condition.fieldTypeName).toBe("customFieldType");
+    expect(node.condition.operatorName).toBe(defaultOperators.EQUALS);
+    expect(node.condition.value).toBe("hello");
+  })
 
 });

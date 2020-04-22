@@ -161,10 +161,11 @@ interface ConditionFactoryOpts {
 ConditionFactory members:
 | Member  | Type  | Description  |
 |---|---|---|
-| `fields` | `ConditionFactoryField[]` | fields provided in the constructors |
+| `fields` | `ConditionFactoryField[]` | fields provided in the constructor |
 | `operators` | `ConditionFactoryOperator[]` | operators provided in the constructor |
 | `fieldTypes` | `ConditionFactoryFieldTypeDefinition[]` | fieldTypes provided in the constructor | 
 | `create` | `Function(fieldName: string, operatorName: string, value: any)` | returns: `ConditionFactoryCondition` (below) |
+| `createAndUpdate` | `Function(node: Core.ExpressionNode, fieldName: string, operatorName: string, value: any)` | returns: `void` - updates the condition key of the current node with a newly created condition |
 
 ```ts
 interface ConditionFactoryField {

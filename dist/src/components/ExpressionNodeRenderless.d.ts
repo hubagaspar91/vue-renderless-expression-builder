@@ -6,15 +6,7 @@ export default class ExpressionNodeRenderless extends ExpressionNodeBase {
      */
     node: ExpressionNode;
     /**
-     * Emits an event towards the parent ExpressionBuilderRenderless, initializing
-     * the update of its condition
-     * @param condition
-     * @private
-     */
-    private update;
-    /**
-     * Creates a new condition with the ConditionProvider, injected from the parent ExpressionBuilderRenderless
-     * and sends an event to execute the update
+     * Updates the condition in place and signals the ExpressionBuilderRenderless through events
      * @param fieldName
      * @param operator
      * @param value

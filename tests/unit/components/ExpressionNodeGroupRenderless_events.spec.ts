@@ -24,7 +24,7 @@ beforeEach(() => {
     },
     provide: {
       [PROVIDE_EVENT_HUB_KEY]: eventHub,
-      [PROVIDE_CONDITION_FACTORY_KEY]: returnConditionProvider()
+      [PROVIDE_CONDITION_FACTORY_KEY]: returnConditionProvider(eventHub)
     },
     scopedSlots: {
       default: () => null
@@ -75,7 +75,7 @@ const testGroupAction = (actionType: string, group: boolean, index?: number) => 
       },
       provide: {
         [PROVIDE_EVENT_HUB_KEY]: eventHub,
-        [PROVIDE_CONDITION_FACTORY_KEY]: returnConditionProvider()
+        [PROVIDE_CONDITION_FACTORY_KEY]: returnConditionProvider(eventHub)
       },
       scopedSlots: {
         default: () => null
@@ -108,7 +108,7 @@ describe("ExpressionNodeGroup - toggleConnectionType, Add, Insert Events", () =>
       },
       provide: {
         [PROVIDE_EVENT_HUB_KEY]: eventHub,
-        [PROVIDE_CONDITION_FACTORY_KEY]: returnConditionProvider()
+        [PROVIDE_CONDITION_FACTORY_KEY]: returnConditionProvider(eventHub)
       },
       scopedSlots: {
         default: () => null

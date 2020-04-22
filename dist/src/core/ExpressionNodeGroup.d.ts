@@ -35,6 +35,9 @@ export default class ExpressionNodeGroup extends ExpressionNodeBase implements I
      *
      * Also setting the current nodeGroup instance as parent of the children
      *
+     * this only executes when the children key is reassigned, for instance when manipulating
+     * the expression with 3rd party drag & drop libs
+     *
      * @param value {IExpressionNode}
      */
     set children(value: IExpressionNode[]);

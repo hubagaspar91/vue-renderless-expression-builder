@@ -56,7 +56,8 @@ export default class ExpressionBuilderRenderless extends Vue {
   conditionProvider = new ConditionFactory({
     operators: this.operators as ConditionFactoryOperator[],
     fields: this.fields,
-    fieldTypes: this.fieldTypes
+    fieldTypes: this.fieldTypes,
+    eventHub: this.eventHub
   });
 
   created() {

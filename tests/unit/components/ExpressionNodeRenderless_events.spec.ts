@@ -24,7 +24,7 @@ beforeEach(() => {
     },
     provide: {
       [PROVIDE_EVENT_HUB_KEY]: eventHub,
-      [PROVIDE_CONDITION_FACTORY_KEY]: returnConditionProvider()
+      [PROVIDE_CONDITION_FACTORY_KEY]: returnConditionProvider(eventHub)
     },
     scopedSlots: {
       default: () => null
@@ -65,8 +65,8 @@ describe("ExpressionNode - Sending Delete and Update events", () => {
 
           expect(body.node).toBeInstanceOf(ExpressionNode);
           expect((body.node as ExpressionNode).condition.value).toStrictEqual("testValue0");
-          expect(body.path).toStrictEqual([0, 0]);
-          expect(body.action).toBe(actionTypes.SET);
+          expect(body.path).toStrictEqual([]);
+          expect(body.action).toBe(actionTypes.UPDATED);
         } catch (e) {
           reject(e);
         }

@@ -5,21 +5,24 @@ import {
   ConditionFactoryOpts
 } from "@/conditions/Interfaces";
 import {
-  defaultAvailableOperators,
   returnDefaultFieldTypes,
   returnDefaultOperators,
   selectTypeFields
 } from "@/conditions/Defaults";
+import {Vue} from "vue-property-decorator";
+import {actionTypes} from "@/components/Utils";
 
 
 export default class ConditionFactory {
   private readonly _operators: ConditionFactoryOperator[] = returnDefaultOperators();
   private _fields: ConditionFactoryField[] = [];
   private readonly _fieldTypes: ConditionFactoryFieldTypeDefinition[] = returnDefaultFieldTypes();
+  private readonly _eventHub: Vue;
 
   constructor(opts: ConditionFactoryOpts) {
     this._operators = opts.operators || this._operators;
     this._fieldTypes = opts.fieldTypes || this._fieldTypes;
+    this._eventHub = opts.eventHub as Vue;
 
     if (this._operators.length == 0)
       throw new Error("ConditionFactory initialized with 0 operators.");
@@ -71,6 +74,25 @@ export default class ConditionFactory {
     }
     throw new Error(`Operator type ${operatorName}, does not exist, available options are 
       ${this._operators.map(o => o.name).join(", ")}`);
+  }
+
+  /**
+   * Creates a condition, and updates the provided node with Vue.set
+   * It then signals the builder, that the root has been updated
+   * @param node
+   * @param fieldName
+   * @param operatorName
+   * @param value
+   */
+  createAndUpdate(node: Object, fieldName: string = this._fields[0].name,
+                  operatorName: string = (this._fields[0].operators as string[])[0],
+                  value: any = null) {
+    if ("condition" in node) {
+      const condition = this.create(fieldName, operatorName, value);
+      Vue.set(node, "condition", condition);
+      if (this._eventHub)  // sends updated event, if eventHub was passed to the constructor
+        this._eventHub.$emit("input", {node: node, action: actionTypes.UPDATED, path: []});
+    } else throw new Error("Node (first param) must be an ExpressionNode");
   }
 
   private _processOpts(opts: ConditionFactoryOpts) {
