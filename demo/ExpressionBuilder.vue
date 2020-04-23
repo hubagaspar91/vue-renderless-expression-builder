@@ -1,7 +1,6 @@
 <template>
     <!-- propagate input, for your component to work with v-model -->
-    <expression-builder-renderless :fields="fields" :fieldTypes="fieldTypes" :operators="operators" :value="value"
-                                   @input="emitInput">
+    <expression-builder-renderless :fields="fields" :fieldTypes="fieldTypes" :operators="operators" :value="value">
         <!-- the root expression node group, initialized from the root of the Core.ExpressionBuilder instance -->
         <expression-node-group :node="value.root"></expression-node-group>
     </expression-builder-renderless>
@@ -91,12 +90,6 @@
             type: defaultFieldTypes.NUMBER
           }
         ]
-      }
-    },
-    methods: {
-      // emit input - for your component to work with v-model
-      emitInput(val) {
-        this.$emit("input", val)
       }
     }
   }
