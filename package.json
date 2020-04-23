@@ -1,6 +1,6 @@
 {
   "name": "vue-renderless-expression-builder",
-  "version": "0.6.41",
+  "version": "0.6.43",
   "homepage": "https://github.com/hubagaspar91/vue-renderless-expression-builder",
   "private": false,
   "main": "dist/vue-renderless-expression-builder.umd.js",

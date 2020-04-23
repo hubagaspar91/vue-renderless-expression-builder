@@ -17,13 +17,13 @@ export const defaultFieldTypes = {
  * Labels (display names) for the default field types
  */
 export const defaultFieldTypeLabels: Record<string, string> = {
-  TEXT: "text",
-  DATE: "date",
-  NUMBER: "number",
-  BOOLEAN: "boolean",
-  CHOICE: "radio",
-  MULTIPLE_CHOICE: "multiple choice",
-  SELECT: "select"
+  [defaultFieldTypes.TEXT]: "text",
+  [defaultFieldTypes.DATE]: "date",
+  [defaultFieldTypes.NUMBER]: "number",
+  [defaultFieldTypes.BOOLEAN]: "boolean",
+  [defaultFieldTypes.CHOICE]: "radio",
+  [defaultFieldTypes.MULTIPLE_CHOICE]: "multiple choice",
+  [defaultFieldTypes.SELECT]: "select"
 };
 
 /**
@@ -33,8 +33,6 @@ export const defaultFieldTypeLabels: Record<string, string> = {
 export const defaultOperators: Record<string, string> = {
   EQUALS: "equals",
   NOT_EQUALS: "notEquals",
-  CONTAINS: "contains",
-  NOT_CONTAINS: "notContains",
   GREATER_THAN: "graterThan",
   LOWER_THAN: "lowerThan",
   IN: "in",
@@ -46,9 +44,7 @@ export const defaultOperators: Record<string, string> = {
   IS_EMPTY: "isEmpty",
   NOT_IS_EMPTY: "notIsEmpty",
   IS_NULL: "isNull",
-  NOT_IS_NULL: "notIsNull",
-  IS_ONE_OF: "isOneOf",
-  NOT_IS_ONE_OF: "notIsOneOf"
+  NOT_IS_NULL: "notIsNull"
 };
 
 /**
@@ -59,8 +55,6 @@ export const defaultAvailableOperators: Record<string, string[]> = {
   [defaultFieldTypes.TEXT]: [
     defaultOperators.EQUALS,
     defaultOperators.NOT_EQUALS,
-    defaultOperators.CONTAINS,
-    defaultOperators.NOT_CONTAINS,
     defaultOperators.IS_EMPTY,
     defaultOperators.NOT_IS_EMPTY,
     defaultOperators.ENDS_WITH,
@@ -111,8 +105,6 @@ export const defaultAvailableOperators: Record<string, string[]> = {
 export const defaultOperatorLabels: Record<string, string> = {
   [defaultOperators.EQUALS]: "equals",
   [defaultOperators.NOT_EQUALS]: "not equals",
-  [defaultOperators.CONTAINS]: "contains",
-  [defaultOperators.NOT_CONTAINS]: "not contains",
   [defaultOperators.GREATER_THAN]: "greater than",
   [defaultOperators.LOWER_THAN]: "lower than",
   [defaultOperators.IN]: "in",

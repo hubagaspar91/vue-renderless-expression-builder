@@ -768,7 +768,7 @@ var actionTypes = {
 };
 Object.freeze(actionTypes);
 
-var _defaultAvailableOper, _defaultOperatorLabel;
+var _defaultFieldTypeLabe, _defaultAvailableOper, _defaultOperatorLabel;
 
 /**
  * Default filed types available in the expression builder
@@ -786,15 +786,7 @@ var defaultFieldTypes = {
  * Labels (display names) for the default field types
  */
 
-var defaultFieldTypeLabels = {
-  TEXT: "text",
-  DATE: "date",
-  NUMBER: "number",
-  BOOLEAN: "boolean",
-  CHOICE: "radio",
-  MULTIPLE_CHOICE: "multiple choice",
-  SELECT: "select"
-};
+var defaultFieldTypeLabels = (_defaultFieldTypeLabe = {}, defineProperty(_defaultFieldTypeLabe, defaultFieldTypes.TEXT, "text"), defineProperty(_defaultFieldTypeLabe, defaultFieldTypes.DATE, "date"), defineProperty(_defaultFieldTypeLabe, defaultFieldTypes.NUMBER, "number"), defineProperty(_defaultFieldTypeLabe, defaultFieldTypes.BOOLEAN, "boolean"), defineProperty(_defaultFieldTypeLabe, defaultFieldTypes.CHOICE, "radio"), defineProperty(_defaultFieldTypeLabe, defaultFieldTypes.MULTIPLE_CHOICE, "multiple choice"), defineProperty(_defaultFieldTypeLabe, defaultFieldTypes.SELECT, "select"), _defaultFieldTypeLabe);
 /**
  * Kind of logical operators available in the expression builder, their place in a condition
  * Field {operator} conditionValue
@@ -803,8 +795,6 @@ var defaultFieldTypeLabels = {
 var defaultOperators = {
   EQUALS: "equals",
   NOT_EQUALS: "notEquals",
-  CONTAINS: "contains",
-  NOT_CONTAINS: "notContains",
   GREATER_THAN: "graterThan",
   LOWER_THAN: "lowerThan",
   IN: "in",
@@ -816,21 +806,19 @@ var defaultOperators = {
   IS_EMPTY: "isEmpty",
   NOT_IS_EMPTY: "notIsEmpty",
   IS_NULL: "isNull",
-  NOT_IS_NULL: "notIsNull",
-  IS_ONE_OF: "isOneOf",
-  NOT_IS_ONE_OF: "notIsOneOf"
+  NOT_IS_NULL: "notIsNull"
 };
 /**
  * Lists of default available operators for every default field type
  * Can be extended from input params
  */
 
-var defaultAvailableOperators = (_defaultAvailableOper = {}, defineProperty(_defaultAvailableOper, defaultFieldTypes.TEXT, [defaultOperators.EQUALS, defaultOperators.NOT_EQUALS, defaultOperators.CONTAINS, defaultOperators.NOT_CONTAINS, defaultOperators.IS_EMPTY, defaultOperators.NOT_IS_EMPTY, defaultOperators.ENDS_WITH, defaultOperators.NOT_ENDS_WITH, defaultOperators.STARTS_WITH, defaultOperators.NOT_STARTS_WITH, defaultOperators.IS_NULL, defaultOperators.NOT_IS_NULL, defaultOperators.IN, defaultOperators.NOT_IN]), defineProperty(_defaultAvailableOper, defaultFieldTypes.DATE, [defaultOperators.EQUALS, defaultOperators.NOT_EQUALS, defaultOperators.IS_NULL, defaultOperators.NOT_IS_NULL, defaultOperators.GREATER_THAN, defaultOperators.LOWER_THAN]), defineProperty(_defaultAvailableOper, defaultFieldTypes.NUMBER, [defaultOperators.EQUALS, defaultOperators.NOT_EQUALS, defaultOperators.IS_NULL, defaultOperators.NOT_IS_NULL, defaultOperators.GREATER_THAN, defaultOperators.LOWER_THAN]), defineProperty(_defaultAvailableOper, defaultFieldTypes.BOOLEAN, [defaultOperators.EQUALS]), defineProperty(_defaultAvailableOper, defaultFieldTypes.CHOICE, [defaultOperators.EQUALS, defaultOperators.NOT_EQUALS]), defineProperty(_defaultAvailableOper, defaultFieldTypes.MULTIPLE_CHOICE, [defaultOperators.IN, defaultOperators.NOT_IN]), defineProperty(_defaultAvailableOper, defaultFieldTypes.SELECT, [defaultOperators.EQUALS, defaultOperators.NOT_EQUALS]), _defaultAvailableOper);
+var defaultAvailableOperators = (_defaultAvailableOper = {}, defineProperty(_defaultAvailableOper, defaultFieldTypes.TEXT, [defaultOperators.EQUALS, defaultOperators.NOT_EQUALS, defaultOperators.IS_EMPTY, defaultOperators.NOT_IS_EMPTY, defaultOperators.ENDS_WITH, defaultOperators.NOT_ENDS_WITH, defaultOperators.STARTS_WITH, defaultOperators.NOT_STARTS_WITH, defaultOperators.IS_NULL, defaultOperators.NOT_IS_NULL, defaultOperators.IN, defaultOperators.NOT_IN]), defineProperty(_defaultAvailableOper, defaultFieldTypes.DATE, [defaultOperators.EQUALS, defaultOperators.NOT_EQUALS, defaultOperators.IS_NULL, defaultOperators.NOT_IS_NULL, defaultOperators.GREATER_THAN, defaultOperators.LOWER_THAN]), defineProperty(_defaultAvailableOper, defaultFieldTypes.NUMBER, [defaultOperators.EQUALS, defaultOperators.NOT_EQUALS, defaultOperators.IS_NULL, defaultOperators.NOT_IS_NULL, defaultOperators.GREATER_THAN, defaultOperators.LOWER_THAN]), defineProperty(_defaultAvailableOper, defaultFieldTypes.BOOLEAN, [defaultOperators.EQUALS]), defineProperty(_defaultAvailableOper, defaultFieldTypes.CHOICE, [defaultOperators.EQUALS, defaultOperators.NOT_EQUALS]), defineProperty(_defaultAvailableOper, defaultFieldTypes.MULTIPLE_CHOICE, [defaultOperators.IN, defaultOperators.NOT_IN]), defineProperty(_defaultAvailableOper, defaultFieldTypes.SELECT, [defaultOperators.EQUALS, defaultOperators.NOT_EQUALS]), _defaultAvailableOper);
 /**
  * Labels (display names) for the default operators
  */
 
-var defaultOperatorLabels = (_defaultOperatorLabel = {}, defineProperty(_defaultOperatorLabel, defaultOperators.EQUALS, "equals"), defineProperty(_defaultOperatorLabel, defaultOperators.NOT_EQUALS, "not equals"), defineProperty(_defaultOperatorLabel, defaultOperators.CONTAINS, "contains"), defineProperty(_defaultOperatorLabel, defaultOperators.NOT_CONTAINS, "not contains"), defineProperty(_defaultOperatorLabel, defaultOperators.GREATER_THAN, "greater than"), defineProperty(_defaultOperatorLabel, defaultOperators.LOWER_THAN, "lower than"), defineProperty(_defaultOperatorLabel, defaultOperators.IN, "in"), defineProperty(_defaultOperatorLabel, defaultOperators.NOT_IN, "not in"), defineProperty(_defaultOperatorLabel, defaultOperators.STARTS_WITH, "starts with"), defineProperty(_defaultOperatorLabel, defaultOperators.NOT_STARTS_WITH, "doesn't start with"), defineProperty(_defaultOperatorLabel, defaultOperators.ENDS_WITH, "ends with"), defineProperty(_defaultOperatorLabel, defaultOperators.NOT_ENDS_WITH, "doesn't end with"), defineProperty(_defaultOperatorLabel, defaultOperators.IS_EMPTY, "is empty"), defineProperty(_defaultOperatorLabel, defaultOperators.NOT_IS_EMPTY, "is not empty"), defineProperty(_defaultOperatorLabel, defaultOperators.IS_NULL, "is null"), defineProperty(_defaultOperatorLabel, defaultOperators.NOT_IS_NULL, "is not null"), _defaultOperatorLabel);
+var defaultOperatorLabels = (_defaultOperatorLabel = {}, defineProperty(_defaultOperatorLabel, defaultOperators.EQUALS, "equals"), defineProperty(_defaultOperatorLabel, defaultOperators.NOT_EQUALS, "not equals"), defineProperty(_defaultOperatorLabel, defaultOperators.GREATER_THAN, "greater than"), defineProperty(_defaultOperatorLabel, defaultOperators.LOWER_THAN, "lower than"), defineProperty(_defaultOperatorLabel, defaultOperators.IN, "in"), defineProperty(_defaultOperatorLabel, defaultOperators.NOT_IN, "not in"), defineProperty(_defaultOperatorLabel, defaultOperators.STARTS_WITH, "starts with"), defineProperty(_defaultOperatorLabel, defaultOperators.NOT_STARTS_WITH, "doesn't start with"), defineProperty(_defaultOperatorLabel, defaultOperators.ENDS_WITH, "ends with"), defineProperty(_defaultOperatorLabel, defaultOperators.NOT_ENDS_WITH, "doesn't end with"), defineProperty(_defaultOperatorLabel, defaultOperators.IS_EMPTY, "is empty"), defineProperty(_defaultOperatorLabel, defaultOperators.NOT_IS_EMPTY, "is not empty"), defineProperty(_defaultOperatorLabel, defaultOperators.IS_NULL, "is null"), defineProperty(_defaultOperatorLabel, defaultOperators.NOT_IS_NULL, "is not null"), _defaultOperatorLabel);
 /**
  * Default field types that require a select-type render implementation
  */
