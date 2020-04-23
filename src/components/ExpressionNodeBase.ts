@@ -43,7 +43,7 @@ export default class ExpressionNodeBase extends Vue {
    * @param action
    * @param index
    */
-  emitInput(node?: IExpressionNode, action = actionTypes.SET, index?: number): void {
+  emitInput(node?: IExpressionNode, action = "", index?: number): void {
     const path = getNodePath(this.node);
     if (index != undefined)
       path.push(index);

@@ -98,6 +98,24 @@ describe("ConditionFactory - create method", () => {
     expect(node.condition.fieldTypeName).toBe("customFieldType");
     expect(node.condition.operatorName).toBe(defaultOperators.EQUALS);
     expect(node.condition.value).toBe("hello");
-  })
+  });
+
+  it("tests createAndUpdate method, not valid node", () => {
+    const node = {};
+    expect(() => cf.createAndUpdate(node, "custom0", defaultOperators.EQUALS, "hello"))
+      .toThrow(/Node \(first param\) must be an ExpressionNode/);
+  });
+
+  it("tests createAndUpdate with default", () => {
+    const expected: ConditionFactoryCondition = {
+      fieldTypeName: defaultFieldTypes.TEXT,
+      fieldName: mockFields[0].name,
+      operatorName: defaultOperators.EQUALS,
+      value: null
+    };
+    const node = {condition: {fieldName: 0, fieldTypeName: 0, operatorName: 0, value: 0}};
+    cf.createAndUpdate(node);
+    expect(node.condition).toStrictEqual(expected);
+  });
 
 });

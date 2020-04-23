@@ -1,6 +1,6 @@
 {
   "name": "vue-renderless-expression-builder",
-  "version": "0.6.43",
+  "version": "0.6.50",
   "homepage": "https://github.com/hubagaspar91/vue-renderless-expression-builder",
   "private": false,
   "main": "dist/vue-renderless-expression-builder.umd.js",
@@ -10,7 +10,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "rollup -c",
-    "test:unit": "vue-cli-service test:unit --coverage",
+    "test:unit": "vue-cli-service test:unit --coverage; make-coverage-badge --output-path ./coverage.svg",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
@@ -22,7 +22,6 @@
     "vue": "^2.6.11"
   },
   "devDependencies": {
-    "vue": "^2.6.11",
     "@babel/core": "^7.9.0",
     "@babel/plugin-transform-runtime": "^7.9.0",
     "@babel/preset-typescript": "^7.9.0",
@@ -39,6 +38,7 @@
     "@vue/test-utils": "1.0.0-beta.31",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^6.1.2",
+    "make-coverage-badge": "^1.2.0",
     "node-sass": "^4.12.0",
     "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-commonjs": "^10.1.0",
@@ -48,6 +48,7 @@
     "rollup-plugin-vue": "^5.1.6",
     "sass-loader": "^8.0.2",
     "typescript": "~3.7.5",
+    "vue": "^2.6.11",
     "vue-template-compiler": "^2.6.11"
   }
 }

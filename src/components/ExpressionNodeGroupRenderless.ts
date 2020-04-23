@@ -54,9 +54,9 @@ export default class ExpressionNodeGroupRenderless extends ExpressionNodeBase {
    */
   toggleConnectionType() {
     if (this.node.connectionType === connectionTypes.AND)
-      this.node.connectionType = connectionTypes.OR;
+      this.$set(this.node, "connectionType", connectionTypes.OR);
     else
-      this.node.connectionType = connectionTypes.AND;
+      this.$set(this.node, "connectionType", connectionTypes.AND);
   }
 
   render() {

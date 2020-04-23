@@ -27,9 +27,7 @@ export default class ExpressionNode extends ExpressionNodeBase implements IExpre
   }
 
   set condition(condition) {
-    if (condition instanceof Object)
-      this._condition = condition;
-    else throw new Error("Condition must be an object.")
+    this._condition = condition;
   }
 
   /**

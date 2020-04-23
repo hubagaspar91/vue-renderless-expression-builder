@@ -10,6 +10,7 @@ import ExpressionNodeRenderless from "@/components/ExpressionNodeRenderless";
 import ExpressionNode from "@/core/ExpressionNode";
 import {IExpressionNodeGroupJSON, IExpressionNodeJSON} from "@/core/Interfaces";
 import {defaultOperators} from "@/conditions/Defaults";
+import {actionTypes, InputEventBody} from "@/components/Utils";
 
 let wrapper: Wrapper<ExpressionBuilderRenderless>,
   nodeWrapper: Wrapper<ExpressionNodeRenderless>,
@@ -67,10 +68,10 @@ describe("ExpressionBuilderRenderless - Events from ExpressionNodeRenderless com
   it("Delete", () => {
     return new Promise((resolve, reject) => {
 
-      wrapper.vm.$on("input", (builder: ExpressionBuilder) => {
-        const json = builder.root.toJSON();
+      wrapper.vm.eventHub.$on("input", (body: InputEventBody) => {
         try {
-          expect((json.children[0] as IExpressionNodeGroupJSON).children).toHaveLength(0);
+          expect(body.path).toStrictEqual([0,0]);
+          expect(body.action).toBe(actionTypes.DELETE);
         } catch (e) {
           reject(e);
         }
@@ -78,24 +79,6 @@ describe("ExpressionBuilderRenderless - Events from ExpressionNodeRenderless com
       });
 
       nodeWrapper.vm.emitDelete();
-    })
-  });
-
-  it("Update", () => {
-    return new Promise((resolve, reject) => {
-
-      wrapper.vm.$on("input", (builder: ExpressionBuilder) => {
-        const json = builder.root.toJSON();
-        try {
-          expect(((json.children[0] as IExpressionNodeGroupJSON).children[0] as IExpressionNodeJSON).value)
-            .toBe("testValue");
-        } catch (e) {
-          reject(e);
-        }
-        resolve();
-      });
-
-      nodeWrapper.vm.updateCondition("test", defaultOperators.EQUALS, "testValue");
     })
   });
 });

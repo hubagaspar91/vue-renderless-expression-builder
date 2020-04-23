@@ -56,8 +56,7 @@ export default class ExpressionBuilderRenderless extends Vue {
   conditionProvider = new ConditionFactory({
     operators: this.operators as ConditionFactoryOperator[],
     fields: this.fields,
-    fieldTypes: this.fieldTypes,
-    eventHub: this.eventHub
+    fieldTypes: this.fieldTypes
   });
 
   created() {
@@ -79,9 +78,6 @@ export default class ExpressionBuilderRenderless extends Vue {
       index = body.path[body.path.length-1];
 
     switch (body.action) {
-      case actionTypes.SET:
-        this.value.contextTo(pathToParent).set(body.node, index);
-        break;
       case actionTypes.ADD:
         this.value.contextTo(body.path).add(body.node);
         break;
@@ -94,8 +90,6 @@ export default class ExpressionBuilderRenderless extends Vue {
     }
 
     this.value.contextToRoot();
-
-    this.$emit("input", this.value);
   }
 
   get root(): ExpressionNodeGroup {

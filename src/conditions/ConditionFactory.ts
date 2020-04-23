@@ -10,19 +10,16 @@ import {
   selectTypeFields
 } from "@/conditions/Defaults";
 import {Vue} from "vue-property-decorator";
-import {actionTypes} from "@/components/Utils";
 
 
 export default class ConditionFactory {
   private readonly _operators: ConditionFactoryOperator[] = returnDefaultOperators();
   private _fields: ConditionFactoryField[] = [];
   private readonly _fieldTypes: ConditionFactoryFieldTypeDefinition[] = returnDefaultFieldTypes();
-  private readonly _eventHub: Vue;
 
   constructor(opts: ConditionFactoryOpts) {
     this._operators = opts.operators || this._operators;
     this._fieldTypes = opts.fieldTypes || this._fieldTypes;
-    this._eventHub = opts.eventHub as Vue;
 
     if (this._operators.length == 0)
       throw new Error("ConditionFactory initialized with 0 operators.");
@@ -59,15 +56,11 @@ export default class ConditionFactory {
       if (!(field.operators as string[]).includes(operatorName))
         throw new Error(`Operator ${operatorName} is not available for field ${field.name}`);
 
-      const fieldType = this.fieldTypes.find(ft => ft.name == field.type);
-      if (!fieldType)
-        throw new Error(`Field type ${field.type} is not defined on the instance. 
-          Options are: ${this.fieldTypes.map(ft => ft.name).join(", ")}`);
-
+      // at this point, the field type surely exists, as it's checked for in the constructor
       return {
         operatorName: operator.name,
         fieldName: field.name,
-        fieldTypeName: fieldType.name,
+        fieldTypeName: field.type,
         value
       }
 
@@ -90,8 +83,6 @@ export default class ConditionFactory {
     if ("condition" in node) {
       const condition = this.create(fieldName, operatorName, value);
       Vue.set(node, "condition", condition);
-      if (this._eventHub)  // sends updated event, if eventHub was passed to the constructor
-        this._eventHub.$emit("input", {node: node, action: actionTypes.UPDATED, path: []});
     } else throw new Error("Node (first param) must be an ExpressionNode");
   }
 
@@ -105,7 +96,10 @@ export default class ConditionFactory {
         operators: field.operators
       };
 
-      if (!this.fieldTypes.find(ft => ft.name == innerField.type))
+      // finding the field type object, for the type of the field
+      const fieldTypeObject = this._fieldTypes.find(t => t.name == innerField.type);
+
+      if (!fieldTypeObject)
         throw new Error(`Field ${innerField.name} has undefined type ${innerField.type}`);
 
       if (selectTypeFields.includes(innerField.type) && (!innerField.choices || innerField.choices.length == 0))
@@ -113,12 +107,6 @@ export default class ConditionFactory {
 
       // setting operators, if it was provided null or empty
       if (!innerField.operators || innerField.operators.length == 0) {
-
-        // finding the field type object, for the type of the field
-        const fieldTypeObject = this._fieldTypes.find(t => t.name == innerField.type);
-
-        if (!fieldTypeObject)
-          throw new Error(`Field type ${innerField.type} is not added to the instance`);
 
         // populating the field's operators from the default, defined in the fieldTypeDefinition
         innerField.operators = this._operators.filter(operator =>

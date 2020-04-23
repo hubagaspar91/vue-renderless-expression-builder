@@ -24,7 +24,7 @@ beforeEach(() => {
     },
     provide: {
       [PROVIDE_EVENT_HUB_KEY]: eventHub,
-      [PROVIDE_CONDITION_FACTORY_KEY]: returnConditionProvider(eventHub)
+      [PROVIDE_CONDITION_FACTORY_KEY]: returnConditionProvider()
     },
     scopedSlots: {
       default: () => null
@@ -55,9 +55,7 @@ const testGroupAction = (actionType: string, group: boolean, index?: number) => 
         } else expect(body.node).toBeInstanceOf(ExpressionNodeGroup);
 
         switch (actionType) {
-          case actionTypes.SET:
           case actionTypes.INSERT:
-          case actionTypes.DELETE:
             expect(body.path).toStrictEqual([0, index]);
             break;
           case actionTypes.ADD:
@@ -75,7 +73,7 @@ const testGroupAction = (actionType: string, group: boolean, index?: number) => 
       },
       provide: {
         [PROVIDE_EVENT_HUB_KEY]: eventHub,
-        [PROVIDE_CONDITION_FACTORY_KEY]: returnConditionProvider(eventHub)
+        [PROVIDE_CONDITION_FACTORY_KEY]: returnConditionProvider()
       },
       scopedSlots: {
         default: () => null
@@ -108,15 +106,18 @@ describe("ExpressionNodeGroup - toggleConnectionType, Add, Insert Events", () =>
       },
       provide: {
         [PROVIDE_EVENT_HUB_KEY]: eventHub,
-        [PROVIDE_CONDITION_FACTORY_KEY]: returnConditionProvider(eventHub)
+        [PROVIDE_CONDITION_FACTORY_KEY]: returnConditionProvider()
       },
       scopedSlots: {
         default: () => null
       }
     });
     expect(wrapper0.vm.eventHub).toBe(eventHub);
+    expect(wrapper0.vm.node.connectionType).toBe(connectionTypes.OR);
     wrapper0.vm.toggleConnectionType();
     expect(wrapper0.vm.node.connectionType).toBe(connectionTypes.AND);
+    wrapper0.vm.toggleConnectionType();
+    expect(wrapper0.vm.node.connectionType).toBe(connectionTypes.OR);
   });
 
   it("insertNode - ExpressionNodeGroupRenderless", () => {

@@ -9,7 +9,6 @@ export interface InputEventBody {
 export const actionTypes = {
   ADD: "add",
   INSERT: "insert",
-  SET: "set",
   DELETE: "delete",
   UPDATED: "updated"
 };

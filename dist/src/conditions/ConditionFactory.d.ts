@@ -3,7 +3,6 @@ export default class ConditionFactory {
     private readonly _operators;
     private _fields;
     private readonly _fieldTypes;
-    private readonly _eventHub;
     constructor(opts: ConditionFactoryOpts);
     get fields(): ConditionFactoryField[];
     get operators(): ConditionFactoryOperator[];

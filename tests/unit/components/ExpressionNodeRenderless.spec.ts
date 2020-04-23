@@ -6,9 +6,7 @@ import {mount, Wrapper} from "@vue/test-utils";
 import ExpressionNodeRenderless from "@/components/ExpressionNodeRenderless";
 import {PROVIDE_CONDITION_FACTORY_KEY, PROVIDE_EVENT_HUB_KEY} from "@/components/ExpressionBuilderRenderless";
 import ExpressionNode from "@/core/ExpressionNode";
-import ConditionFactory from "@/conditions/ConditionFactory";
-import {defaultOperatorLabels, defaultOperators} from "@/conditions/Defaults";
-import {ConditionFactoryCondition} from "@/conditions/Interfaces";
+import {defaultOperators} from "@/conditions/Defaults";
 
 let group: ExpressionNodeGroup, eventHub: Vue, wrapper: Wrapper<ExpressionNodeRenderless>;
 
@@ -24,7 +22,7 @@ beforeEach(() => {
     },
     provide: {
       [PROVIDE_EVENT_HUB_KEY]: eventHub,
-      [PROVIDE_CONDITION_FACTORY_KEY]: returnConditionProvider(eventHub)
+      [PROVIDE_CONDITION_FACTORY_KEY]: returnConditionProvider()
     },
     scopedSlots: {
       default: () => null
@@ -51,7 +49,6 @@ describe("ExpressionNode - Sending Delete and Update events", () => {
           reject(e);
         }
         resolve();
-
       });
       expect(wrapper.vm.eventHub).toBe(eventHub);
       wrapper.vm.emitDelete();
@@ -59,22 +56,10 @@ describe("ExpressionNode - Sending Delete and Update events", () => {
   });
 
   it("Update", () => {
-    return new Promise((resolve, reject) => {
-      eventHub.$on("input", (body: InputEventBody) => {
-        try {
+      wrapper.vm.updateCondition("test", defaultOperators.EQUALS, "testValue0123");
+      expect(wrapper.vm.node.condition.value).toBe("testValue0123");
+      expect(wrapper.vm.node.condition.operatorName).toBe(defaultOperators.EQUALS);
+      expect(wrapper.vm.node.condition.fieldName).toBe("test");
 
-          expect(body.node).toBeInstanceOf(ExpressionNode);
-          expect((body.node as ExpressionNode).condition.value).toStrictEqual("testValue0");
-          expect(body.path).toStrictEqual([]);
-          expect(body.action).toBe(actionTypes.UPDATED);
-        } catch (e) {
-          reject(e);
-        }
-        resolve();
-
-      });
-      expect(wrapper.vm.eventHub).toBe(eventHub);
-      wrapper.vm.updateCondition("test", defaultOperators.EQUALS, "testValue0");
-    })
   });
 });

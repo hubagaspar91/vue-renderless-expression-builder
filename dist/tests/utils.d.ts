@@ -3,4 +3,4 @@ import { ConditionFactoryField } from "@/conditions/Interfaces";
 import ConditionFactory from "@/conditions/ConditionFactory";
 export declare const testJSON: IExpressionNodeGroupJSON;
 export declare const mockFields: ConditionFactoryField[];
-export declare const returnConditionProvider: (eventHub: import("vue/types/umd")) => ConditionFactory;
+export declare const returnConditionProvider: () => ConditionFactory;

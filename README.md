@@ -1,4 +1,5 @@
 # Renderless Expression Builder for Vue.js
+![codecov](https://github.com/hubagaspar91/vue-renderless-expression-builder/blob/master/coverage.svg)
 
 This is something I needed for a project, where I had to build an expression (or query) builder, with a layout drastically different from the standard query builder interface (such as the [jQuery QueryBuilder](https://querybuilder.js.org/)), but with very similar functionality. This library is a layout-agnostic implementaiton, meaning, that it aims to serve as a core for flexibly creating query builder components with different complexities and specifications.
 

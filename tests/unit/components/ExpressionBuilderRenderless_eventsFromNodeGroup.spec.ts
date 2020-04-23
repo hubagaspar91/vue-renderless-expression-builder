@@ -8,7 +8,7 @@ import {mockFields, testJSON} from "../../utils";
 import ExpressionNodeGroup from "@/core/ExpressionNodeGroup";
 import ExpressionNodeGroupRenderless from "@/components/ExpressionNodeGroupRenderless";
 import {ICondition, IExpressionNodeGroupJSON, IExpressionNodeJSON} from "@/core/Interfaces";
-import {actionTypes} from "@/components/Utils";
+import {actionTypes, InputEventBody} from "@/components/Utils";
 import ExpressionNode from "@/core/ExpressionNode";
 import {defaultOperatorLabels, defaultOperators} from "@/conditions/Defaults";
 import {ConditionFactoryCondition} from "@/conditions/Interfaces";
@@ -67,8 +67,8 @@ const testActionOnGroup = (actionType: string, group: boolean, index?: number) =
 
     const newCondition: ICondition = {name: "test", value: 500};
 
-    wrapper.vm.$on("input", (builder: ExpressionBuilder) => {
-      const json = builder.root.toJSON();
+    wrapper.vm.eventHub.$on("input", (body: InputEventBody) => {
+      const json = wrapper.vm.root.toJSON();
       const parentJson = json.children[0] as IExpressionNodeGroupJSON;
       const newNodeJson = parentJson.children[index != undefined ? index : parentJson.children.length - 1];
       try {

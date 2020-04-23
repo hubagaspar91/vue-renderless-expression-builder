@@ -357,7 +357,7 @@ var ExpressionNode = /*#__PURE__*/function (_ExpressionNodeBase) {
       return this._condition;
     },
     set: function set(condition) {
-      if (condition instanceof Object) this._condition = condition;else throw new Error("Condition must be an object.");
+      this._condition = condition;
     }
   }], [{
     key: "fromJSON",
@@ -762,7 +762,6 @@ var ExpressionBuilder = /*#__PURE__*/function () {
 var actionTypes = {
   ADD: "add",
   INSERT: "insert",
-  SET: "set",
   DELETE: "delete",
   UPDATED: "updated"
 };
@@ -868,7 +867,6 @@ var ConditionFactory = /*#__PURE__*/function () {
     this._fieldTypes = returnDefaultFieldTypes();
     this._operators = opts.operators || this._operators;
     this._fieldTypes = opts.fieldTypes || this._fieldTypes;
-    this._eventHub = opts.eventHub;
     if (this._operators.length == 0) throw new Error("ConditionFactory initialized with 0 operators.");
     if (opts.fields.length == 0) throw new Error("ConditionFactory initialized with 0 fields.");
     if (this._fieldTypes.length == 0) throw new Error("ConditionFactory initialized with 0 fieldTypes.");
@@ -893,17 +891,12 @@ var ConditionFactory = /*#__PURE__*/function () {
         });
 
         if (field == undefined) throw new Error("No such field " + fieldName);
-        if (!field.operators.includes(operatorName)) throw new Error("Operator ".concat(operatorName, " is not available for field ").concat(field.name));
-        var fieldType = this.fieldTypes.find(function (ft) {
-          return ft.name == field.type;
-        });
-        if (!fieldType) throw new Error("Field type ".concat(field.type, " is not defined on the instance. \n          Options are: ").concat(this.fieldTypes.map(function (ft) {
-          return ft.name;
-        }).join(", ")));
+        if (!field.operators.includes(operatorName)) throw new Error("Operator ".concat(operatorName, " is not available for field ").concat(field.name)); // at this point, the field type surely exists, as it's checked for in the constructor
+
         return {
           operatorName: operator.name,
           fieldName: field.name,
-          fieldTypeName: fieldType.name,
+          fieldTypeName: field.type,
           value: value
         };
       }
@@ -931,12 +924,6 @@ var ConditionFactory = /*#__PURE__*/function () {
       if ("condition" in node) {
         var condition = this.create(fieldName, operatorName, value);
         Vue.set(node, "condition", condition);
-        if (this._eventHub) // sends updated event, if eventHub was passed to the constructor
-          this._eventHub.$emit("input", {
-            node: node,
-            action: actionTypes.UPDATED,
-            path: []
-          });
       } else throw new Error("Node (first param) must be an ExpressionNode");
     }
   }, {
@@ -951,20 +938,17 @@ var ConditionFactory = /*#__PURE__*/function () {
           label: field.label,
           choices: field.choices,
           operators: field.operators
-        };
-        if (!_this.fieldTypes.find(function (ft) {
-          return ft.name == innerField.type;
-        })) throw new Error("Field ".concat(innerField.name, " has undefined type ").concat(innerField.type));
+        }; // finding the field type object, for the type of the field
+
+        var fieldTypeObject = _this._fieldTypes.find(function (t) {
+          return t.name == innerField.type;
+        });
+
+        if (!fieldTypeObject) throw new Error("Field ".concat(innerField.name, " has undefined type ").concat(innerField.type));
         if (selectTypeFields.includes(innerField.type) && (!innerField.choices || innerField.choices.length == 0)) throw new Error("Need to specify available choices for field ".concat(field.name, " of type ").concat(field.type)); // setting operators, if it was provided null or empty
 
         if (!innerField.operators || innerField.operators.length == 0) {
-          // finding the field type object, for the type of the field
-          var fieldTypeObject = _this._fieldTypes.find(function (t) {
-            return t.name == innerField.type;
-          });
-
-          if (!fieldTypeObject) throw new Error("Field type ".concat(innerField.type, " is not added to the instance")); // populating the field's operators from the default, defined in the fieldTypeDefinition
-
+          // populating the field's operators from the default, defined in the fieldTypeDefinition
           innerField.operators = _this._operators.filter(function (operator) {
             return fieldTypeObject.availableOperators.includes(operator.name);
           }).map(function (o) {
@@ -1018,8 +1002,7 @@ var ExpressionBuilderRenderless = /*#__PURE__*/function (_Vue) {
     _this.conditionProvider = new ConditionFactory({
       operators: _this.operators,
       fields: _this.fields,
-      fieldTypes: _this.fieldTypes,
-      eventHub: _this.eventHub
+      fieldTypes: _this.fieldTypes
     });
     return _this;
   }
@@ -1048,10 +1031,6 @@ var ExpressionBuilderRenderless = /*#__PURE__*/function (_Vue) {
           index = body.path[body.path.length - 1];
 
       switch (body.action) {
-        case actionTypes.SET:
-          this.value.contextTo(pathToParent).set(body.node, index);
-          break;
-
         case actionTypes.ADD:
           this.value.contextTo(body.path).add(body.node);
           break;
@@ -1066,7 +1045,6 @@ var ExpressionBuilderRenderless = /*#__PURE__*/function (_Vue) {
       }
 
       this.value.contextToRoot();
-      this.$emit("input", this.value);
     }
   }, {
     key: "render",
@@ -1149,7 +1127,7 @@ var ExpressionNodeBase$1 = /*#__PURE__*/function (_Vue) {
      * @param index
      */
     value: function emitInput(node) {
-      var action = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : actionTypes.SET;
+      var action = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "";
       var index = arguments.length > 2 ? arguments[2] : undefined;
       var path = getNodePath(this.node);
       if (index != undefined) path.push(index);
@@ -1297,7 +1275,7 @@ var ExpressionNodeGroupRenderless = /*#__PURE__*/function (_ExpressionNodeBase) 
   }, {
     key: "toggleConnectionType",
     value: function toggleConnectionType() {
-      if (this.node.connectionType === connectionTypes.AND) this.node.connectionType = connectionTypes.OR;else this.node.connectionType = connectionTypes.AND;
+      if (this.node.connectionType === connectionTypes.AND) this.$set(this.node, "connectionType", connectionTypes.OR);else this.$set(this.node, "connectionType", connectionTypes.AND);
     }
   }, {
     key: "render",

@@ -24,5 +24,4 @@ export interface ConditionFactoryOpts {
     fields: ConditionFactoryField[];
     operators?: ConditionFactoryOperator[];
     fieldTypes?: ConditionFactoryFieldTypeDefinition[];
-    eventHub?: Vue;
 }
