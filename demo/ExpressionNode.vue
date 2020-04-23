@@ -119,9 +119,10 @@
           return this.node.condition.fieldName;
         },
         set(val) {
-          // when changing fields, null-out the value as well, to avoid data inconsistencies
+          // use this fn to validate the choice
+          // when changing fields, null-out the value and operator as well, to avoid data inconsistencies
           // this can be better handled, I do this for the sake of simplicity here
-          this.conditions.createAndUpdate(this.node, val, this.node.condition.operatorName, null);
+          this.conditions.createAndUpdate(this.node, val);
         }
       },
 
@@ -131,6 +132,7 @@
           return this.node.condition.operatorName;
         },
         set(val) {
+          // use this fn to validate the choice
           this.conditions.createAndUpdate(this.node, this.node.condition.fieldName, val, this.node.condition.value);
         }
       },
@@ -141,7 +143,7 @@
           return this.node.condition.value;
         },
         set(val) {
-          this.conditions.createAndUpdate(this.node, this.node.condition.fieldName, this.node.condition.operatorName, val);
+          this.$set(this.node.condition, "value", val);
         }
       },
 

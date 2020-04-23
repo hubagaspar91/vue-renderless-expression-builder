@@ -21,7 +21,7 @@
     props: {
       value: {
         type: Core.ExpressionBuilder,
-        default: () => new Core.ExpressionBuilder()
+        required: true
       }
     },
     components: {
